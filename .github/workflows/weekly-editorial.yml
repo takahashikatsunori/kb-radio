@@ -1,0 +1,76 @@
+name: Weekly Chief Editor Plan (Sun 21:00 JST)
+
+on:
+  schedule:
+    # 12:00 UTC Sunday = 21:00 JST Sunday
+    - cron: '0 12 * * 0'
+  workflow_dispatch:
+    inputs:
+      start_date:
+        description: '対象週の開始日 (YYYY-MM-DD, 空欄の場合は次の月曜日 JST)'
+        required: false
+        default: ''
+      research_model:
+        description: 'Phase 1 リサーチモデル (デフォルト: gemini-4-hydrogen)'
+        required: false
+        default: 'gemini-4-hydrogen'
+      planner_model:
+        description: 'Phase 2 編集長プランナーモデル (デフォルト: gemini-4-neon)'
+        required: false
+        default: 'gemini-4-neon'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: 'weekly-editorial-plan'
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate weekly editorial plan (Hydrogen + Neon Chief Editor)
+        env:
+          PYTHONUTF8: '1'
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          START_FLAG=""
+          if [ -n "${{ inputs.start_date }}" ]; then
+            START_FLAG="--start-date ${{ inputs.start_date }}"
+          fi
+          RESEARCH_MODEL="${{ inputs.research_model }}"
+          PLANNER_MODEL="${{ inputs.planner_model }}"
+          [ -z "$RESEARCH_MODEL" ] && RESEARCH_MODEL="gemini-4-hydrogen"
+          [ -z "$PLANNER_MODEL" ] && PLANNER_MODEL="gemini-4-neon"
+          python src/plan_weekly_editorial.py \
+            --research-model "$RESEARCH_MODEL" \
+            --planner-model "$PLANNER_MODEL" \
+            $START_FLAG
+
+      - name: Commit & push updated editorial_plan.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/editorial_plan.json
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "editorial: update weekly program plan"
+            git pull --rebase
+            git push
+          else
+            echo "No editorial_plan.json changes to commit."
+          fi

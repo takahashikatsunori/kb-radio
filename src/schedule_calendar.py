@@ -98,10 +98,26 @@ def _match_special_day(dt: date, special_days: dict[str, Any]) -> dict[str, Any]
     return candidates[0][3]
 
 
+def _match_editorial_guide(
+    target_date_str: str,
+    editorial_plan: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Find daily editorial guidance matching target_date_str from weekly editorial_plan.json."""
+    if not editorial_plan:
+        return None
+    for g in editorial_plan.get("daily_guides") or []:
+        if isinstance(g, dict) and g.get("date") == target_date_str:
+            guide = dict(g)
+            guide["weekly_arc"] = editorial_plan.get("weekly_arc")
+            return guide
+    return None
+
+
 def resolve_day_plan(
     target_date_str: str,
     themes: dict[str, Any],
     special_days: dict[str, Any],
+    editorial_plan: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Compute weekday/holiday rules, target duration/chars, and active special countdown."""
     dt = datetime.strptime(target_date_str, "%Y-%m-%d").date()
@@ -129,7 +145,22 @@ def resolve_day_plan(
     else:
         base_edition = "平日レギュラー版（約10分）"
 
+    editorial_guide = _match_editorial_guide(target_date_str, editorial_plan)
     scheduled_special = _match_special_day(dt, special_days)
+    if scheduled_special is None and editorial_guide:
+        ed_sp = editorial_guide.get("editorial_special")
+        if isinstance(ed_sp, dict) and str(ed_sp.get("title", "")).strip():
+            extra_min = max(2, min(4, int(ed_sp.get("extra_minutes", 3))))
+            scheduled_special = {
+                "id": f"editorial_{target_date_str}",
+                "title": str(ed_sp["title"]).strip(),
+                "target_date": target_date_str,
+                "days_until": 0,
+                "phase_label": str(ed_sp.get("phase_label") or "編集長ワクワク特集").strip(),
+                "extra_minutes": extra_min,
+                "theme_focus": str(ed_sp.get("theme_focus") or "").strip(),
+                "source_type": "editorial_special",
+            }
     if scheduled_special:
         extra_sec = int(scheduled_special["extra_minutes"]) * 60
         target_dur = min(MAX_TARGET_DURATION_SEC, base_dur + extra_sec)
@@ -172,6 +203,7 @@ def resolve_day_plan(
         "max_chars": max_chars,
         "edition_label": edition_label,
         "scheduled_special": scheduled_special,
+        "editorial_guide": editorial_guide,
     }
 
 
@@ -179,11 +211,12 @@ def resolve_tomorrow_preview(
     target_date_str: str,
     themes: dict[str, Any],
     special_days: dict[str, Any],
+    editorial_plan: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Resolve tomorrow's broadcast plan to generate an accurate ending preview cue."""
     dt = datetime.strptime(target_date_str, "%Y-%m-%d").date()
     tmr_str = (dt + timedelta(days=1)).isoformat()
-    tmr = resolve_day_plan(tmr_str, themes, special_days)
+    tmr = resolve_day_plan(tmr_str, themes, special_days, editorial_plan=editorial_plan)
     guest_name = tmr["day_cfg"]["guest"]["name"]
     theme_name = tmr["day_cfg"]["theme_name"]
     total_min = round(tmr["target_duration_sec"] / 60)
@@ -196,7 +229,11 @@ def resolve_tomorrow_preview(
 
     sp = tmr["scheduled_special"]
     if sp:
-        if sp["days_until"] == 0:
+        if sp.get("source_type") == "editorial_special":
+            highlights.append(
+                f"ワクワク特集「{sp['title']}」を追加した約{total_min}分拡大版"
+            )
+        elif sp["days_until"] == 0:
             highlights.append(f"「{sp['title']}」当日の特別コーナーを追加した約{total_min}分拡大版")
         else:
             highlights.append(
@@ -214,6 +251,11 @@ def resolve_tomorrow_preview(
             f"明日（{tmr_str}・{tmr['weekday_ja']}）の予告：朝7時からの平日10分レギュラー版、"
             f"テーマは「{theme_name}」、ゲストは{guest_name}さんであることを予告してください。"
         )
+
+    tmr_guide = tmr.get("editorial_guide") or {}
+    tmr_angle = str(tmr_guide.get("kodaira_angle") or "").strip()
+    if tmr_angle:
+        hint += f"（明日のまちネタ予定：{tmr_angle}）"
 
     return {
         "date": tmr_str,

@@ -31,6 +31,8 @@ DATA_DIR = ROOT_DIR / "data"
 EPISODES_DIR = ROOT_DIR / "episodes"
 DEFAULT_RESEARCH_MODEL = "gemini-4-hydrogen"
 DEFAULT_SCRIPT_MODEL = "gemini-4-neon"
+RECENT_LOCAL_DEDUP_DAYS = 14
+EXPERT_HISTORY_DAYS = 90
 
 
 def _load_json(path: Path) -> Any:
@@ -190,16 +192,139 @@ def _apply_breaking_extension(
     return plan, special_meta
 
 
+def _normalize_kw(s: str) -> str:
+    """Normalize keyword/topic string for matching across parenthetical variants."""
+    base = re.sub(r"（[^）]*）|\([^)]*\)", "", s or "")
+    return re.sub(r"[\s・／/、。・「」『』\-_]+", "", base).lower()
+
+
+def _is_keyword_covered(bank_kw: str, covered_list: list[str]) -> bool:
+    """Return True if bank_kw overlaps substantially with any recently covered keyword."""
+    b_full = re.sub(r"[\s・／/、。・「」『』（）()\-_]+", "", bank_kw or "").lower()
+    b_core = _normalize_kw(bank_kw)
+    for cov in covered_list:
+        c_full = re.sub(r"[\s・／/、。・「」『』（）()\-_]+", "", cov or "").lower()
+        c_core = _normalize_kw(cov)
+        if len(c_core) >= 3 and c_core in b_full:
+            return True
+        if len(b_core) >= 3 and b_core in c_full:
+            return True
+        for sub in re.findall(r"（([^）]+)）|\(([^)]+)\)", cov or ""):
+            tok = re.sub(r"[\s・／/\-_]+", "", (sub[0] or sub[1] or "")).lower()
+            if len(tok) >= 5 and tok in b_full:
+                return True
+    return False
+
+
+def build_dedup_context(
+    target_date_str: str,
+    day_plan: dict[str, Any],
+    topic_history_entries: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Build 14-day local topic dedup & 90-day per-expert keyword history context."""
+    target_dt = datetime.strptime(target_date_str, "%Y-%m-%d").date()
+    day_key = day_plan["day_key"]
+    guest = day_plan["day_cfg"]["guest"]
+    guest_id = guest["id"]
+
+    recent_local_lines: list[str] = []
+    recent_topic_count = 0
+    expert_lines: list[str] = []
+    covered_keywords: list[str] = []
+    seen_cov: set[str] = set()
+
+    sorted_entries = sorted(
+        (e for e in topic_history_entries if isinstance(e, dict) and e.get("date")),
+        key=lambda e: e["date"],
+        reverse=True,
+    )
+
+    for entry in sorted_entries:
+        try:
+            e_dt = datetime.strptime(entry["date"], "%Y-%m-%d").date()
+        except ValueError:
+            continue
+        age_days = (target_dt - e_dt).days
+        if age_days <= 0:
+            continue
+
+        if age_days <= RECENT_LOCAL_DEDUP_DAYS:
+            topics = [str(t).strip() for t in (entry.get("kodaira_topics") or []) if str(t).strip()]
+            areas = [str(a).strip() for a in (entry.get("kodaira_areas") or []) if str(a).strip()]
+            sp_title = str(entry.get("special_feature_title") or "").strip()
+            recent_topic_count += len(topics)
+            parts: list[str] = []
+            if areas:
+                parts.append(f"エリア[{', '.join(areas)}]")
+            if topics:
+                parts.append(f"話題[{'; '.join(topics)}]")
+            if sp_title:
+                parts.append(f"特集[{sp_title}]")
+            if parts:
+                recent_local_lines.append(f"- {entry['date']}（{entry.get('weekday', '')}）: " + " / ".join(parts))
+
+        if age_days <= EXPERT_HISTORY_DAYS and (
+            entry.get("guest_id") == guest_id or entry.get("day_key") == day_key
+        ):
+            kws = [str(k).strip() for k in (entry.get("keywords_featured") or []) if str(k).strip()]
+            for kw in kws:
+                if kw not in seen_cov:
+                    seen_cov.add(kw)
+                    covered_keywords.append(kw)
+            sub = str(entry.get("subtitle") or "").strip()
+            expert_lines.append(
+                f"- {entry['date']}: 解説済み=[{', '.join(kws) or '記録なし'}]（{sub}）"
+            )
+
+    fresh_keywords = [
+        kw for kw in guest.get("keywords_bank", []) if not _is_keyword_covered(kw, covered_keywords)
+    ]
+    all_bank_covered = len(fresh_keywords) == 0
+
+    return {
+        "recent_local_count": recent_topic_count,
+        "recent_local_text": "\n".join(recent_local_lines) if recent_local_lines else "（直近14日間の過去放送記録なし）",
+        "expert_covered_keywords": covered_keywords,
+        "expert_history_text": "\n".join(expert_lines) if expert_lines else "（過去90日間の同専門家回の記録なし）",
+        "fresh_keywords": fresh_keywords if not all_bank_covered else list(guest.get("keywords_bank", [])),
+        "all_bank_covered": all_bank_covered,
+    }
+
+
+def _format_editorial_guide_block(day_plan: dict[str, Any]) -> str:
+    """Format editorial_plan daily guide block for prompts when available."""
+    guide = day_plan.get("editorial_guide")
+    if not guide:
+        return ""
+    arc = guide.get("weekly_arc") or {}
+    lines = ["【今週の編集長プラン（企画ガイドライン）】"]
+    if arc.get("title"):
+        lines.append(f"- 週間テーマ軸: {arc['title']}（{arc.get('concept', '')}）")
+    if guide.get("focus_area"):
+        lines.append(f"- 本日の重点エリア: {guide['focus_area']}")
+    if guide.get("kodaira_angle"):
+        lines.append(f"- 本日のまちネタ切り口: {guide['kodaira_angle']}")
+    if guide.get("expert_angle"):
+        lines.append(f"- 専門家トークの角度: {guide['expert_angle']}")
+    hints = guide.get("search_hints") or []
+    if hints:
+        lines.append(f"- 優先検索ヒント: {', '.join(hints)}")
+    lines.append("※ 当日に重大な地震・気象警報・速報ニュースが発生した場合は、上記ガイドより当日の緊急安全情報を最優先してください。")
+    return "\n".join(lines)
+
+
 def build_research_prompt(
     target_date: str,
     day_plan: dict[str, Any],
     live_bundle: dict[str, Any],
+    dedup_ctx: dict[str, Any] | None = None,
 ) -> str:
     """Build Phase A prompt for real-time Kodaira topics, disaster news, and breaking-special detection."""
     day_cfg = day_plan["day_cfg"]
     guest = day_cfg["guest"]
     weather_json = json.dumps(live_bundle["weather"], ensure_ascii=False)
     quakes_json = json.dumps(live_bundle["earthquakes"][:5], ensure_ascii=False)
+    dedup = dedup_ctx or build_dedup_context(target_date, day_plan, [])
 
     holiday_note = (
         f"※本日は国民の祝日「{day_plan['holiday_name']}」のため15分拡大版です。休日の小平での過ごし方やイベント情報も厚めに調べてください。"
@@ -212,15 +337,34 @@ def build_research_prompt(
         if sched
         else ""
     )
+    editorial_block = _format_editorial_guide_block(day_plan)
+    fresh_kws_str = ", ".join(dedup["fresh_keywords"][:6])
+    covered_kws_str = ", ".join(dedup["expert_covered_keywords"]) or "なし"
+    fresh_note = (
+        "（キーワード候補が一巡済みのため、過去90日とは異なる発展サブトピックや小平での応用例を深掘りしてください）"
+        if dedup["all_bank_covered"]
+        else ""
+    )
 
     return f"""あなたは東京都小平市の朝7時放送ラジオ番組のリサーチャーです。
 放送日: {target_date}（{day_plan['weekday_ja']}）
 編成タイプ: {day_plan['edition_label']}
 本日の曜日テーマ: {day_cfg['theme_name']}
 本日の専門家ゲスト: {guest['name']}（{guest['title']}）
-注目キーワード候補: {', '.join(guest['keywords_bank'][:6])}
+今回優先すべき未解説キーワード候補: {fresh_kws_str} {fresh_note}
 {holiday_note}
 {special_note}
+
+{editorial_block}
+
+【重複禁止①：直近14日間に放送済みの小平トピック・エリア】
+{dedup['recent_local_text']}
+※上記とまったく同じ場所・話題を連日繰り返さないでください（開催当日リマインドや明確な続報がある場合を除く）。小平市内の別エリア・新しい話題を優先して調べてください。
+
+【重複禁止②：この専門家（{guest['name']}）が過去3か月（90日）間に解説済みの専門用語・テーマ】
+既出キーワード: {covered_kws_str}
+{dedup['expert_history_text']}
+※上記で既出のキーワードは主テーマにせず、未解説の候補や新しい切り口を調査してください。
 
 参考ライブ気象（小平市）:
 {weather_json}
@@ -229,10 +373,10 @@ def build_research_prompt(
 {quakes_json}
 
 Google検索を使って、以下4点を最新の公式情報・地域ニュースから調査し、日本語で簡潔なブリーフィングを作成してください。
-1. 【小平市のローカル話題・季節トピック】{target_date}前後の小平市内のイベント、市民ニュース、まちづくり、名所（玉川上水・狭山・境緑道・小川パレット・丸ポスト・図書館・公民館・地元商店街や旬の農産物等）など、聴くと小平市が好きになる話題を2〜3個。
+1. 【小平市のローカル話題・季節トピック】{target_date}前後の小平市内のイベント、市民ニュース、まちづくり、名所（玉川上水・狭山・境緑道・小川パレット・丸ポスト・図書館・公民館・地元商店街や旬の農産物等）など、直近14日と重複しない「聴くと小平市が好きになる話題」を2〜3個。
 2. 【東京都・小平市の防災・行政お知らせ】最近の市報・公式HP・防災訓練・補助金・ごみ出し注意・防災アプリ等の最新情報。
 3. 【全国の最新防災・気象トピック】直近1週間の地震・気象・防災庁や国の防災関連ニュース。
-4. 【本日の専門テーマ掘り下げ資料】「{day_cfg['theme_name']}」に関する専門用語・技術・機材・制度で小平市民の暮らしに役立つ正確な豆知識。
+4. 【本日の専門テーマ掘り下げ資料】「{day_cfg['theme_name']}」に関して過去90日と被らない専門用語・技術・機材・制度で小平市民の暮らしに役立つ正確な豆知識。
 
 ※確認できた事実と日付だけを挙げ、推測でイベント日時や数値を作らないでください。
 
@@ -252,16 +396,21 @@ def build_script_prompt(
     live_bundle: dict[str, Any],
     research_summary: str,
     grounded_links: list[dict[str, str]],
+    dedup_ctx: dict[str, Any] | None = None,
 ) -> str:
-    """Build Phase B prompt to generate structured episode.json with holiday/special/preview support."""
+    """Build Phase B prompt to generate structured episode.json with holiday/special/dedup/editorial support."""
     day_cfg = day_plan["day_cfg"]
     koharu = characters["hosts"]["koharu"]
     heizo = characters["hosts"]["heizo"]
     guest = day_cfg["guest"]
-    recent_logs = json.dumps(knowledge_entries[-5:], ensure_ascii=False, indent=2)
+    recent_logs = json.dumps(knowledge_entries[-7:], ensure_ascii=False, indent=2)
     weather_json = json.dumps(live_bundle["weather"], ensure_ascii=False)
     quakes_json = json.dumps(live_bundle["earthquakes"][:4], ensure_ascii=False)
     links_json = json.dumps(grounded_links, ensure_ascii=False, indent=2)
+    dedup = dedup_ctx or build_dedup_context(target_date, day_plan, [])
+    editorial_block = _format_editorial_guide_block(day_plan)
+    fresh_kws_str = ", ".join(dedup["fresh_keywords"])
+    covered_kws_str = ", ".join(dedup["expert_covered_keywords"]) or "なし"
 
     holiday_instruction = ""
     if day_plan["is_holiday"]:
@@ -271,7 +420,7 @@ def build_script_prompt(
         )
 
     if special_meta:
-        segment_rules = f"""## 6. セグメント構成（特別コーナー含む全6コーナー構成を厳守）
+        segment_rules = f"""## 7. セグメント構成（特別コーナー含む全6コーナー構成を厳守）
 1. `id: "opening"` / `intro_jingle: "opening_jingle"` / `bgm: "bgm_warm"` / `outro_jingle: null` — 朝7時の挨拶・小平市の今朝の天気＆直近地震・季節の小平トーク
 2. `id: "kodaira_life"` / `intro_jingle: "stinger"` / `bgm: "bgm_news"` / `outro_jingle: null` — 小平が好きになる今日のまち・生活・防災トピック
 3. `id: "guest_talk"` / `intro_jingle: "guest_jingle"` / `bgm: "{day_cfg['bgm_mood']}"` / `outro_jingle: null` — 本日のテーマ「{day_cfg['theme_name']}」専門家 {guest['name']} さんの深掘り解説＆3人の掛け合い
@@ -279,7 +428,7 @@ def build_script_prompt(
 5. `id: "daily_bousai"` / `intro_jingle: "stinger"` / `bgm: "bgm_news"` / `outro_jingle: null` — 暮らしに直結する防災チェック・自治体サービス案内
 6. `id: "ending"` / `intro_jingle: "stinger"` / `bgm: "bgm_warm"` / `outro_jingle: "outro_jingle"` — 今日の「小春＆平蔵の防災ノート」まとめ＆【明日の予告】＆いってらっしゃい！"""
     else:
-        segment_rules = f"""## 6. セグメント構成（全5コーナー構成を厳守）
+        segment_rules = f"""## 7. セグメント構成（全5コーナー構成を厳守）
 1. `id: "opening"` / `intro_jingle: "opening_jingle"` / `bgm: "bgm_warm"` / `outro_jingle: null` — 朝7時の挨拶・小平市の今朝の天気＆直近地震・季節の小平トーク
 2. `id: "kodaira_life"` / `intro_jingle: "stinger"` / `bgm: "bgm_news"` / `outro_jingle: null` — 小平が好きになる今日のまち・生活・防災トピック
 3. `id: "guest_talk"` / `intro_jingle: "guest_jingle"` / `bgm: "{day_cfg['bgm_mood']}"` / `outro_jingle: null` — 本日のテーマ「{day_cfg['theme_name']}」専門家 {guest['name']} さんの深掘り解説＆3人の質疑応答・掛け合い
@@ -297,16 +446,26 @@ def build_script_prompt(
 - **明日の予告（ending セグメントで必ず触れること）**:
   {tomorrow_preview['preview_hint']}
 
+{editorial_block}
+
 ## 2. 登場人物（スピーカーIDは必ず `koharu`, `heizo`, `guest` のみ使用）
 - `koharu`（小春）: {koharu['personality']}
 - `heizo`（平蔵）: {heizo['personality']}
 - `guest`（{guest['name']} / {guest['title']}）: {guest['personality']} 小平とのつながり: {guest['kodaira_connection']}
-- 専門家キーワード候補（この中から2〜4個を必ず噛み砕いて解説）: {', '.join(guest['keywords_bank'])}
+- 今回優先すべき未解説キーワード候補（この中から2〜4個を必ず噛み砕いて解説）: {fresh_kws_str}
 
-## 3. 連続成長・過去の学び（自然な流れで振り返りや成長を取り入れる）
+## 3. 重複禁止ルール（厳守）
+- **直近14日間の小平ローカル話題（同じネタ・場所の繰り返し禁止）**:
+{dedup['recent_local_text']}
+- **この専門家（{guest['name']}）が過去3か月（90日）間に解説済みの専門用語・テーマ（同ネタ禁止）**:
+  既出: {covered_kws_str}
+{dedup['expert_history_text']}
+※ 連続成長として一言振り返るのは良いですが、本日のメイン話題や解説用語には**必ず上記と重ならない新しい内容**を選んでください。
+
+## 4. 連続成長・過去の学び（自然な流れで振り返りや成長を取り入れる）
 {recent_logs}
 
-## 4. ライブ気象・地震・調査ブリーフィング（事実厳守）
+## 5. ライブ気象・地震・調査ブリーフィング（事実厳守）
 小平市気象: {weather_json}
 直近地震: {quakes_json}
 調査ブリーフィング:
@@ -315,7 +474,7 @@ def build_script_prompt(
 利用可能な検証済み公式リンク候補:
 {links_json}
 
-## 5. Gemini 3.8 Flash TTS 表現力ルール（超重要）
+## 6. Gemini 3.8 Flash TTS 表現力ルール（超重要）
 - 各セリフは `speaker`, `text`, `tts_text`, `style`, `pause_after` を持つ。
 - **`text`（画面表示用）**: `<laugh>` 等のタグは絶対に入れず、自然な日本語台本にする。
 - **`tts_text`（Gemini 3.8 Flash TTS 読み上げ用）**:
@@ -327,10 +486,12 @@ def build_script_prompt(
 
 {segment_rules}
 
-## 7. 出力JSONスキーマ（厳密にこのキー構造のJSONのみ出力）
+## 8. 出力JSONスキーマ（厳密にこのキー構造のJSONのみ出力）
 {{
   "subtitle": "第{ep_num}回・{target_date}（{day_plan['weekday_ja']}）朝7時号 ― テーマ要約サブタイトル",
   "keywords_featured": ["解説した専門用語1", "専門用語2", "専門用語3"],
+  "kodaira_topics": ["今回取り上げた小平の施設・イベント・まちネタ1", "まちネタ2"],
+  "kodaira_areas": ["今回登場した小平市内のエリア・駅・施設名1", "エリア2"],
   "links": [
     {{"category": "カテゴリ", "title": "タイトル", "url": "https://...（必ず上記候補や実在URLから選択）", "note": "一言説明"}}
   ],
@@ -585,6 +746,16 @@ def _assemble_and_validate_episode(
             "theme_badge": day_cfg["theme_badge"],
             "target_duration_sec": int(day_plan["target_duration_sec"]),
             "output_filename": f"kodaira_radio_{date_compact}.mp3",
+            "kodaira_topics": [
+                str(t).strip()
+                for t in (raw_generated.get("kodaira_topics") or [])
+                if str(t).strip()
+            ],
+            "kodaira_areas": [
+                str(a).strip()
+                for a in (raw_generated.get("kodaira_areas") or [])
+                if str(a).strip()
+            ],
             "models": {
                 "research": research_model,
                 "script": script_model,
@@ -634,6 +805,41 @@ def _update_knowledge_log(episode: dict[str, Any]) -> None:
     entries.sort(key=lambda e: e["date"])
     log_path.parent.mkdir(parents=True, exist_ok=True)
     log_path.write_text(json.dumps({"entries": entries}, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _update_topic_history(episode: dict[str, Any]) -> None:
+    """Append episode topics, areas, and expert keywords into data/topic_history.json."""
+    hist_path = DATA_DIR / "topic_history.json"
+    data = _load_json(hist_path) if hist_path.exists() else {"entries": []}
+
+    meta = episode["meta"]
+    guest = episode.get("guest", {})
+    ep_date = meta["episode_date"]
+    sp = meta.get("special_feature")
+    sp_title = sp.get("title") if isinstance(sp, dict) else None
+
+    entries: list[dict[str, Any]] = [
+        e for e in data.get("entries", []) if isinstance(e, dict) and e.get("date") != ep_date
+    ]
+    entries.append(
+        {
+            "date": ep_date,
+            "weekday": meta.get("weekday_ja", ""),
+            "day_key": meta.get("weekday", ""),
+            "episode_number": meta.get("episode_number"),
+            "theme": meta.get("theme_name", ""),
+            "guest_id": guest.get("id", ""),
+            "guest_name": guest.get("name", ""),
+            "subtitle": meta.get("subtitle", ""),
+            "kodaira_topics": meta.get("kodaira_topics") or [],
+            "kodaira_areas": meta.get("kodaira_areas") or [],
+            "keywords_featured": guest.get("keywords_featured") or [],
+            "special_feature_title": sp_title,
+        }
+    )
+    entries.sort(key=lambda e: e["date"])
+    hist_path.parent.mkdir(parents=True, exist_ok=True)
+    hist_path.write_text(json.dumps({"entries": entries}, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def main() -> None:
@@ -689,17 +895,34 @@ def main() -> None:
         if (DATA_DIR / "knowledge_log.json").exists()
         else {"entries": []}
     )
+    topic_history_data = (
+        _load_json(DATA_DIR / "topic_history.json")
+        if (DATA_DIR / "topic_history.json").exists()
+        else {"entries": []}
+    )
+    editorial_plan = (
+        _load_json(DATA_DIR / "editorial_plan.json")
+        if (DATA_DIR / "editorial_plan.json").exists()
+        else None
+    )
 
-    day_plan = resolve_day_plan(target_date, themes, special_days)
-    tomorrow_preview = resolve_tomorrow_preview(target_date, themes, special_days)
+    day_plan = resolve_day_plan(target_date, themes, special_days, editorial_plan=editorial_plan)
+    tomorrow_preview = resolve_tomorrow_preview(
+        target_date, themes, special_days, editorial_plan=editorial_plan
+    )
     ep_num = _next_episode_number(target_date)
+    dedup_ctx = build_dedup_context(
+        target_date, day_plan, topic_history_data.get("entries", [])
+    )
 
     print(
         f"Collecting live Kodaira feeds for {target_date} ({day_plan['weekday_ja']} / {day_plan['edition_label']})..."
     )
     live_bundle = collect_live_briefing()
     live_quake_special = _detect_live_quake_special(live_bundle["earthquakes"])
-    research_prompt = build_research_prompt(target_date, day_plan, live_bundle)
+    research_prompt = build_research_prompt(
+        target_date, day_plan, live_bundle, dedup_ctx=dedup_ctx
+    )
 
     if args.dry_run_prompt:
         plan_preview, special_meta = _apply_breaking_extension(day_plan, live_quake_special)
@@ -714,6 +937,15 @@ def main() -> None:
             live_bundle=live_bundle,
             research_summary="[Dry-run: Phase A Google Search grounding output goes here]",
             grounded_links=live_bundle["verified_links"],
+            dedup_ctx=dedup_ctx,
+        )
+        eg = plan_preview.get("editorial_guide") or {}
+        eg_sp = eg.get("editorial_special") if isinstance(eg.get("editorial_special"), dict) else None
+        eg_desc = (
+            f"{eg.get('focus_area', '-')} | {eg.get('kodaira_angle', '-')}"
+            + (f" [Special: {eg_sp.get('title')}]" if eg_sp and eg_sp.get("title") else "")
+            if eg
+            else "None"
         )
         print("\n=== DRY RUN CONFIG SUMMARY ===")
         print(f"Date            : {target_date} ({plan_preview['weekday_ja']}) | Episode #{ep_num}")
@@ -723,6 +955,9 @@ def main() -> None:
         print(f"Target          : {plan_preview['target_duration_sec']}s / ~{plan_preview['target_chars']} chars ({plan_preview['min_chars']}~{plan_preview['max_chars']})")
         print(f"Theme / Guest   : {plan_preview['day_cfg']['theme_name']} / {plan_preview['day_cfg']['guest']['name']} ({plan_preview['day_cfg']['guest']['voice_name']})")
         print(f"Special Feature : {special_meta['title'] + ' [' + special_meta['phase_label'] + ']' if special_meta else 'None'}")
+        print(f"Editorial Guide : {eg_desc}")
+        print(f"Dedup 14d Local : {dedup_ctx['recent_local_count']} recent topic(s)")
+        print(f"Dedup 90d Expert: {len(dedup_ctx['expert_covered_keywords'])} covered keyword(s) | Fresh candidates: {len(dedup_ctx['fresh_keywords'])}")
         print(f"Tomorrow Preview: {tomorrow_preview['preview_hint']}")
         print(f"Has special_feat: {'special_feature' in sample_script_prompt}")
         return
@@ -772,6 +1007,7 @@ def main() -> None:
         live_bundle=live_bundle,
         research_summary=research_text,
         grounded_links=grounded_links,
+        dedup_ctx=dedup_ctx,
     )
     script_resp = client.models.generate_content(
         model=script_model,
@@ -799,6 +1035,7 @@ def main() -> None:
     ep_dir.mkdir(parents=True, exist_ok=True)
     ep_json_path.write_text(json.dumps(episode, ensure_ascii=False, indent=2), encoding="utf-8")
     _update_knowledge_log(episode)
+    _update_topic_history(episode)
 
     total_lines = sum(len(s["lines"]) for s in episode["segments"])
     total_chars = sum(len(l["text"]) for s in episode["segments"] for l in s["lines"])

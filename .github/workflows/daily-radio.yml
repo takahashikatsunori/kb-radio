@@ -100,7 +100,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add episodes/ data/knowledge_log.json docs/
+          git add episodes/ data/knowledge_log.json data/topic_history.json docs/
           if [ -n "$(git status --porcelain)" ]; then
             git commit -m "radio: broadcast ${{ steps.meta.outputs.target_date }}"
             git pull --rebase
