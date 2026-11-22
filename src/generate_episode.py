@@ -32,7 +32,7 @@ EPISODES_DIR = ROOT_DIR / "episodes"
 DEFAULT_RESEARCH_MODEL = "gemini-4-hydrogen"
 DEFAULT_SCRIPT_MODEL = "gemini-4-neon"
 DEFAULT_FACTCHECK_MODEL = "gemini-4-hydrogen"
-RECENT_LOCAL_DEDUP_DAYS = 14
+RECENT_LOCAL_DEDUP_DAYS = 28
 EXPERT_HISTORY_DAYS = 90
 
 
@@ -222,7 +222,7 @@ def build_dedup_context(
     day_plan: dict[str, Any],
     topic_history_entries: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    """Build 14-day local topic dedup & 90-day per-expert keyword history context."""
+    """Build local topic dedup (RECENT_LOCAL_DEDUP_DAYS) & 90-day per-expert keyword history context."""
     target_dt = datetime.strptime(target_date_str, "%Y-%m-%d").date()
     day_key = day_plan["day_key"]
     guest = day_plan["day_cfg"]["guest"]
@@ -284,9 +284,17 @@ def build_dedup_context(
 
     return {
         "recent_local_count": recent_topic_count,
-        "recent_local_text": "\n".join(recent_local_lines) if recent_local_lines else "（直近14日間の過去放送記録なし）",
+        "recent_local_text": (
+            "\n".join(recent_local_lines)
+            if recent_local_lines
+            else f"（直近{RECENT_LOCAL_DEDUP_DAYS}日間の過去放送記録なし）"
+        ),
         "expert_covered_keywords": covered_keywords,
-        "expert_history_text": "\n".join(expert_lines) if expert_lines else "（過去90日間の同専門家回の記録なし）",
+        "expert_history_text": (
+            "\n".join(expert_lines)
+            if expert_lines
+            else f"（過去{EXPERT_HISTORY_DAYS}日間の同専門家回の記録なし）"
+        ),
         "fresh_keywords": fresh_keywords if not all_bank_covered else list(guest.get("keywords_bank", [])),
         "all_bank_covered": all_bank_covered,
     }
@@ -358,9 +366,9 @@ def build_research_prompt(
 
 {editorial_block}
 
-【重複禁止①：直近14日間に放送済みの小平トピック・エリア】
+【重複禁止①：直近{RECENT_LOCAL_DEDUP_DAYS}日間に放送済みの小平トピック・エリア】
 {dedup['recent_local_text']}
-※上記とまったく同じ場所・話題を連日繰り返さないでください（開催当日リマインドや明確な続報がある場合を除く）。小平市内の別エリア・新しい話題を優先して調べてください。
+※上記とまったく同じ場所・話題を約1か月間（{RECENT_LOCAL_DEDUP_DAYS}日間）は繰り返さないでください（開催当日リマインドや明確な続報がある場合を除く）。小平市内の別エリア・新しい話題を優先して調べてください。
 
 【重複禁止②：この専門家（{guest['name']}）が過去3か月（90日）間に解説済みの専門用語・テーマ】
 既出キーワード: {covered_kws_str}
@@ -374,7 +382,7 @@ def build_research_prompt(
 {quakes_json}
 
 Google検索を使って、以下4点を最新の公式情報・地域ニュースから調査し、日本語で簡潔なブリーフィングを作成してください。
-1. 【小平市のローカル話題・季節トピック】{target_date}前後の小平市内のイベント、市民ニュース、まちづくり、名所（玉川上水・狭山・境緑道・小川パレット・丸ポスト・図書館・公民館・地元商店街や旬の農産物等）など、直近14日と重複しない「聴くと小平市が好きになる話題」を2〜3個。
+1. 【小平市のローカル話題・季節トピック】{target_date}前後の小平市内のイベント、市民ニュース、まちづくり、名所（玉川上水・狭山・境緑道・小川パレット・丸ポスト・図書館・公民館・地元商店街や旬の農産物等）など、直近{RECENT_LOCAL_DEDUP_DAYS}日と重複しない「聴くと小平市が好きになる話題」を2〜3個。
 2. 【東京都・小平市の防災・行政お知らせ】最近の市報・公式HP・防災訓練・補助金・ごみ出し注意・防災アプリ等の最新情報。
 3. 【全国の最新防災・気象トピック】直近1週間の地震・気象・防災庁や国の防災関連ニュース。
 4. 【本日の専門テーマ掘り下げ資料】「{day_cfg['theme_name']}」に関して過去90日と被らない専門用語・技術・機材・制度で小平市民の暮らしに役立つ正確な豆知識。
@@ -462,7 +470,7 @@ def build_script_prompt(
 - **平蔵（`heizo`）・専門家ゲスト（`guest`）の厳格信頼性**: 専門知識・数値（耐震基準年、応急手当の回数・手順、備蓄基準量、警戒レベル、法律・行政制度など）や小平市の施設・イベント日時・電話番号は **一切推測や誇張・脚色をせず、確認できた正確な事実のみ** を語ること。
 
 ## 3. 重複禁止ルール（厳守）
-- **直近14日間の小平ローカル話題（同じネタ・場所の繰り返し禁止）**:
+- **直近{RECENT_LOCAL_DEDUP_DAYS}日間の小平ローカル話題（同じネタ・場所の繰り返し禁止）**:
 {dedup['recent_local_text']}
 - **この専門家（{guest['name']}）が過去3か月（90日）間に解説済みの専門用語・テーマ（同ネタ禁止）**:
   既出: {covered_kws_str}
@@ -1302,7 +1310,7 @@ def main() -> None:
         print(f"Theme / Guest   : {plan_preview['day_cfg']['theme_name']} / {plan_preview['day_cfg']['guest']['name']} ({plan_preview['day_cfg']['guest']['voice_name']})")
         print(f"Special Feature : {special_meta['title'] + ' [' + special_meta['phase_label'] + ']' if special_meta else 'None'}")
         print(f"Editorial Guide : {eg_desc}")
-        print(f"Dedup 14d Local : {dedup_ctx['recent_local_count']} recent topic(s)")
+        print(f"Dedup {RECENT_LOCAL_DEDUP_DAYS}d Local : {dedup_ctx['recent_local_count']} recent topic(s)")
         print(f"Dedup 90d Expert: {len(dedup_ctx['expert_covered_keywords'])} covered keyword(s) | Fresh candidates: {len(dedup_ctx['fresh_keywords'])}")
         print(f"Tomorrow Preview: {tomorrow_preview['preview_hint']}")
         print(f"Has special_feat: {'special_feature' in sample_script_prompt}")

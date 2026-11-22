@@ -78,7 +78,7 @@ def _format_recent_history(
     start_dt: date,
     topic_history_entries: list[dict[str, Any]],
 ) -> str:
-    """Format recent 14-day broadcast topics/areas to help avoid repetition."""
+    """Format recent broadcast topics/areas ({RECENT_LOCAL_DEDUP_DAYS}-day window) to help avoid repetition."""
     lines: list[str] = []
     sorted_entries = sorted(
         (e for e in topic_history_entries if isinstance(e, dict) and e.get("date")),
