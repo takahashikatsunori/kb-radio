@@ -1,0 +1,95 @@
+{
+  "recurring": [
+    {
+      "id": "jan17_volunteer",
+      "title": "防災とボランティアの日（阪神・淡路大震災）",
+      "start_mm_dd": "01-17",
+      "end_mm_dd": "01-17",
+      "countdown_days_before": 4,
+      "extra_minutes": 4,
+      "theme_focus": "1995年阪神・淡路大震災の教訓（家具固定・耐震化・通電火災・災害ボランティアと地域の助け合い）"
+    },
+    {
+      "id": "spring_fire_week",
+      "title": "春の火災予防運動",
+      "start_mm_dd": "03-01",
+      "end_mm_dd": "03-07",
+      "countdown_days_before": 2,
+      "extra_minutes": 3,
+      "theme_focus": "空気が乾く春先の強風火災予防、住宅用火災警報器の点検、こんろ・たばこ・放火対策"
+    },
+    {
+      "id": "mar11_311",
+      "title": "東日本大震災の日・防災特別点検",
+      "start_mm_dd": "03-11",
+      "end_mm_dd": "03-11",
+      "countdown_days_before": 4,
+      "extra_minutes": 5,
+      "theme_focus": "2011年東日本大震災から学ぶ帰宅困難対策・通信途絶時の備え・7日分の日常備蓄と地域の記憶継承"
+    },
+    {
+      "id": "flood_month_prep",
+      "title": "水防月間・梅雨前の水害対策特集",
+      "start_mm_dd": "05-28",
+      "end_mm_dd": "06-02",
+      "countdown_days_before": 3,
+      "extra_minutes": 3,
+      "theme_focus": "梅雨・台風シーズン前の小平市ハザードマップ確認、雨水ますの掃除、マイ・タイムライン作成"
+    },
+    {
+      "id": "sep01_bousai_week",
+      "title": "防災の日（9月1日）・防災週間",
+      "start_mm_dd": "08-30",
+      "end_mm_dd": "09-05",
+      "countdown_days_before": 5,
+      "extra_minutes": 5,
+      "theme_focus": "関東大震災を原点とする防災の日に合わせた家庭備蓄の総点検、防災訓練、避難ルート再確認"
+    },
+    {
+      "id": "nov05_tsunami",
+      "title": "津波防災の日・世界津波の日",
+      "start_mm_dd": "11-05",
+      "end_mm_dd": "11-05",
+      "countdown_days_before": 3,
+      "extra_minutes": 3,
+      "theme_focus": "稲むらの火の教訓、海辺・旅先での高台避難とJアラート・緊急速報メールの受け取り方"
+    },
+    {
+      "id": "autumn_fire_week",
+      "title": "秋の火災予防運動",
+      "start_mm_dd": "11-09",
+      "end_mm_dd": "11-15",
+      "countdown_days_before": 3,
+      "extra_minutes": 3,
+      "theme_focus": "冬の暖房器具・トラッキング火災・感震ブレーカー・リチウムイオン電池の安全管理と処分"
+    },
+    {
+      "id": "nov19_stockpile",
+      "title": "備蓄の日（1・1・9）",
+      "start_mm_dd": "11-19",
+      "end_mm_dd": "11-19",
+      "countdown_days_before": 3,
+      "extra_minutes": 3,
+      "theme_focus": "水・食料・携帯トイレのローリングストック総点検と東京備蓄ナビの活用"
+    },
+    {
+      "id": "year_end_fire_prep",
+      "title": "年末年始の防火・帰省＆大掃除防災特集",
+      "start_mm_dd": "12-26",
+      "end_mm_dd": "12-31",
+      "countdown_days_before": 2,
+      "extra_minutes": 3,
+      "theme_focus": "年末大掃除ついでのコンセントホコリ清掃・家具固定確認・年末年始の医療機関・救急相談案内"
+    }
+  ],
+  "dated_events": [
+    {
+      "id": "kodaira_2026_11_28_events",
+      "title": "小平市 ペット防災相談会＆オリジナル防災マップ講座 締切スペシャル",
+      "date": "2026-11-28",
+      "countdown_days_before": 3,
+      "extra_minutes": 3,
+      "theme_focus": "11月28日（土）開催の子どもキャンプ場ドッグラン＆ペット防災相談会（狂犬病済票・混合ワクチン証明書要持参）と中央公民館『こだいらのオリジナル防災マップをつくろう』申込締切直前ガイド"
+    }
+  ]
+}

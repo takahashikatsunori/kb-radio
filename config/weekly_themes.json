@@ -8,7 +8,7 @@
       "max_chars": 3600
     },
     "weekend": {
-      "label": "土日じっくり特集版（約15分）",
+      "label": "土日・祝日15分拡大版（約15分）",
       "target_duration_sec": 900,
       "target_chars": 4800,
       "min_chars": 4300,

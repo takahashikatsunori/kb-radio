@@ -17,22 +17,18 @@ from google import genai
 from google.genai import types
 
 from live_feeds import collect_live_briefing
+from schedule_calendar import (
+    CHARS_PER_MINUTE,
+    MAX_TARGET_DURATION_SEC,
+    resolve_day_plan,
+    resolve_tomorrow_preview,
+)
 
 JST = timezone(timedelta(hours=9))
 ROOT_DIR = Path(__file__).resolve().parent.parent
 CONFIG_DIR = ROOT_DIR / "config"
 DATA_DIR = ROOT_DIR / "data"
 EPISODES_DIR = ROOT_DIR / "episodes"
-
-WEEKDAY_KEYS = [
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-    "sunday",
-]
 
 
 def _load_json(path: Path) -> Any:
@@ -57,31 +53,172 @@ def _resolve_redirect_url(url: str, timeout: float = 4.0) -> str:
 
 def _next_episode_number(target_date: str) -> int:
     """Compute sequential episode number across existing episodes."""
-    existing_dates = sorted(
-        p.name for p in EPISODES_DIR.iterdir()
-        if p.is_dir() and (p / "episode.json").exists()
-    ) if EPISODES_DIR.exists() else []
+    existing_dates = (
+        sorted(
+            p.name
+            for p in EPISODES_DIR.iterdir()
+            if p.is_dir() and (p / "episode.json").exists()
+        )
+        if EPISODES_DIR.exists()
+        else []
+    )
     if target_date in existing_dates:
         ep = _load_json(EPISODES_DIR / target_date / "episode.json")
-        return int(ep.get("meta", {}).get("episode_number", existing_dates.index(target_date) + 1))
+        return int(
+            ep.get("meta", {}).get(
+                "episode_number", existing_dates.index(target_date) + 1
+            )
+        )
     return len(existing_dates) + 1
+
+
+def _detect_live_quake_special(earthquakes: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Check if recent earthquakes warrant an automatic breaking-news special corner."""
+    for q in earthquakes:
+        scale_num = int(q.get("max_scale_num") or -1)
+        is_kanto = bool(q.get("is_kanto_or_tokyo"))
+        tsunami = str(q.get("tsunami") or "")
+        has_tsunami = tsunami in ("Watch", "Warning")
+        if (is_kanto and scale_num >= 40) or scale_num >= 50 or has_tsunami:
+            hypo = q.get("hypocenter", "国内")
+            scale_ja = q.get("max_scale", "")
+            return {
+                "title": f"緊急防災特集：{hypo}（{scale_ja}）を受けた備え",
+                "summary": f"直近の地震（{q.get('time', '')} {hypo} {scale_ja}）を踏まえた安全確認・余震や二次災害への備え",
+                "extra_minutes": 4,
+            }
+    return None
+
+
+def _parse_breaking_special(
+    research_text: str,
+    live_quake_special: dict[str, Any] | None,
+) -> tuple[str, dict[str, Any] | None]:
+    """Extract === BREAKING_SPECIAL === JSON block from Phase A output safely."""
+    marker = "=== BREAKING_SPECIAL ==="
+    clean_text = research_text
+    parsed_special: dict[str, Any] | None = None
+
+    if marker in research_text:
+        head, tail = research_text.split(marker, 1)
+        clean_text = head.strip()
+        m = re.search(r"\{.*\}", tail, re.DOTALL)
+        if m:
+            try:
+                obj = json.loads(m.group(0))
+                if obj.get("has_breaking_special") and str(obj.get("title", "")).strip():
+                    extra_min = max(3, min(5, int(obj.get("extra_minutes") or 3)))
+                    parsed_special = {
+                        "title": str(obj["title"]).strip(),
+                        "summary": str(obj.get("summary") or "").strip(),
+                        "extra_minutes": extra_min,
+                    }
+            except Exception:  # noqa: BLE001
+                parsed_special = None
+
+    if live_quake_special and not parsed_special:
+        parsed_special = live_quake_special
+    elif live_quake_special and parsed_special:
+        parsed_special["summary"] = f"{live_quake_special['summary']} ／ {parsed_special['summary']}"
+        parsed_special["extra_minutes"] = max(
+            parsed_special["extra_minutes"], live_quake_special["extra_minutes"]
+        )
+
+    return clean_text, parsed_special
+
+
+def _apply_breaking_extension(
+    day_plan: dict[str, Any],
+    breaking_special: dict[str, Any] | None,
+) -> tuple[dict[str, Any], dict[str, Any] | None]:
+    """Extend target duration/chars when breaking news or scheduled special day applies."""
+    plan = dict(day_plan)
+    sched = plan.get("scheduled_special")
+
+    if not sched and not breaking_special:
+        return plan, None
+
+    if sched and breaking_special:
+        extra_min = min(6, int(sched["extra_minutes"]) + int(breaking_special["extra_minutes"]))
+        special_meta = {
+            "kind": "combined",
+            "title": f"{sched['title']} ＆ {breaking_special['title']}",
+            "phase_label": sched["phase_label"],
+            "focus": f"{sched['theme_focus']} ／ 緊急トピック: {breaking_special['summary']}",
+            "extra_minutes": extra_min,
+        }
+    elif sched:
+        extra_min = int(sched["extra_minutes"])
+        special_meta = {
+            "kind": "scheduled_countdown",
+            "title": sched["title"],
+            "phase_label": sched["phase_label"],
+            "focus": sched["theme_focus"],
+            "extra_minutes": extra_min,
+        }
+    else:
+        assert breaking_special is not None
+        extra_min = int(breaking_special["extra_minutes"])
+        special_meta = {
+            "kind": "breaking_news",
+            "title": breaking_special["title"],
+            "phase_label": "速報特集",
+            "focus": breaking_special["summary"],
+            "extra_minutes": extra_min,
+        }
+
+    base_dur = int(plan["base_duration_sec"])
+    target_dur = min(MAX_TARGET_DURATION_SEC, base_dur + extra_min * 60)
+    added_sec = max(0, target_dur - base_dur)
+    added_chars = round((added_sec / 60.0) * CHARS_PER_MINUTE)
+
+    plan["target_duration_sec"] = target_dur
+    plan["target_chars"] = int(plan["base_chars"]) + added_chars
+    plan["min_chars"] = int(plan["base_min_chars"]) + round(added_chars * 0.85)
+    plan["max_chars"] = int(plan["base_max_chars"]) + round(added_chars * 1.15)
+    total_min = round(target_dur / 60)
+
+    if plan["is_holiday"]:
+        plan["edition_label"] = f"祝日15分＋特別特集拡大版（{plan['holiday_name']}・約{total_min}分）"
+    elif plan["is_weekend"]:
+        plan["edition_label"] = f"土日15分＋特別特集拡大版（約{total_min}分）"
+    else:
+        plan["edition_label"] = f"特別コーナー拡大版（約{total_min}分）"
+
+    return plan, special_meta
 
 
 def build_research_prompt(
     target_date: str,
-    day_cfg: dict[str, Any],
+    day_plan: dict[str, Any],
     live_bundle: dict[str, Any],
 ) -> str:
-    """Build Phase A prompt for real-time Kodaira local topics and disaster news research."""
+    """Build Phase A prompt for real-time Kodaira topics, disaster news, and breaking-special detection."""
+    day_cfg = day_plan["day_cfg"]
     guest = day_cfg["guest"]
     weather_json = json.dumps(live_bundle["weather"], ensure_ascii=False)
     quakes_json = json.dumps(live_bundle["earthquakes"][:5], ensure_ascii=False)
 
+    holiday_note = (
+        f"※本日は国民の祝日「{day_plan['holiday_name']}」のため15分拡大版です。休日の小平での過ごし方やイベント情報も厚めに調べてください。"
+        if day_plan["is_holiday"]
+        else ""
+    )
+    sched = day_plan.get("scheduled_special")
+    special_note = (
+        f"※本日は特別テーマ期間中：【{sched['title']}（{sched['phase_label']}）】／ 焦点: {sched['theme_focus']}"
+        if sched
+        else ""
+    )
+
     return f"""あなたは東京都小平市の朝7時放送ラジオ番組のリサーチャーです。
-放送日: {target_date}（{day_cfg['weekday_ja']}）
+放送日: {target_date}（{day_plan['weekday_ja']}）
+編成タイプ: {day_plan['edition_label']}
 本日の曜日テーマ: {day_cfg['theme_name']}
 本日の専門家ゲスト: {guest['name']}（{guest['title']}）
 注目キーワード候補: {', '.join(guest['keywords_bank'][:6])}
+{holiday_note}
+{special_note}
 
 参考ライブ気象（小平市）:
 {weather_json}
@@ -95,21 +232,27 @@ Google検索を使って、以下4点を最新の公式情報・地域ニュー�
 3. 【全国の最新防災・気象トピック】直近1週間の地震・気象・防災庁や国の防災関連ニュース。
 4. 【本日の専門テーマ掘り下げ資料】「{day_cfg['theme_name']}」に関する専門用語・技術・機材・制度で小平市民の暮らしに役立つ正確な豆知識。
 
-※確認できた事実と日付だけを挙げ、推測でイベント日時や数値を作らないでください。"""
+※確認できた事実と日付だけを挙げ、推測でイベント日時や数値を作らないでください。
+
+最後に必ず以下の区切り行とJSONだけを出力し、本日「臨時の拡大特別コーナーを設けるべき重大な防災ニュース・災害警報・大規模防災イベント」があるか判定してください（通常の小規模ニュースのみなら false にしてください）:
+=== BREAKING_SPECIAL ===
+{{"has_breaking_special": false, "title": "", "summary": "", "extra_minutes": 0}}"""
 
 
 def build_script_prompt(
     target_date: str,
     ep_num: int,
     characters: dict[str, Any],
-    day_cfg: dict[str, Any],
-    schedule_rule: dict[str, Any],
+    day_plan: dict[str, Any],
+    special_meta: dict[str, Any] | None,
+    tomorrow_preview: dict[str, Any],
     knowledge_entries: list[dict[str, Any]],
     live_bundle: dict[str, Any],
     research_summary: str,
     grounded_links: list[dict[str, str]],
 ) -> str:
-    """Build Phase B prompt to generate structured episode.json with expressive Gemini TTS tags."""
+    """Build Phase B prompt to generate structured episode.json with holiday/special/preview support."""
+    day_cfg = day_plan["day_cfg"]
     koharu = characters["hosts"]["koharu"]
     heizo = characters["hosts"]["heizo"]
     guest = day_cfg["guest"]
@@ -118,14 +261,39 @@ def build_script_prompt(
     quakes_json = json.dumps(live_bundle["earthquakes"][:4], ensure_ascii=False)
     links_json = json.dumps(grounded_links, ensure_ascii=False, indent=2)
 
+    holiday_instruction = ""
+    if day_plan["is_holiday"]:
+        holiday_instruction = (
+            f"- **祝日拡大版ポイント**: 本日は国民の祝日「{day_plan['holiday_name']}」です！"
+            f"オープニングで祝日の挨拶とともに、休日の小平のお出かけ・防災点検の楽しみ方を盛り込んで15分拡大版としてゆったり届けてください。"
+        )
+
+    if special_meta:
+        segment_rules = f"""## 6. セグメント構成（特別コーナー含む全6コーナー構成を厳守）
+1. `id: "opening"` / `intro_jingle: "opening_jingle"` / `bgm: "bgm_warm"` / `outro_jingle: null` — 朝7時の挨拶・小平市の今朝の天気＆直近地震・季節の小平トーク
+2. `id: "kodaira_life"` / `intro_jingle: "stinger"` / `bgm: "bgm_news"` / `outro_jingle: null` — 小平が好きになる今日のまち・生活・防災トピック
+3. `id: "guest_talk"` / `intro_jingle: "guest_jingle"` / `bgm: "{day_cfg['bgm_mood']}"` / `outro_jingle: null` — 本日のテーマ「{day_cfg['theme_name']}」専門家 {guest['name']} さんの深掘り解説＆3人の掛け合い
+4. `id: "special_feature"` / `intro_jingle: "stinger"` / `bgm: "bgm_feature"` / `outro_jingle: null` — **【特別拡大コーナー】{special_meta['title']}（{special_meta['phase_label']}）**：{special_meta['focus']} について小春・平蔵（必要に応じてゲストも参加）で分かりやすく特集！
+5. `id: "daily_bousai"` / `intro_jingle: "stinger"` / `bgm: "bgm_news"` / `outro_jingle: null` — 暮らしに直結する防災チェック・自治体サービス案内
+6. `id: "ending"` / `intro_jingle: "stinger"` / `bgm: "bgm_warm"` / `outro_jingle: "outro_jingle"` — 今日の「小春＆平蔵の防災ノート」まとめ＆【明日の予告】＆いってらっしゃい！"""
+    else:
+        segment_rules = f"""## 6. セグメント構成（全5コーナー構成を厳守）
+1. `id: "opening"` / `intro_jingle: "opening_jingle"` / `bgm: "bgm_warm"` / `outro_jingle: null` — 朝7時の挨拶・小平市の今朝の天気＆直近地震・季節の小平トーク
+2. `id: "kodaira_life"` / `intro_jingle: "stinger"` / `bgm: "bgm_news"` / `outro_jingle: null` — 小平が好きになる今日のまち・生活・防災トピック
+3. `id: "guest_talk"` / `intro_jingle: "guest_jingle"` / `bgm: "{day_cfg['bgm_mood']}"` / `outro_jingle: null` — 本日のテーマ「{day_cfg['theme_name']}」専門家 {guest['name']} さんの深掘り解説＆3人の質疑応答・掛け合い
+4. `id: "daily_bousai"` / `intro_jingle: "stinger"` / `bgm: "bgm_news"` / `outro_jingle: null` — 暮らしに直結する防災チェック・自治体サービスやイベント案内
+5. `id: "ending"` / `intro_jingle: "stinger"` / `bgm: "bgm_warm"` / `outro_jingle: "outro_jingle"` — 今日の「小春＆平蔵の防災ノート」まとめ＆【明日の予告】＆いってらっしゃい！"""
+
     return f"""あなたは「{characters['program']['title']}」のメイン構成作家です。
 以下の条件・設定・事実データをもとに、ラジオ番組1回分の完全台本JSONを生成してください。
 
 ## 1. 放送メタ条件
-- 放送日: {target_date}（{day_cfg['weekday_ja']}） / 第{ep_num}回
-- 番組尺タイプ: {schedule_rule['label']}
-- **必須文字数目標**: 全セリフの `text` 合計文字数を **{schedule_rule['min_chars']}〜{schedule_rule['max_chars']}文字（目標 {schedule_rule['target_chars']}文字）** に収めること。
-- 平日（10分）はテンポ良く約55〜70セリフ、土日（15分）はたっぷり深掘りして約80〜98セリフで構成する。
+- 放送日: {target_date}（{day_plan['weekday_ja']}） / 第{ep_num}回
+- 番組編成: {day_plan['edition_label']}（目標 {round(day_plan['target_duration_sec'] / 60)}分）
+- **必須文字数目標**: 全セリフの `text` 合計文字数を **{day_plan['min_chars']}〜{day_plan['max_chars']}文字（目標 {day_plan['target_chars']}文字）** に収めること。
+{holiday_instruction}
+- **明日の予告（ending セグメントで必ず触れること）**:
+  {tomorrow_preview['preview_hint']}
 
 ## 2. 登場人物（スピーカーIDは必ず `koharu`, `heizo`, `guest` のみ使用）
 - `koharu`（小春）: {koharu['personality']}
@@ -149,22 +317,17 @@ def build_script_prompt(
 - 各セリフは `speaker`, `text`, `tts_text`, `style`, `pause_after` を持つ。
 - **`text`（画面表示用）**: `<laugh>` 等のタグは絶対に入れず、自然な日本語台本にする。
 - **`tts_text`（Gemini 3.8 Flash TTS 読み上げ用）**:
-  - 笑い・相槌・間合いを豊かにするため、半角英語の山括弧タグ `<laugh>`, `<chuckle>`, `<giggle>`, `<sigh>`, `<breath>`, `<short pause>` を会話の自然な位置にバランスよく入れる（特に小春は明るく `<laugh>` や `<giggle>` 多め、平蔵やゲストも温かく `<chuckle>` や `<short pause>` を活用）。
-  - 演技のト書き（「明るく笑って：」など）は絶対に `tts_text` に書かないこと（そのまま読まれてしまうため）。
-  - 難読の小平地名（小川町=おがわちょう、津田町=つだまち、御幸町=みゆきちょう、上水南町=じょうすいみなみちょう、狭山・境緑道=さやま・さかいりょくどう 等）や電話番号（042-341-0793=ぜろよんに、さんよんいち、ぜろななきゅうさん）、英略語（GIS=ジーアイエス、DMAT=ディーマット 等）は `tts_text` 内でかな・カタカナ読みに開く。
-- **`style`**: 各ターンごとの英語の短い演技ディレクション（例: `"bright, cheerful, smiling"`, `"warm, gentle and reassuring"`, `"curious and amused"`, `"enthusiastic expert explaining clearly"`）。
-- **話者配列ルール（重要）**: 1つの会話ブロック内で自然に掛け合いできるよう、できるだけ2人の会話が続いたあと交代する（3人が1文ごとに順番に回り続けるより、`小春⇄ゲスト`、`平蔵⇄ゲスト`、`小春⇄平蔵` の2〜4往復ペアが連なる自然なラジオ進行が望ましい）。
+  - 笑い・相槌・間合いを豊かにするため、半角英語の山括弧タグ `<laugh>`, `<chuckle>`, `<giggle>`, `<sigh>`, `<breath>`, `<short pause>` を会話の自然な位置にバランスよく入れる。
+  - 演技のト書き（「明るく笑って：」など）は絶対に `tts_text` に書かないこと。
+  - 難読の小平地名（小川町=おがわちょう、津田町=つだまち、御幸町=みゆきちょう、上水南町=じょうすいみなみちょう、狭山・境緑道=さやま・さかいりょくどう 等）や電話番号、英略語は `tts_text` 内でかな・カタカナ読みに開く。
+- **`style`**: 各ターンごとの英語の短い演技ディレクション。
+- **話者配列ルール**: 1つの会話ブロック内で自然に掛け合いできるよう、できるだけ `小春⇄ゲスト`、`平蔵⇄ゲスト`、`小春⇄平蔵` の2〜4往復ペアが連なる進行にすること。
 
-## 6. セグメント構成（この5コーナー構成を厳守）
-1. `id: "opening"` / `intro_jingle: "opening_jingle"` / `bgm: "bgm_warm"` / `outro_jingle: null` — 朝7時の挨拶・小平市の今朝の天気＆直近地震・季節の小平トーク
-2. `id: "kodaira_life"` / `intro_jingle: "stinger"` / `bgm: "bgm_news"` / `outro_jingle: null` — 小平が好きになる今日のまち・生活・防災トピック
-3. `id: "guest_talk"` / `intro_jingle: "guest_jingle"` / `bgm: "{day_cfg['bgm_mood']}"` / `outro_jingle: null` — 本日のテーマ「{day_cfg['theme_name']}」専門家 {guest['name']} さんの深掘り解説＆3人の質疑応答・掛け合い
-4. `id: "daily_bousai"` / `intro_jingle: "stinger"` / `bgm: "bgm_news"` / `outro_jingle: null` — 暮らしに直結する防災チェック・自治体サービスやイベント案内
-5. `id: "ending"` / `intro_jingle: "stinger"` / `bgm: "bgm_warm"` / `outro_jingle: "outro_jingle"` — 今日の「小春＆平蔵の防災ノート」まとめ＆明日の予告＆いってらっしゃい！
+{segment_rules}
 
 ## 7. 出力JSONスキーマ（厳密にこのキー構造のJSONのみ出力）
 {{
-  "subtitle": "第{ep_num}回・{target_date}（{day_cfg['weekday_ja']}）朝7時号 ― テーマ要約サブタイトル",
+  "subtitle": "第{ep_num}回・{target_date}（{day_plan['weekday_ja']}）朝7時号 ― テーマ要約サブタイトル",
   "keywords_featured": ["解説した専門用語1", "専門用語2", "専門用語3"],
   "links": [
     {{"category": "カテゴリ", "title": "タイトル", "url": "https://...（必ず上記候補や実在URLから選択）", "note": "一言説明"}}
@@ -246,14 +409,15 @@ def _assemble_and_validate_episode(
     raw_generated: dict[str, Any],
     target_date: str,
     ep_num: int,
-    day_key: str,
     characters: dict[str, Any],
-    day_cfg: dict[str, Any],
-    schedule_rule: dict[str, Any],
+    day_plan: dict[str, Any],
+    special_meta: dict[str, Any] | None,
+    tomorrow_preview: dict[str, Any],
     live_bundle: dict[str, Any],
     fallback_links: list[dict[str, str]],
 ) -> dict[str, Any]:
     """Wrap generated segments with full program metadata and validate every line."""
+    day_cfg = day_plan["day_cfg"]
     guest = day_cfg["guest"]
     date_compact = target_date.replace("-", "")
     koharu = characters["hosts"]["koharu"]
@@ -346,7 +510,8 @@ def _assemble_and_validate_episode(
 
     raw_links = raw_generated.get("links") or []
     valid_links = [
-        lk for lk in raw_links
+        lk
+        for lk in raw_links
         if isinstance(lk, dict) and str(lk.get("url", "")).startswith("https://")
     ]
     if not valid_links:
@@ -367,15 +532,26 @@ def _assemble_and_validate_episode(
         "meta": {
             "title": characters["program"]["title"],
             "subtitle": raw_generated.get("subtitle")
-            or f"第{ep_num}回・{target_date}（{day_cfg['weekday_ja']}）朝7時号 ― {day_cfg['theme_name']}",
+            or f"第{ep_num}回・{target_date}（{day_plan['weekday_ja']}）朝7時号 ― {day_cfg['theme_name']}",
             "episode_date": target_date,
             "episode_number": ep_num,
-            "weekday": day_key,
-            "weekday_ja": day_cfg["weekday_ja"],
-            "is_weekend": bool(day_cfg["is_weekend"]),
+            "weekday": day_plan["day_key"],
+            "weekday_ja": day_plan["weekday_ja"],
+            "is_weekend": bool(day_plan["is_weekend"]),
+            "is_holiday": bool(day_plan["is_holiday"]),
+            "holiday_name": day_plan["holiday_name"],
+            "edition_label": day_plan["edition_label"],
+            "special_feature": special_meta,
+            "tomorrow_preview": {
+                "date": tomorrow_preview["date"],
+                "edition_label": tomorrow_preview["edition_label"],
+                "is_holiday": tomorrow_preview["is_holiday"],
+                "holiday_name": tomorrow_preview["holiday_name"],
+                "has_special": bool(tomorrow_preview.get("scheduled_special")),
+            },
             "theme_name": day_cfg["theme_name"],
             "theme_badge": day_cfg["theme_badge"],
-            "target_duration_sec": int(schedule_rule["target_duration_sec"]),
+            "target_duration_sec": int(day_plan["target_duration_sec"]),
             "output_filename": f"kodaira_radio_{date_compact}.mp3",
             "voices": voices,
         },
@@ -402,10 +578,7 @@ def _assemble_and_validate_episode(
 def _update_knowledge_log(episode: dict[str, Any]) -> None:
     """Append episode learned_notes into data/knowledge_log.json without duplicating dates."""
     log_path = DATA_DIR / "knowledge_log.json"
-    if log_path.exists():
-        data = _load_json(log_path)
-    else:
-        data = {"entries": []}
+    data = _load_json(log_path) if log_path.exists() else {"entries": []}
 
     ep_date = episode["meta"]["episode_date"]
     entries: list[dict[str, Any]] = [
@@ -449,8 +622,6 @@ def main() -> None:
 
     load_dotenv(ROOT_DIR / ".env")
     target_date = args.date
-    dt = datetime.strptime(target_date, "%Y-%m-%d")
-    day_key = WEEKDAY_KEYS[dt.weekday()]
 
     ep_dir = EPISODES_DIR / target_date
     ep_json_path = ep_dir / "episode.json"
@@ -460,35 +631,51 @@ def main() -> None:
 
     characters = _load_json(CONFIG_DIR / "characters.json")
     themes = _load_json(CONFIG_DIR / "weekly_themes.json")
-    day_cfg = themes["days"][day_key]
-    schedule_rule = themes["schedule_rules"]["weekend" if day_cfg["is_weekend"] else "weekday"]
-    knowledge_data = _load_json(DATA_DIR / "knowledge_log.json") if (DATA_DIR / "knowledge_log.json").exists() else {"entries": []}
+    special_days = (
+        _load_json(CONFIG_DIR / "special_days.json")
+        if (CONFIG_DIR / "special_days.json").exists()
+        else {"recurring": [], "dated_events": []}
+    )
+    knowledge_data = (
+        _load_json(DATA_DIR / "knowledge_log.json")
+        if (DATA_DIR / "knowledge_log.json").exists()
+        else {"entries": []}
+    )
+
+    day_plan = resolve_day_plan(target_date, themes, special_days)
+    tomorrow_preview = resolve_tomorrow_preview(target_date, themes, special_days)
     ep_num = _next_episode_number(target_date)
 
-    print(f"Collecting live Kodaira weather & earthquake feeds for {target_date} ({day_cfg['weekday_ja']})...")
+    print(
+        f"Collecting live Kodaira feeds for {target_date} ({day_plan['weekday_ja']} / {day_plan['edition_label']})..."
+    )
     live_bundle = collect_live_briefing()
-    research_prompt = build_research_prompt(target_date, day_cfg, live_bundle)
+    live_quake_special = _detect_live_quake_special(live_bundle["earthquakes"])
+    research_prompt = build_research_prompt(target_date, day_plan, live_bundle)
 
     if args.dry_run_prompt:
+        plan_preview, special_meta = _apply_breaking_extension(day_plan, live_quake_special)
         sample_script_prompt = build_script_prompt(
             target_date=target_date,
             ep_num=ep_num,
             characters=characters,
-            day_cfg=day_cfg,
-            schedule_rule=schedule_rule,
+            day_plan=plan_preview,
+            special_meta=special_meta,
+            tomorrow_preview=tomorrow_preview,
             knowledge_entries=knowledge_data.get("entries", []),
             live_bundle=live_bundle,
             research_summary="[Dry-run: Phase A Google Search grounding output goes here]",
             grounded_links=live_bundle["verified_links"],
         )
         print("\n=== DRY RUN CONFIG SUMMARY ===")
-        print(f"Date        : {target_date} ({day_cfg['weekday_ja']}) | Episode #{ep_num}")
-        print(f"Schedule    : {schedule_rule['label']} (target {schedule_rule['target_duration_sec']}s / ~{schedule_rule['target_chars']} chars)")
-        print(f"Theme       : {day_cfg['theme_name']}")
-        print(f"Guest       : {day_cfg['guest']['name']} ({day_cfg['guest']['voice_name']})")
-        print(f"Weather OK  : {live_bundle['weather'].get('ok')} | Quakes (48h): {len(live_bundle['earthquakes'])}")
-        print("\n=== PHASE A RESEARCH PROMPT (Preview) ===\n" + research_prompt)
-        print("\n=== PHASE B SCRIPT PROMPT (First 1200 chars) ===\n" + sample_script_prompt[:1200] + "\n...")
+        print(f"Date            : {target_date} ({plan_preview['weekday_ja']}) | Episode #{ep_num}")
+        print(f"Edition         : {plan_preview['edition_label']}")
+        print(f"Holiday         : {plan_preview['is_holiday']} ({plan_preview['holiday_name'] or '-'})")
+        print(f"Target          : {plan_preview['target_duration_sec']}s / ~{plan_preview['target_chars']} chars ({plan_preview['min_chars']}~{plan_preview['max_chars']})")
+        print(f"Theme / Guest   : {plan_preview['day_cfg']['theme_name']} / {plan_preview['day_cfg']['guest']['name']} ({plan_preview['day_cfg']['guest']['voice_name']})")
+        print(f"Special Feature : {special_meta['title'] + ' [' + special_meta['phase_label'] + ']' if special_meta else 'None'}")
+        print(f"Tomorrow Preview: {tomorrow_preview['preview_hint']}")
+        print(f"Has special_feat: {'special_feature' in sample_script_prompt}")
         return
 
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
@@ -510,16 +697,20 @@ def main() -> None:
             temperature=0.4,
         ),
     )
-    research_text = getattr(research_resp, "text", "") or ""
+    raw_research = getattr(research_resp, "text", "") or ""
+    research_text, breaking_special = _parse_breaking_special(raw_research, live_quake_special)
     grounded_links = _extract_grounding_links(research_resp, live_bundle["verified_links"])
 
-    print(f"Phase B: Generating structured episode script ({schedule_rule['label']})...")
+    final_plan, special_meta = _apply_breaking_extension(day_plan, breaking_special)
+    print(f"Phase B: Generating script ({final_plan['edition_label']}, target ~{final_plan['target_chars']} chars)...")
+
     script_prompt = build_script_prompt(
         target_date=target_date,
         ep_num=ep_num,
         characters=characters,
-        day_cfg=day_cfg,
-        schedule_rule=schedule_rule,
+        day_plan=final_plan,
+        special_meta=special_meta,
+        tomorrow_preview=tomorrow_preview,
         knowledge_entries=knowledge_data.get("entries", []),
         live_bundle=live_bundle,
         research_summary=research_text,
@@ -538,10 +729,10 @@ def main() -> None:
         raw_generated=raw_json,
         target_date=target_date,
         ep_num=ep_num,
-        day_key=day_key,
         characters=characters,
-        day_cfg=day_cfg,
-        schedule_rule=schedule_rule,
+        day_plan=final_plan,
+        special_meta=special_meta,
+        tomorrow_preview=tomorrow_preview,
         live_bundle=live_bundle,
         fallback_links=grounded_links,
     )

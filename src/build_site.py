@@ -357,6 +357,14 @@ header {
   color: var(--guest);
   font-weight: 700;
 }
+.edition-pill {
+  display: inline-block;
+  padding: 0.14rem 0.55rem;
+  border-radius: 999px;
+  background: var(--amber-soft);
+  color: #92400e;
+  font-weight: 700;
+}
 .ep-title {
   margin: 0.35rem 0 0;
   font-size: clamp(0.98rem, 3.6vw, 1.22rem);
@@ -906,6 +914,18 @@ def _render_episode_page(
     guest_name_esc = html.escape(guest.get("name", ""))
     nav_html = _render_nav(root_prefix, "latest" if is_home else "archive")
 
+    special_pills_html = ""
+    if meta.get("is_holiday") or meta.get("special_feature"):
+        ed_text = meta.get("edition_label") or ""
+        if ed_text:
+            special_pills_html += f'<span class="edition-pill">{html.escape(ed_text)}</span>'
+        sp_feat = meta.get("special_feature")
+        if isinstance(sp_feat, dict) and sp_feat.get("title"):
+            sp_label = f"特別特集: {sp_feat['title']}"
+            if sp_feat.get("phase_label"):
+                sp_label += f"（{sp_feat['phase_label']}）"
+            special_pills_html += f'<span class="edition-pill">{html.escape(sp_label)}</span>'
+
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -932,6 +952,7 @@ def _render_episode_page(
       <div class="card ep-hero">
         <div class="ep-meta-row">
           <span class="theme-pill">{theme_badge_esc}</span>
+          {special_pills_html}
           <span>{date_esc}（{weekday_short}）・{dur_esc}{est_suffix}・ゲスト: {guest_name_esc}</span>
         </div>
         <h1 class="ep-title">{subtitle_esc}</h1>
@@ -1423,6 +1444,7 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
         meta = ep["meta"]
         guest = ep.get("guest", {})
         notes = ep.get("learned_notes", {})
+        sp_feat = meta.get("special_feature")
         items.append(
             {
                 "date": meta["episode_date"],
@@ -1430,6 +1452,9 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
                 "weekday": meta.get("weekday", ""),
                 "weekday_ja": meta.get("weekday_ja", ""),
                 "theme_name": meta.get("theme_name", ""),
+                "edition_label": meta.get("edition_label", ""),
+                "is_holiday": bool(meta.get("is_holiday")),
+                "special_title": sp_feat.get("title", "") if isinstance(sp_feat, dict) else "",
                 "subtitle": meta["subtitle"],
                 "guest_name": guest.get("name", ""),
                 "guest_title": guest.get("title", ""),
@@ -1549,6 +1574,14 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
           const tag = document.createElement("span");
           tag.className = "pill-tag";
           tag.textContent = "第" + it.episode_number + "回 ・ " + it.date + "（" + it.weekday_ja + "）";
+          card.appendChild(tag);
+          if (it.is_holiday || it.special_title) {{
+            const ed = document.createElement("span");
+            ed.className = "edition-pill";
+            ed.style.fontSize = "0.72rem";
+            ed.textContent = it.special_title ? (it.edition_label + " ／ " + it.special_title) : it.edition_label;
+            card.appendChild(ed);
+          }}
           const h3 = document.createElement("h3");
           h3.style.margin = "0.2rem 0";
           h3.style.fontSize = "1rem";
@@ -1564,7 +1597,6 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
           btn.className = "btn-link";
           btn.href = it.href;
           btn.textContent = "この回を聴く・台本を読む →";
-          card.appendChild(tag);
           card.appendChild(h3);
           card.appendChild(sub);
           card.appendChild(g);
