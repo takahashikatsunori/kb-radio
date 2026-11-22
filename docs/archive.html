@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>バックナンバー一覧 | 毎朝7時！こだいら防災＆まちラジオ</title>
+  <style>
+    
+:root {
+  --forest: #1b5e3c;
+  --forest-dark: #124028;
+  --forest-soft: #e7f4ec;
+  --paper: #f8f7f3;
+  --card: #ffffff;
+  --ink: #1f2937;
+  --muted: #5b6472;
+  --border: #dfe4de;
+  --amber: #d97706;
+  --amber-soft: #fef3c7;
+  --koharu: #e11d48;
+  --koharu-soft: #fff1f2;
+  --heizo: #2563eb;
+  --heizo-soft: #eff6ff;
+  --guest: var(--guest-color, #4338ca);
+  --guest-soft: var(--guest-bg, #eef2ff);
+  --shadow: 0 8px 24px rgba(18, 64, 40, 0.08);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", system-ui, -apple-system, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.65;
+}
+a { color: var(--forest); }
+header {
+  background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest) 65%, #2b7a50 100%);
+  color: #ffffff;
+  border-bottom: 4px solid var(--amber);
+}
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.15rem 1.25rem 1.45rem;
+}
+.top-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+.brand {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.nav-links a {
+  color: rgba(255,255,255,0.92);
+  text-decoration: none;
+  font-size: 0.86rem;
+  font-weight: 600;
+  padding: 0.32rem 0.78rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.28);
+  background: rgba(255,255,255,0.10);
+  transition: background 0.15s;
+}
+.nav-links a:hover, .nav-links a.active {
+  background: #ffffff;
+  color: var(--forest-dark);
+  border-color: #ffffff;
+}
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 0.55rem;
+  font-size: 0.78rem;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.16);
+  border: 1px solid rgba(255,255,255,0.28);
+  font-weight: 600;
+}
+.badge.accent {
+  background: var(--amber);
+  border-color: var(--amber);
+  color: #fff;
+}
+h1 {
+  margin: 0 0 0.25rem;
+  font-size: clamp(1.3rem, 2.5vw, 1.85rem);
+}
+.subtitle {
+  margin: 0;
+  color: rgba(255,255,255,0.9);
+  font-size: 0.94rem;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.25rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(310px, 0.95fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+.container.single {
+  grid-template-columns: 1fr;
+}
+@media (max-width: 920px) {
+  .container { grid-template-columns: 1fr; }
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.section-head {
+  padding: 0.8rem 1.1rem;
+  background: #fcfcfa;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+.section-head h2 {
+  margin: 0;
+  font-size: 0.98rem;
+  color: var(--forest-dark);
+}
+.hint {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.player-card {
+  position: sticky;
+  top: 0.65rem;
+  z-index: 20;
+  padding: 1rem 1.15rem;
+  border-top: 4px solid var(--forest);
+}
+.audio-pending-banner {
+  background: var(--amber-soft);
+  border: 1px solid #f59e0b;
+  color: #92400e;
+  border-radius: 8px;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.83rem;
+  margin-bottom: 0.75rem;
+}
+.now-playing {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.45rem;
+}
+.now-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--forest);
+}
+.now-chapter {
+  font-size: 0.96rem;
+  font-weight: 700;
+}
+.time-readout {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--heizo);
+  white-space: nowrap;
+}
+.scrubber {
+  width: 100%;
+  accent-color: var(--forest);
+  cursor: pointer;
+  height: 6px;
+  margin: 0.35rem 0 0.7rem;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--ink);
+  padding: 0.4rem 0.72rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+}
+button:hover:not(:disabled) {
+  background: var(--forest-soft);
+  border-color: var(--forest);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+button.primary {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #fff;
+  padding: 0.46rem 1.05rem;
+}
+button.primary:hover:not(:disabled) { background: var(--forest-dark); }
+button.active-toggle {
+  background: var(--heizo-soft);
+  border-color: var(--heizo);
+  color: var(--heizo);
+}
+.speed-group button.is-selected {
+  background: var(--forest);
+  color: #fff;
+  border-color: var(--forest);
+}
+.chapter-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.5rem;
+  padding: 0.85rem 1.05rem;
+}
+.chapter-btn {
+  text-align: left;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+.chapter-btn.active {
+  background: var(--forest-soft);
+  border-color: var(--forest);
+  box-shadow: inset 3px 0 0 var(--forest);
+}
+.chapter-tc {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--heizo);
+  font-weight: 700;
+}
+.chapter-title {
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+.transcript-body {
+  padding: 0.85rem 1.05rem 1.3rem;
+  max-height: 68vh;
+  overflow-y: auto;
+}
+.seg-divider {
+  margin: 1.1rem 0 0.6rem;
+  padding: 0.42rem 0.72rem;
+  background: var(--forest-soft);
+  border-left: 4px solid var(--forest);
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--forest-dark);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.seg-divider:first-child { margin-top: 0; }
+.line-item {
+  display: grid;
+  grid-template-columns: 48px 86px minmax(0, 1fr);
+  gap: 0.5rem;
+  padding: 0.52rem 0.6rem;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  align-items: baseline;
+}
+.line-item:hover { background: #f3f5f2; }
+.line-item.active {
+  background: var(--amber-soft);
+  border-color: #f59e0b;
+}
+.line-tc {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.76rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.speaker-pill {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.12rem 0.4rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.speaker-koharu { background: var(--koharu-soft); color: var(--koharu); }
+.speaker-heizo { background: var(--heizo-soft); color: var(--heizo); }
+.speaker-guest { background: var(--guest-soft); color: var(--guest); }
+.line-text { font-size: 0.93rem; }
+.panel-body {
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.link-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fcfcfa;
+  transition: border-color 0.15s, background 0.15s, transform 0.08s;
+}
+.link-card:hover {
+  border-color: var(--forest);
+  background: var(--forest-soft);
+  transform: translateY(-1px);
+}
+.pill-tag {
+  display: inline-block;
+  font-size: 0.71rem;
+  font-weight: 700;
+  padding: 0.1rem 0.48rem;
+  border-radius: 999px;
+  background: var(--forest-soft);
+  color: var(--forest-dark);
+  margin-bottom: 0.25rem;
+}
+.link-title {
+  font-size: 0.89rem;
+  font-weight: 700;
+  color: var(--forest-dark);
+  margin: 0 0 0.2rem;
+}
+.link-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0;
+}
+.note-box {
+  padding: 0.72rem 0.85rem;
+  border-radius: 10px;
+  background: #fcfcfa;
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+.note-box ul {
+  margin: 0.35rem 0 0.45rem;
+  padding-left: 1.15rem;
+}
+.guest-card {
+  padding: 0.85rem 1rem;
+  border-left: 4px solid var(--guest);
+  background: var(--guest-soft);
+  border-radius: 10px;
+}
+.kw-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+.kw-chip {
+  font-size: 0.74rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.archive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+.archive-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.95rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.btn-link {
+  display: inline-block;
+  text-decoration: none;
+  background: var(--forest);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.38rem 0.8rem;
+  border-radius: 8px;
+  text-align: center;
+}
+.btn-link:hover { background: var(--forest-dark); }
+footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2.2rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: #fcfcfa;
+      align-items: center;
+    }
+    .search-input {
+      flex: 1 1 240px;
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+    .day-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .day-pills button.active {
+      background: var(--forest);
+      color: #fff;
+      border-color: var(--forest);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <nav class="top-nav"><a class="brand" href="index.html">毎朝7時！こだいら防災＆まちラジオ</a><div class="nav-links"><a href="index.html">最新回を聴く</a><a href="archive.html" class="active">バックナンバー</a><a href="characters.html">出演者＆防災ノート</a></div></nav>
+      <h1>バックナンバー アーカイブ</h1>
+      <p class="subtitle">これまでの放送回をいつでも聴く・読むことができます</p>
+    </div>
+  </header>
+
+  <main class="container single">
+    <div class="card">
+      <div class="filter-bar">
+        <input type="search" id="search-input" class="search-input" placeholder="キーワード検索（例：GIS、小川パレット、星野、防災庁…）" />
+        <div class="day-pills" id="day-pills">
+          <button type="button" data-day="all" class="active">すべて</button>
+          <button type="button" data-day="monday">月</button>
+          <button type="button" data-day="tuesday">火</button>
+          <button type="button" data-day="wednesday">水</button>
+          <button type="button" data-day="thursday">木</button>
+          <button type="button" data-day="friday">金</button>
+          <button type="button" data-day="saturday">土</button>
+          <button type="button" data-day="sunday">日</button>
+        </div>
+      </div>
+      <div class="archive-grid" id="archive-grid"></div>
+    </div>
+  </main>
+
+  <footer>毎朝7時！こだいら防災＆まちラジオ（東京都小平市）</footer>
+
+  <script type="application/json" id="archive-data">[{"date": "2026-11-22", "episode_number": 1, "weekday": "sunday", "weekday_ja": "日曜日", "theme_name": "防災テック・ハザードマップ・衛星・最新情報", "subtitle": "第1回・2026年11月22日（日曜日）朝7時号 ― 日曜15分特集：防災テックとGISで歩く小平のまち", "guest_name": "星野 創", "guest_title": "防災テック＆GISエンジニア（地理情報・衛星通信・架空ゲスト）", "duration": "14:35", "has_audio": true, "href": "episodes/2026-11-22/index.html", "learned_points": ["GIS（地理情報システム）とカラーユニバーサルデザインでハザードマップや小平市防災マップアプリの仕組みがぐっと見やすくなっていること", "Jアラートは衛星と地上回線の二重ルートで届き、窓を閉めて聞き逃しても小平市防災行政無線テレホンサービス（042-341-0793）で確認できること", "防災アプリやDXは便利な一方、問合せ情報漏えいのようなセキュリティ事例も踏まえて公式の一次情報を落ち着いて確認することが大切なこと"], "keywords": ["GIS（地理情報システム）", "オフラインGPS地図キャッシュ", "Jアラート衛星＆地上二重ルート", "災害時ドローンマッピング＆低軌道衛星通信"]}]</script>
+  <script>
+    (function () {
+      const items = JSON.parse(document.getElementById("archive-data").textContent);
+      const grid = document.getElementById("archive-grid");
+      const searchInput = document.getElementById("search-input");
+      const dayButtons = Array.from(document.querySelectorAll("#day-pills button"));
+      let selectedDay = "all";
+
+      function render() {
+        const q = (searchInput.value || "").trim().toLowerCase();
+        grid.innerHTML = "";
+        const filtered = items.filter((it) => {
+          if (selectedDay !== "all" && it.weekday !== selectedDay) return false;
+          if (!q) return true;
+          const hay = [
+            it.date, it.theme_name, it.subtitle, it.guest_name,
+            ...(it.keywords || []), ...(it.learned_points || [])
+          ].join(" ").toLowerCase();
+          return hay.includes(q);
+        });
+        if (filtered.length === 0) {
+          const empty = document.createElement("p");
+          empty.style.color = "var(--muted)";
+          empty.textContent = "条件に一致するバックナンバーが見つかりませんでした。";
+          grid.appendChild(empty);
+          return;
+        }
+        filtered.forEach((it) => {
+          const card = document.createElement("article");
+          card.className = "archive-card";
+          const top = document.createElement("div");
+          top.innerHTML = "";
+          const tag = document.createElement("span");
+          tag.className = "pill-tag";
+          tag.textContent = "第" + it.episode_number + "回 ・ " + it.date + "（" + it.weekday_ja + "）";
+          const h3 = document.createElement("h3");
+          h3.style.margin = "0.2rem 0";
+          h3.style.fontSize = "1rem";
+          h3.textContent = it.theme_name;
+          const sub = document.createElement("div");
+          sub.style.fontSize = "0.84rem";
+          sub.style.color = "var(--muted)";
+          sub.textContent = it.subtitle;
+          const g = document.createElement("div");
+          g.style.fontSize = "0.82rem";
+          g.textContent = "ゲスト: " + it.guest_name + " ／ 時間: " + it.duration + (it.has_audio ? "（音声あり）" : "（台本）");
+          const btn = document.createElement("a");
+          btn.className = "btn-link";
+          btn.href = it.href;
+          btn.textContent = "この回を聴く・台本を読む →";
+          card.appendChild(tag);
+          card.appendChild(h3);
+          card.appendChild(sub);
+          card.appendChild(g);
+          card.appendChild(btn);
+          grid.appendChild(card);
+        });
+      }
+
+      searchInput.addEventListener("input", render);
+      dayButtons.forEach((b) => {
+        b.addEventListener("click", () => {
+          selectedDay = b.dataset.day || "all";
+          dayButtons.forEach((x) => x.classList.toggle("active", x === b));
+          render();
+        });
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>
