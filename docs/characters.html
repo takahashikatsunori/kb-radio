@@ -25,6 +25,10 @@
   --shadow: 0 6px 20px rgba(18, 64, 40, 0.08);
 }
 * { box-sizing: border-box; }
+html, body {
+  overflow-x: clip;
+  max-width: 100%;
+}
 body {
   margin: 0;
   font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", system-ui, -apple-system, sans-serif;
@@ -155,6 +159,7 @@ header {
   font-size: clamp(0.98rem, 3.6vw, 1.22rem);
   line-height: 1.38;
   color: var(--forest-dark);
+  overflow-wrap: anywhere;
 }
 .section-head {
   padding: 0.75rem 1rem;
@@ -225,7 +230,7 @@ header {
 }
 .controls {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 0.35rem;
@@ -299,7 +304,22 @@ button.active-toggle {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-/* Chapters */
+/* Chapters accordion */
+.chapter-summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+.chapter-summary::-webkit-details-marker {
+  display: none;
+}
+.chapter-summary .hint::after {
+  content: " ▼";
+  font-size: 0.7rem;
+}
+.chapter-details[open] .chapter-summary .hint::after {
+  content: " ▲";
+}
 .chapter-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
@@ -395,6 +415,7 @@ button.active-toggle {
 .line-text {
   grid-area: text;
   font-size: 0.94rem;
+  overflow-wrap: anywhere;
 }
 
 /* Right panels & cards */
@@ -433,11 +454,13 @@ button.active-toggle {
   font-weight: 700;
   color: var(--forest-dark);
   margin: 0 0 0.18rem;
+  overflow-wrap: anywhere;
 }
 .link-note {
   font-size: 0.8rem;
   color: var(--muted);
   margin: 0;
+  overflow-wrap: anywhere;
 }
 .note-box {
   padding: 0.72rem 0.85rem;
@@ -445,6 +468,7 @@ button.active-toggle {
   background: #fcfcfa;
   border: 1px solid var(--border);
   font-size: 0.86rem;
+  overflow-wrap: anywhere;
 }
 .note-box ul {
   margin: 0.35rem 0 0.45rem;
@@ -477,7 +501,7 @@ button.active-toggle {
 }
 .archive-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 0.85rem;
   padding: 0.9rem;
 }
@@ -489,6 +513,7 @@ button.active-toggle {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
+  overflow-wrap: anywhere;
 }
 .btn-link {
   display: inline-block;
@@ -522,9 +547,9 @@ footer {
     display: grid;
   }
   .player-card {
-    margin: 0 -0.75rem 0.65rem;
-    border-radius: 0 0 14px 14px;
-    padding: 0.6rem 0.85rem;
+    margin: 0 0 0.65rem;
+    border-radius: 12px;
+    padding: 0.6rem 0.78rem;
   }
   main[data-active-tab="script"] #tab-panel-script { display: block; }
   main[data-active-tab="script"] .col-side { display: none; }
@@ -540,28 +565,31 @@ footer {
   main[data-active-tab="notes"] #tab-panel-notes { display: block; }
 }
 
-/* Narrow phone breakpoint (<= 640px): single-row controls, horizontal chapters, 2-row transcript */
+/* Narrow phone breakpoint (<= 640px): vertical-only controls, accordion chapters, 2-row transcript */
 @media (max-width: 640px) {
   .header-inner { padding: 0.55rem 0.75rem 0.62rem; }
   .brand-bar { margin-bottom: 0.45rem; }
   .ep-hero { padding: 0.62rem 0.78rem; margin-bottom: 0.6rem; }
   .speed-group { display: none; }
   .speed-cycle-btn { display: inline-flex; align-items: center; }
-  button { padding: 0.36rem 0.55rem; font-size: 0.78rem; min-height: 36px; }
-  button.primary { padding: 0.36rem 0.78rem; }
+  button { padding: 0.36rem 0.52rem; font-size: 0.78rem; min-height: 36px; }
+  button.primary { padding: 0.36rem 0.72rem; }
 
   .chapter-list {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 0.65rem 0.75rem;
-    gap: 0.45rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 0.6rem 0.75rem;
+    gap: 0.38rem;
   }
   .chapter-btn {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.45rem;
+    width: 100%;
+    padding: 0.48rem 0.62rem;
+  }
+  .chapter-tc {
     flex: 0 0 auto;
-    min-width: 175px;
-    max-width: 225px;
   }
 
   .transcript-body {
