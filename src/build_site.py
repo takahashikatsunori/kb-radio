@@ -13,6 +13,8 @@ DATA_DIR = ROOT_DIR / "data"
 EPISODES_DIR = ROOT_DIR / "episodes"
 DOCS_DIR = ROOT_DIR / "docs"
 DOCS_AUDIO_DIR = DOCS_DIR / "audio"
+DOCS_CAST_ASSETS_DIR = DOCS_DIR / "assets" / "cast"
+DOCS_INTROS_AUDIO_DIR = DOCS_AUDIO_DIR / "intros"
 
 BGM_LABELS = {
     "bgm_warm": "温かいアコースティック風トークBGM（bgm_warm）",
@@ -40,6 +42,82 @@ def _safe_json_for_html(obj: Any) -> str:
 
 def _load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _write_placeholder_svg(
+    svg_path: Path,
+    name: str,
+    accent_color: str,
+    bg_soft: str,
+    badge_label: str,
+) -> None:
+    """Write a crisp 1:1 512x512 SVG bust-up placeholder harmonizing with Concept A."""
+    initial = html.escape((name or "?")[:1])
+    color_esc = html.escape(accent_color or "#1b5e3c")
+    soft_esc = html.escape(bg_soft or "#eef2ff")
+    badge_esc = html.escape(badge_label or "")
+    grad_id = html.escape(svg_path.stem)
+    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="{html.escape(name)} イラスト準備中">
+  <defs>
+    <linearGradient id="bg_{grad_id}" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fffdf8"/>
+      <stop offset="55%" stop-color="{soft_esc}"/>
+      <stop offset="100%" stop-color="#e7f4ec"/>
+    </linearGradient>
+    <clipPath id="clip_{grad_id}">
+      <rect x="0" y="0" width="512" height="512" rx="36"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#clip_{grad_id})">
+    <rect width="512" height="512" fill="url(#bg_{grad_id})"/>
+    <!-- Sunny morning studio window motif -->
+    <rect x="38" y="34" width="436" height="290" rx="18" fill="#ffffff" fill-opacity="0.58" stroke="#cbd5e1" stroke-width="3"/>
+    <line x1="256" y1="34" x2="256" y2="324" stroke="#e2e8f0" stroke-width="2.5"/>
+    <circle cx="408" cy="102" r="36" fill="#fde68a" fill-opacity="0.55"/>
+    <!-- Bust-up silhouette with studio headphones -->
+    <path d="M98 512 C104 374, 174 334, 256 334 C338 334, 408 374, 414 512 Z" fill="{color_esc}" fill-opacity="0.22"/>
+    <path d="M126 512 C132 394, 188 358, 256 358 C324 358, 380 394, 386 512 Z" fill="#ffffff" stroke="{color_esc}" stroke-width="5"/>
+    <path d="M214 358 L256 410 L298 358" fill="none" stroke="{color_esc}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Head & headphones -->
+    <path d="M168 228 A88 88 0 0 1 344 228" fill="none" stroke="#334155" stroke-width="14" stroke-linecap="round"/>
+    <rect x="148" y="204" width="28" height="62" rx="14" fill="{color_esc}"/>
+    <rect x="336" y="204" width="28" height="62" rx="14" fill="{color_esc}"/>
+    <circle cx="256" cy="232" r="76" fill="#ffffff" stroke="{color_esc}" stroke-width="5"/>
+    <text x="256" y="256" text-anchor="middle" font-family="'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif" font-size="76" font-weight="800" fill="{color_esc}">{initial}</text>
+    <!-- Role & status pills -->
+    <rect x="128" y="38" width="256" height="32" rx="16" fill="{color_esc}" fill-opacity="0.14"/>
+    <text x="256" y="60" text-anchor="middle" font-family="'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif" font-size="16" font-weight="700" fill="{color_esc}">{badge_esc}</text>
+    <rect x="146" y="446" width="220" height="38" rx="19" fill="#1f2937" fill-opacity="0.78"/>
+    <text x="256" y="471" text-anchor="middle" font-family="'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif" font-size="17" font-weight="700" fill="#ffffff">イラスト準備中</text>
+  </g>
+</svg>
+"""
+    svg_path.parent.mkdir(parents=True, exist_ok=True)
+    svg_path.write_text(svg, encoding="utf-8")
+
+
+def _resolve_cast_portrait(
+    cast_id: str,
+    name: str,
+    accent_color: str,
+    bg_soft: str,
+    badge_label: str,
+) -> dict[str, Any]:
+    """Return portrait asset metadata; use real raster file if present else write SVG placeholder."""
+    DOCS_CAST_ASSETS_DIR.mkdir(parents=True, exist_ok=True)
+    for ext in (".jpg", ".jpeg", ".png", ".webp"):
+        cand = DOCS_CAST_ASSETS_DIR / f"{cast_id}{ext}"
+        if cand.exists() and cand.stat().st_size > 512:
+            return {
+                "src": f"assets/cast/{cand.name}",
+                "is_placeholder": False,
+            }
+    svg_path = DOCS_CAST_ASSETS_DIR / f"{cast_id}.svg"
+    _write_placeholder_svg(svg_path, name, accent_color, bg_soft, badge_label)
+    return {
+        "src": f"assets/cast/{svg_path.name}",
+        "is_placeholder": True,
+    }
 
 
 def _build_estimated_manifest(episode: dict[str, Any]) -> dict[str, Any]:
@@ -278,15 +356,15 @@ header {
 }
 .nav-links {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.4rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.32rem;
 }
 .nav-links a {
   color: rgba(255, 255, 255, 0.94);
   text-decoration: none;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 700;
-  padding: 0.34rem 0.3rem;
+  padding: 0.34rem 0.2rem;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.28);
   background: rgba(255, 255, 255, 0.12);
@@ -791,6 +869,8 @@ footer {
 @media (max-width: 640px) {
   .header-inner { padding: 0.55rem 0.7rem 0.62rem; }
   .brand-bar { margin-bottom: 0.45rem; }
+  .nav-links { gap: 0.25rem; }
+  .nav-links a { font-size: 0.72rem; padding: 0.34rem 0.14rem; }
   .ep-hero { padding: 0.62rem 0.75rem; margin-bottom: 0.6rem; }
   .controls { gap: 0.25rem; }
   .btn-group { gap: 0.25rem; }
@@ -860,7 +940,8 @@ def _render_nav(root_prefix: str, active: str, subhead: str = "", page_h1: str =
         f'<nav class="nav-links" aria-label="メインメニュー">'
         f'<a href="{root_prefix}index.html"{cls("latest")}>最新回</a>'
         f'<a href="{root_prefix}archive.html"{cls("archive")}>過去回</a>'
-        f'<a href="{root_prefix}characters.html"{cls("characters")}>出演者・ノート</a>'
+        f'<a href="{root_prefix}cast.html"{cls("cast")}>出演者</a>'
+        f'<a href="{root_prefix}characters.html"{cls("characters")}>防災ノート</a>'
         f'</nav>'
         f'{extra}'
     )
@@ -884,6 +965,7 @@ def _render_episode_page(
         "meta": meta,
         "manifest_meta": mf_meta,
         "guest": guest,
+        "cast_href": f"{root_prefix}cast.html#{guest.get('id', '')}",
         "has_audio": bundle["has_audio"],
         "audio_src": audio_rel,
         "weather": episode.get("weather_summary", {}),
@@ -1211,6 +1293,15 @@ def _render_episode_page(
       gCard.appendChild(gTitle);
       gCard.appendChild(gDesc);
       gCard.appendChild(kwWrap);
+      const gCastLink = document.createElement("a");
+      gCastLink.href = data.cast_href || "cast.html";
+      gCastLink.style.display = "inline-block";
+      gCastLink.style.marginTop = "0.55rem";
+      gCastLink.style.fontSize = "0.8rem";
+      gCastLink.style.fontWeight = "700";
+      gCastLink.style.textDecoration = "none";
+      gCastLink.textContent = "出演者プロフィール＆自己紹介を聴く →";
+      gCard.appendChild(gCastLink);
       gwPanel.appendChild(gCard);
 
       if (data.weather && data.weather.daily && data.weather.daily.length > 0) {{
@@ -1621,28 +1712,729 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
 """
 
 
-def _render_characters_page(
+def _render_cast_page(
     characters: dict[str, Any],
     themes: dict[str, Any],
-    knowledge_log: dict[str, Any],
+    cast_intros_cfg: dict[str, Any],
+    intros_manifest: dict[str, Any],
 ) -> str:
+    intros_by_id = {e["id"]: e for e in cast_intros_cfg.get("cast_intros", [])}
+    mf_by_id = intros_manifest.get("by_id", {})
+
+    def build_member_payload(
+        cid: str,
+        name: str,
+        reading: str,
+        role_sub: str,
+        badge: str,
+        placeholder_badge: str,
+        jump_label: str,
+        personality: str,
+        sub_detail_label: str,
+        sub_detail: str,
+        fallback_chips: list[str],
+        voice_name: str,
+        ui_cfg: dict[str, Any],
+    ) -> dict[str, Any]:
+        color = ui_cfg.get("color", "#1b5e3c")
+        bg_soft = ui_cfg.get("bg_soft", "#f0f9ff")
+        intro_cfg = intros_by_id.get(cid, {})
+        mf = mf_by_id.get(cid, {})
+        mp3_rel = mf.get("mp3_rel") or f"audio/intros/intro_{cid}.mp3"
+        mp3_path = DOCS_DIR / mp3_rel
+        has_audio = mp3_path.exists() and mp3_path.stat().st_size > 10_000
+        dur_sec = float(mf.get("duration_sec") or 0.0)
+        dur_fmt = mf.get("duration_formatted") or fmt_tc(dur_sec)
+        portrait = _resolve_cast_portrait(cid, name, color, bg_soft, placeholder_badge)
+
+        chips: list[str] = []
+        for ch in list(intro_cfg.get("highlights") or []) + list(fallback_chips):
+            if ch and ch not in chips:
+                chips.append(ch)
+
+        return {
+            "id": cid,
+            "name": name,
+            "reading": reading,
+            "role_sub": role_sub,
+            "badge": badge,
+            "jump_label": jump_label,
+            "tagline": intro_cfg.get("tagline", ""),
+            "personality": personality,
+            "sub_detail_label": sub_detail_label,
+            "sub_detail": sub_detail,
+            "chips": chips[:6],
+            "color": color,
+            "bg_soft": bg_soft,
+            "voice_label": f"Gemini TTS ({voice_name})",
+            "portrait": portrait,
+            "audio_src": mp3_rel,
+            "has_audio": has_audio,
+            "duration_sec": dur_sec,
+            "duration_formatted": dur_fmt,
+            "intro_text": intro_cfg.get("text", ""),
+        }
+
+    hosts_out: list[dict[str, Any]] = []
+    for h in characters.get("hosts", {}).values():
+        hosts_out.append(
+            build_member_payload(
+                cid=h["id"],
+                name=h["name"],
+                reading=h["reading"],
+                role_sub=h["role"],
+                badge="レギュラーキャスター",
+                placeholder_badge="キャスター",
+                jump_label=h["name"],
+                personality=h["personality"],
+                sub_detail_label="トーク・進行の特徴",
+                sub_detail=" ／ ".join(h.get("speaking_habits", [])),
+                fallback_chips=h.get("speaking_habits", []),
+                voice_name=h["tts"]["gemini_voice"],
+                ui_cfg=h.get("ui", {}),
+            )
+        )
+
+    guests_out: list[dict[str, Any]] = []
+    for day_cfg in themes.get("days", {}).values():
+        g = day_cfg["guest"]
+        day_short = day_cfg["weekday_ja"][:1]
+        ed = "15分特集" if day_cfg.get("is_weekend") else "10分"
+        guests_out.append(
+            build_member_payload(
+                cid=g["id"],
+                name=g["name"],
+                reading=g["reading"],
+                role_sub=g["title"],
+                badge=f"{day_cfg['weekday_ja']}（{ed}）・{day_cfg['theme_name']}",
+                placeholder_badge=f"{day_cfg['weekday_ja']}ゲスト",
+                jump_label=f"{day_short}：{g['name']}",
+                personality=g["personality"],
+                sub_detail_label="小平市とのつながり・注目テーマ",
+                sub_detail=g.get("kodaira_connection", ""),
+                fallback_chips=g.get("keywords_bank", [])[:4],
+                voice_name=g["voice_name"],
+                ui_cfg=g.get("ui", {}),
+            )
+        )
+
     payload = {
-        "hosts": list(characters["hosts"].values()),
-        "days": list(themes["days"].values()),
-        "entries": list(reversed(knowledge_log.get("entries", []))),
+        "hosts": hosts_out,
+        "guests": guests_out,
     }
     nav_html = _render_nav(
         "",
-        "characters",
-        page_h1="出演者＆防災ノート",
-        subhead="小春と平蔵、そして7人の専門家ゲスト図鑑・累積ノート",
+        "cast",
+        page_h1="出演者紹介",
+        subhead="小春・平蔵と7人の防災専門家ゲスト — プロフィール＆自己紹介ボイス",
     )
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>出演者＆防災ノート | 毎朝7時！こだいら防災＆まちラジオ</title>
+  <title>出演者紹介 | 毎朝7時！こだいら防災＆まちラジオ</title>
+  <style>
+    {COMMON_CSS}
+    .cast-jump-card {{
+      padding: 0.78rem 0.9rem;
+      margin-bottom: 0.85rem;
+    }}
+    .cast-jump-title {{
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin: 0 0 0.45rem;
+    }}
+    .cast-jump-row {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.36rem;
+    }}
+    .cast-jump-link {{
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.28rem 0.62rem;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--ink);
+    }}
+    .cast-jump-link:hover {{
+      background: var(--forest-soft);
+      border-color: var(--forest);
+    }}
+    .cast-jump-dot {{
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+    }}
+    .cast-grid {{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.85rem;
+      padding: 0.85rem;
+    }}
+    .cast-card {{
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.9rem;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      min-width: 0;
+      overflow-wrap: anywhere;
+      scroll-margin-top: 1rem;
+      transition: box-shadow 0.15s;
+    }}
+    .cast-card.is-playing {{
+      box-shadow: 0 8px 24px rgba(18, 64, 40, 0.16);
+    }}
+    .cast-head {{
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: 0.75rem;
+      align-items: start;
+      min-width: 0;
+    }}
+    .cast-avatar-wrap {{
+      width: 96px;
+      aspect-ratio: 1 / 1;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      background: #f8fafc;
+    }}
+    .cast-avatar {{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }}
+    .cast-head-info {{
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.22rem;
+    }}
+    .cast-badge {{
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.14rem 0.5rem;
+      border-radius: 999px;
+    }}
+    .cast-name {{
+      margin: 0.06rem 0 0;
+      font-size: 1.08rem;
+      line-height: 1.3;
+    }}
+    .cast-reading {{
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+    }}
+    .cast-role-sub {{
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }}
+    .cast-tagline {{
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.45;
+    }}
+    .intro-player {{
+      border-radius: 12px;
+      padding: 0.65rem 0.75rem;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.42rem;
+      min-width: 0;
+    }}
+    .intro-player-top {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      min-width: 0;
+    }}
+    .intro-play-btn {{
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 0.42rem 0.85rem;
+      border-radius: 999px;
+      cursor: pointer;
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }}
+    .intro-play-btn:disabled {{
+      opacity: 0.55;
+      cursor: not-allowed;
+    }}
+    .intro-time {{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--ink);
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }}
+    .intro-scrub {{
+      width: 100%;
+      height: 6px;
+      margin: 0.05rem 0;
+      cursor: pointer;
+    }}
+    .intro-voice-tag {{
+      font-size: 0.7rem;
+      color: var(--muted);
+    }}
+    .intro-script-details {{
+      border-top: 1px dashed rgba(0, 0, 0, 0.14);
+      padding-top: 0.35rem;
+      font-size: 0.82rem;
+    }}
+    .intro-script-details summary {{
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: var(--forest);
+      list-style: none;
+    }}
+    .intro-script-details summary::-webkit-details-marker {{ display: none; }}
+    .intro-script-text {{
+      margin: 0.4rem 0 0;
+      line-height: 1.68;
+      color: var(--ink);
+    }}
+    .cast-body {{
+      font-size: 0.85rem;
+      line-height: 1.65;
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }}
+    .cast-sub-box {{
+      background: #f9faf8;
+      border-radius: 9px;
+      padding: 0.52rem 0.68rem;
+      border: 1px solid var(--border);
+      font-size: 0.81rem;
+      line-height: 1.58;
+    }}
+    .cast-sub-box strong {{
+      display: block;
+      font-size: 0.75rem;
+      color: var(--forest);
+      margin-bottom: 0.15rem;
+    }}
+    .cast-footnote {{
+      font-size: 0.78rem;
+      color: var(--muted);
+      padding: 0.7rem 0.9rem;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      line-height: 1.6;
+    }}
+    @media (max-width: 860px) {{
+      .cast-grid {{
+        grid-template-columns: minmax(0, 1fr);
+        padding: 0.65rem;
+        gap: 0.75rem;
+      }}
+    }}
+    @media (max-width: 640px) {{
+      .cast-head {{
+        grid-template-columns: 82px minmax(0, 1fr);
+        gap: 0.6rem;
+      }}
+      .cast-avatar-wrap {{
+        width: 82px;
+        border-radius: 12px;
+      }}
+      .cast-card {{ padding: 0.78rem; }}
+    }}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      {nav_html}
+    </div>
+  </header>
+
+  <main class="container single">
+    <audio id="cast-audio" preload="none"></audio>
+
+    <div class="card cast-jump-card">
+      <div class="cast-jump-title">出演者クイックジャンプ（タップで移動）</div>
+      <div class="cast-jump-row" id="cast-jump-row"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-head">
+        <h2>レギュラーキャスター（小平の「小」と「平」）</h2>
+        <span class="hint">毎日朝7時ナビゲート</span>
+      </div>
+      <div class="cast-grid" id="cast-hosts-grid"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-head">
+        <h2>曜日別 防災専門家ゲスト（月〜日・架空キャラクター）</h2>
+        <span class="hint">平日10分／土日祝15分</span>
+      </div>
+      <div class="cast-grid" id="cast-guests-grid"></div>
+    </div>
+
+    <div class="cast-footnote">
+      ※ 平蔵および曜日ゲスト7名の胸上イラストは制作準備中のため仮アイコンを表示しています（イラストが完成しだい順次切り替わります）。自己紹介音声は Gemini 3.8 Flash TTS により各キャスター専用ボイスで収録しています。
+    </div>
+  </main>
+
+  <footer>毎朝7時！こだいら防災＆まちラジオ（東京都小平市）／ <a href="characters.html">累積防災ノートへ →</a></footer>
+
+  <script type="application/json" id="cast-data">{_safe_json_for_html(payload)}</script>
+  <script>
+    (function () {{
+      const data = JSON.parse(document.getElementById("cast-data").textContent);
+      const audio = document.getElementById("cast-audio");
+      const jumpRow = document.getElementById("cast-jump-row");
+      const hostsGrid = document.getElementById("cast-hosts-grid");
+      const guestsGrid = document.getElementById("cast-guests-grid");
+
+      const controllers = new Map();
+      let activeId = null;
+      let isScrubbing = false;
+
+      function fmtTime(sec) {{
+        const s = Math.max(0, Math.floor(sec || 0));
+        return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+      }}
+
+      function resetController(cid) {{
+        const ctrl = controllers.get(cid);
+        if (!ctrl) return;
+        ctrl.card.classList.remove("is-playing");
+        ctrl.btnPlay.textContent = "▶ 自己紹介を聴く";
+        ctrl.scrub.value = "0";
+        ctrl.timeEl.textContent = "00:00 / " + fmtTime(ctrl.estDur);
+      }}
+
+      function startOrToggle(item) {{
+        const ctrl = controllers.get(item.id);
+        if (!ctrl || !item.has_audio) return;
+
+        if (activeId === item.id) {{
+          if (audio.paused) {{
+            audio.play().catch(() => {{}});
+          }} else {{
+            audio.pause();
+          }}
+          return;
+        }}
+
+        if (activeId) {{
+          audio.pause();
+          resetController(activeId);
+        }}
+
+        activeId = item.id;
+        ctrl.card.classList.add("is-playing");
+        audio.src = item.audio_src;
+        audio.currentTime = 0;
+        ctrl.btnPlay.textContent = "❚❚ 読み込み中…";
+        audio.play().catch(() => {{
+          ctrl.btnPlay.textContent = "▶ 自己紹介を聴く";
+        }});
+      }}
+
+      function renderCard(item, container) {{
+        const card = document.createElement("article");
+        card.className = "cast-card";
+        card.id = item.id;
+        card.style.borderTop = "4px solid " + item.color;
+
+        const head = document.createElement("div");
+        head.className = "cast-head";
+
+        const avatarWrap = document.createElement("div");
+        avatarWrap.className = "cast-avatar-wrap";
+        avatarWrap.style.borderColor = item.color;
+        const img = document.createElement("img");
+        img.className = "cast-avatar";
+        img.src = item.portrait.src;
+        img.alt = item.name + "のポートレート";
+        img.loading = "lazy";
+        avatarWrap.appendChild(img);
+
+        const info = document.createElement("div");
+        info.className = "cast-head-info";
+
+        const badge = document.createElement("span");
+        badge.className = "cast-badge";
+        badge.style.background = item.bg_soft;
+        badge.style.color = item.color;
+        badge.textContent = item.badge;
+
+        const nameH3 = document.createElement("h3");
+        nameH3.className = "cast-name";
+        nameH3.textContent = item.name + " ";
+        const readSpan = document.createElement("span");
+        readSpan.className = "cast-reading";
+        readSpan.textContent = "（" + item.reading + "）";
+        nameH3.appendChild(readSpan);
+
+        const roleSub = document.createElement("div");
+        roleSub.className = "cast-role-sub";
+        roleSub.textContent = item.role_sub;
+
+        info.appendChild(badge);
+        info.appendChild(nameH3);
+        info.appendChild(roleSub);
+
+        if (item.tagline) {{
+          const tagLine = document.createElement("div");
+          tagLine.className = "cast-tagline";
+          tagLine.textContent = item.tagline;
+          info.appendChild(tagLine);
+        }}
+
+        head.appendChild(avatarWrap);
+        head.appendChild(info);
+        card.appendChild(head);
+
+        const player = document.createElement("div");
+        player.className = "intro-player";
+        player.style.background = item.bg_soft;
+
+        const pTop = document.createElement("div");
+        pTop.className = "intro-player-top";
+
+        const btnPlay = document.createElement("button");
+        btnPlay.type = "button";
+        btnPlay.className = "intro-play-btn";
+        btnPlay.style.background = item.color;
+        btnPlay.textContent = item.has_audio ? "▶ 自己紹介を聴く" : "音声準備中";
+        btnPlay.disabled = !item.has_audio;
+
+        const timeEl = document.createElement("span");
+        timeEl.className = "intro-time";
+        timeEl.textContent = "00:00 / " + item.duration_formatted;
+
+        pTop.appendChild(btnPlay);
+        pTop.appendChild(timeEl);
+
+        const scrub = document.createElement("input");
+        scrub.type = "range";
+        scrub.className = "intro-scrub";
+        scrub.min = "0";
+        scrub.max = String(item.duration_sec || 30);
+        scrub.step = "0.1";
+        scrub.value = "0";
+        scrub.style.accentColor = item.color;
+        scrub.setAttribute("aria-label", item.name + "の自己紹介音声シークバー");
+        scrub.disabled = !item.has_audio;
+
+        const vTag = document.createElement("div");
+        vTag.className = "intro-voice-tag";
+        vTag.textContent = "音声ボイス: " + item.voice_label;
+
+        player.appendChild(pTop);
+        player.appendChild(scrub);
+        player.appendChild(vTag);
+
+        if (item.intro_text) {{
+          const det = document.createElement("details");
+          det.className = "intro-script-details";
+          const sum = document.createElement("summary");
+          sum.textContent = "自己紹介メッセージを読む ▾";
+          const pTxt = document.createElement("p");
+          pTxt.className = "intro-script-text";
+          pTxt.textContent = item.intro_text;
+          det.appendChild(sum);
+          det.appendChild(pTxt);
+          player.appendChild(det);
+        }}
+
+        card.appendChild(player);
+
+        const body = document.createElement("div");
+        body.className = "cast-body";
+        const pDesc = document.createElement("p");
+        pDesc.style.margin = "0";
+        pDesc.textContent = item.personality;
+        body.appendChild(pDesc);
+
+        if (item.sub_detail) {{
+          const subBox = document.createElement("div");
+          subBox.className = "cast-sub-box";
+          const subTitle = document.createElement("strong");
+          subTitle.textContent = item.sub_detail_label;
+          const subTxt = document.createElement("div");
+          subTxt.textContent = item.sub_detail;
+          subBox.appendChild(subTitle);
+          subBox.appendChild(subTxt);
+          body.appendChild(subBox);
+        }}
+
+        if (item.chips && item.chips.length > 0) {{
+          const kw = document.createElement("div");
+          kw.className = "kw-wrap";
+          item.chips.forEach((ch) => {{
+            const chip = document.createElement("span");
+            chip.className = "kw-chip";
+            chip.textContent = ch;
+            kw.appendChild(chip);
+          }});
+          body.appendChild(kw);
+        }}
+
+        card.appendChild(body);
+        container.appendChild(card);
+
+        controllers.set(item.id, {{
+          item: item,
+          card: card,
+          btnPlay: btnPlay,
+          timeEl: timeEl,
+          scrub: scrub,
+          estDur: item.duration_sec || 30,
+        }});
+
+        btnPlay.addEventListener("click", () => startOrToggle(item));
+        scrub.addEventListener("input", () => {{
+          isScrubbing = true;
+          const ctrl = controllers.get(item.id);
+          const total = (activeId === item.id && Number.isFinite(audio.duration)) ? audio.duration : ctrl.estDur;
+          ctrl.timeEl.textContent = fmtTime(Number(scrub.value)) + " / " + fmtTime(total);
+        }});
+        scrub.addEventListener("change", () => {{
+          const targetTime = Number(scrub.value);
+          if (activeId !== item.id) {{
+            if (activeId) {{
+              audio.pause();
+              resetController(activeId);
+            }}
+            activeId = item.id;
+            controllers.get(item.id).card.classList.add("is-playing");
+            audio.src = item.audio_src;
+            audio.addEventListener("loadedmetadata", function onMeta() {{
+              audio.removeEventListener("loadedmetadata", onMeta);
+              audio.currentTime = targetTime;
+              audio.play().catch(() => {{}});
+            }});
+          }} else {{
+            audio.currentTime = targetTime;
+          }}
+          isScrubbing = false;
+        }});
+      }}
+
+      function addJumpPill(item) {{
+        const a = document.createElement("a");
+        a.className = "cast-jump-link";
+        a.href = "#" + item.id;
+        const dot = document.createElement("span");
+        dot.className = "cast-jump-dot";
+        dot.style.background = item.color;
+        a.appendChild(dot);
+        a.appendChild(document.createTextNode(item.jump_label));
+        jumpRow.appendChild(a);
+      }}
+
+      data.hosts.forEach((h) => {{
+        addJumpPill(h);
+        renderCard(h, hostsGrid);
+      }});
+      data.guests.forEach((g) => {{
+        addJumpPill(g);
+        renderCard(g, guestsGrid);
+      }});
+
+      audio.addEventListener("loadedmetadata", () => {{
+        if (!activeId) return;
+        const ctrl = controllers.get(activeId);
+        if (!ctrl) return;
+        if (Number.isFinite(audio.duration) && audio.duration > 0) {{
+          ctrl.estDur = audio.duration;
+          ctrl.scrub.max = String(audio.duration);
+        }}
+        ctrl.timeEl.textContent = fmtTime(audio.currentTime) + " / " + fmtTime(ctrl.estDur);
+      }});
+
+      audio.addEventListener("timeupdate", () => {{
+        if (!activeId || isScrubbing) return;
+        const ctrl = controllers.get(activeId);
+        if (!ctrl) return;
+        const total = Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : ctrl.estDur;
+        ctrl.scrub.max = String(total);
+        ctrl.scrub.value = String(audio.currentTime);
+        ctrl.timeEl.textContent = fmtTime(audio.currentTime) + " / " + fmtTime(total);
+      }});
+
+      audio.addEventListener("play", () => {{
+        if (!activeId) return;
+        const ctrl = controllers.get(activeId);
+        if (ctrl) ctrl.btnPlay.textContent = "❚❚ 一時停止";
+      }});
+
+      audio.addEventListener("pause", () => {{
+        if (!activeId) return;
+        const ctrl = controllers.get(activeId);
+        if (ctrl && !audio.ended) ctrl.btnPlay.textContent = "▶ 自己紹介を聴く";
+      }});
+
+      audio.addEventListener("ended", () => {{
+        if (!activeId) return;
+        const ctrl = controllers.get(activeId);
+        if (ctrl) {{
+          ctrl.btnPlay.textContent = "▶ もう一度聴く";
+          ctrl.scrub.value = "0";
+          ctrl.timeEl.textContent = "00:00 / " + fmtTime(ctrl.estDur);
+        }}
+      }});
+    }})();
+  </script>
+</body>
+</html>
+"""
+
+
+def _render_characters_page(knowledge_log: dict[str, Any]) -> str:
+    payload = {
+        "entries": list(reversed(knowledge_log.get("entries", []))),
+    }
+    nav_html = _render_nav(
+        "",
+        "characters",
+        page_h1="防災ノート",
+        subhead="小春と平蔵が毎朝まとめる累積・防災＆こだいら発見ノート",
+    )
+    return f"""<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>防災ノート | 毎朝7時！こだいら防災＆まちラジオ</title>
   <style>{COMMON_CSS}</style>
 </head>
 <body>
@@ -1654,18 +2446,15 @@ def _render_characters_page(
 
   <main class="container single">
     <div class="card">
-      <div class="section-head">
-        <h2>レギュラーキャスター（小平の「小」と「平」）</h2>
+      <div class="panel-body">
+        <div class="note-box" style="margin-bottom:0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.55rem;">
+          <div>
+            <strong>番組キャスター・専門家ゲストの紹介ページが新しくなりました</strong>
+            <div style="font-size:0.82rem; color:var(--muted);">小春・平蔵と曜日ゲスト7名のプロフィール＆自己紹介ボイスはこちら</div>
+          </div>
+          <a class="btn-link" href="cast.html">出演者紹介・声を聴く →</a>
+        </div>
       </div>
-      <div class="archive-grid" id="hosts-grid"></div>
-    </div>
-
-    <div class="card">
-      <div class="section-head">
-        <h2>曜日別テーマ ＆ 専門家ゲスト（月〜日）</h2>
-        <span class="hint">平日10分／土日15分</span>
-      </div>
-      <div class="archive-grid" id="guests-grid"></div>
     </div>
 
     <div class="card">
@@ -1682,55 +2471,6 @@ def _render_characters_page(
   <script>
     (function () {{
       const data = JSON.parse(document.getElementById("char-data").textContent);
-      const hostsGrid = document.getElementById("hosts-grid");
-      data.hosts.forEach((h) => {{
-        const c = document.createElement("div");
-        c.className = "archive-card";
-        c.style.borderTop = "4px solid " + (h.ui ? h.ui.color : "#1b5e3c");
-        const title = document.createElement("h3");
-        title.style.margin = "0";
-        title.textContent = h.name + "（" + h.reading + "）";
-        const role = document.createElement("div");
-        role.className = "pill-tag";
-        role.textContent = h.role;
-        const p = document.createElement("p");
-        p.style.margin = "0";
-        p.style.fontSize = "0.86rem";
-        p.textContent = h.personality;
-        c.appendChild(role);
-        c.appendChild(title);
-        c.appendChild(p);
-        hostsGrid.appendChild(c);
-      }});
-
-      const guestsGrid = document.getElementById("guests-grid");
-      data.days.forEach((d) => {{
-        const g = d.guest;
-        const c = document.createElement("div");
-        c.className = "archive-card";
-        c.style.borderLeft = "4px solid " + (g.ui ? g.ui.color : "#4338ca");
-        const tag = document.createElement("span");
-        tag.className = "pill-tag";
-        tag.textContent = d.weekday_ja + "（" + (d.is_weekend ? "15分特集" : "10分") + "）: " + d.theme_name;
-        const title = document.createElement("h3");
-        title.style.margin = "0";
-        title.style.fontSize = "1rem";
-        title.textContent = g.name + "（" + g.reading + "）";
-        const role = document.createElement("div");
-        role.style.fontSize = "0.8rem";
-        role.style.color = "var(--muted)";
-        role.textContent = g.title;
-        const desc = document.createElement("p");
-        desc.style.margin = "0";
-        desc.style.fontSize = "0.85rem";
-        desc.textContent = g.personality + " " + g.kodaira_connection;
-        c.appendChild(tag);
-        c.appendChild(title);
-        c.appendChild(role);
-        c.appendChild(desc);
-        guestsGrid.appendChild(c);
-      }});
-
       const logList = document.getElementById("log-list");
       data.entries.forEach((e) => {{
         const box = document.createElement("div");
@@ -1769,6 +2509,16 @@ def build_site() -> None:
 
     characters = _load_json(CONFIG_DIR / "characters.json")
     themes = _load_json(CONFIG_DIR / "weekly_themes.json")
+    cast_intros_cfg = (
+        _load_json(CONFIG_DIR / "cast_intros.json")
+        if (CONFIG_DIR / "cast_intros.json").exists()
+        else {"cast_intros": []}
+    )
+    intros_manifest = (
+        _load_json(DATA_DIR / "cast_intros_manifest.json")
+        if (DATA_DIR / "cast_intros_manifest.json").exists()
+        else {"by_id": {}}
+    )
     knowledge_log = (
         _load_json(DATA_DIR / "knowledge_log.json")
         if (DATA_DIR / "knowledge_log.json").exists()
@@ -1794,8 +2544,13 @@ def build_site() -> None:
         encoding="utf-8",
     )
     (DOCS_DIR / "archive.html").write_text(_render_archive_page(bundles), encoding="utf-8")
+    (DOCS_DIR / "cast.html").write_text(
+        _render_cast_page(characters, themes, cast_intros_cfg, intros_manifest),
+        encoding="utf-8",
+    )
     (DOCS_DIR / "characters.html").write_text(
-        _render_characters_page(characters, themes, knowledge_log), encoding="utf-8"
+        _render_characters_page(knowledge_log),
+        encoding="utf-8",
     )
 
     print(f"Site built successfully in {DOCS_DIR} ({len(bundles)} episode(s))")

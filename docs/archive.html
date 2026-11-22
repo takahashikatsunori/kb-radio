@@ -80,15 +80,15 @@ header {
 }
 .nav-links {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.4rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.32rem;
 }
 .nav-links a {
   color: rgba(255, 255, 255, 0.94);
   text-decoration: none;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 700;
-  padding: 0.34rem 0.3rem;
+  padding: 0.34rem 0.2rem;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.28);
   background: rgba(255, 255, 255, 0.12);
@@ -593,6 +593,8 @@ footer {
 @media (max-width: 640px) {
   .header-inner { padding: 0.55rem 0.7rem 0.62rem; }
   .brand-bar { margin-bottom: 0.45rem; }
+  .nav-links { gap: 0.25rem; }
+  .nav-links a { font-size: 0.72rem; padding: 0.34rem 0.14rem; }
   .ep-hero { padding: 0.62rem 0.75rem; margin-bottom: 0.6rem; }
   .controls { gap: 0.25rem; }
   .btn-group { gap: 0.25rem; }
@@ -677,7 +679,7 @@ footer {
 <body>
   <header>
     <div class="header-inner">
-      <div class="brand-bar"><a class="brand" href="index.html">こだいら防災＆まちラジオ</a><span class="time-pill">毎朝7時</span></div><nav class="nav-links" aria-label="メインメニュー"><a href="index.html">最新回</a><a href="archive.html" class="active">過去回</a><a href="characters.html">出演者・ノート</a></nav><h1 class="page-h1">バックナンバー</h1><p class="page-subhead">これまでの放送をいつでも聴く・読むことができます</p>
+      <div class="brand-bar"><a class="brand" href="index.html">こだいら防災＆まちラジオ</a><span class="time-pill">毎朝7時</span></div><nav class="nav-links" aria-label="メインメニュー"><a href="index.html">最新回</a><a href="archive.html" class="active">過去回</a><a href="cast.html">出演者</a><a href="characters.html">防災ノート</a></nav><h1 class="page-h1">バックナンバー</h1><p class="page-subhead">これまでの放送をいつでも聴く・読むことができます</p>
     </div>
   </header>
 

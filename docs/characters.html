@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>出演者＆防災ノート | 毎朝7時！こだいら防災＆まちラジオ</title>
+  <title>防災ノート | 毎朝7時！こだいら防災＆まちラジオ</title>
   <style>
 :root {
   --forest: #1b5e3c;
@@ -79,15 +79,15 @@ header {
 }
 .nav-links {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.4rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.32rem;
 }
 .nav-links a {
   color: rgba(255, 255, 255, 0.94);
   text-decoration: none;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 700;
-  padding: 0.34rem 0.3rem;
+  padding: 0.34rem 0.2rem;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.28);
   background: rgba(255, 255, 255, 0.12);
@@ -592,6 +592,8 @@ footer {
 @media (max-width: 640px) {
   .header-inner { padding: 0.55rem 0.7rem 0.62rem; }
   .brand-bar { margin-bottom: 0.45rem; }
+  .nav-links { gap: 0.25rem; }
+  .nav-links a { font-size: 0.72rem; padding: 0.34rem 0.14rem; }
   .ep-hero { padding: 0.62rem 0.75rem; margin-bottom: 0.6rem; }
   .controls { gap: 0.25rem; }
   .btn-group { gap: 0.25rem; }
@@ -645,24 +647,21 @@ footer {
 <body>
   <header>
     <div class="header-inner">
-      <div class="brand-bar"><a class="brand" href="index.html">こだいら防災＆まちラジオ</a><span class="time-pill">毎朝7時</span></div><nav class="nav-links" aria-label="メインメニュー"><a href="index.html">最新回</a><a href="archive.html">過去回</a><a href="characters.html" class="active">出演者・ノート</a></nav><h1 class="page-h1">出演者＆防災ノート</h1><p class="page-subhead">小春と平蔵、そして7人の専門家ゲスト図鑑・累積ノート</p>
+      <div class="brand-bar"><a class="brand" href="index.html">こだいら防災＆まちラジオ</a><span class="time-pill">毎朝7時</span></div><nav class="nav-links" aria-label="メインメニュー"><a href="index.html">最新回</a><a href="archive.html">過去回</a><a href="cast.html">出演者</a><a href="characters.html" class="active">防災ノート</a></nav><h1 class="page-h1">防災ノート</h1><p class="page-subhead">小春と平蔵が毎朝まとめる累積・防災＆こだいら発見ノート</p>
     </div>
   </header>
 
   <main class="container single">
     <div class="card">
-      <div class="section-head">
-        <h2>レギュラーキャスター（小平の「小」と「平」）</h2>
+      <div class="panel-body">
+        <div class="note-box" style="margin-bottom:0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.55rem;">
+          <div>
+            <strong>番組キャスター・専門家ゲストの紹介ページが新しくなりました</strong>
+            <div style="font-size:0.82rem; color:var(--muted);">小春・平蔵と曜日ゲスト7名のプロフィール＆自己紹介ボイスはこちら</div>
+          </div>
+          <a class="btn-link" href="cast.html">出演者紹介・声を聴く →</a>
+        </div>
       </div>
-      <div class="archive-grid" id="hosts-grid"></div>
-    </div>
-
-    <div class="card">
-      <div class="section-head">
-        <h2>曜日別テーマ ＆ 専門家ゲスト（月〜日）</h2>
-        <span class="hint">平日10分／土日15分</span>
-      </div>
-      <div class="archive-grid" id="guests-grid"></div>
     </div>
 
     <div class="card">
@@ -675,59 +674,10 @@ footer {
 
   <footer>毎朝7時！こだいら防災＆まちラジオ（東京都小平市）</footer>
 
-  <script type="application/json" id="char-data">{"hosts": [{"id": "koharu", "name": "小春", "reading": "こはる", "role": "メインパーソナリティ（「小平」の「小」）", "personality": "明るくて活発、常にご機嫌で笑いが絶えず周りの皆も明るくするムードメーカー。小平市のグリーンロード散策や丸ポスト探し、ブルーベリーや梨、地元パン屋・カフェ巡りが大好き。防災の知識はまだそれほど多くなく、リスナー目線の素朴な質問や感情豊かなリアクション・笑い声を担当。", "speaking_habits": ["明るいあいさつと軽やかな笑い声（<laugh> / <chuckle> / <giggle>）", "専門用語を聞くと「それってつまり、どういうことですか？」と素直に噛み砕きをお願いする", "小平の日常風景やおいしい食べ物と結びつけて覚えるのが得意"], "tts": {"gemini_voice": "Leda", "default_style": "bright, cheerful, lively, smiling Japanese morning radio host", "edge_voice": "ja-JP-NanamiNeural", "edge_rate": "+4%", "edge_pitch": "+1Hz", "pan": -0.1}, "ui": {"color": "#e11d48", "bg_soft": "#fff1f2"}}, {"id": "heizo", "name": "平蔵", "reading": "へいぞう", "role": "パートナーキャスター（「小平」の「平」）", "personality": "優しくて頼りになるしっかり者。小春の元気なボケや笑い声を温かく受け止めながら楽しく掛け合いができる。防災に関する知識もそこそこあり、小平市の地理・行政サービス・季節の暮らしに詳しい。ゲストの専門知識を小春と一緒に深掘りし、毎回の学びを分かりやすく「防災ノート」に整理する。", "speaking_habits": ["小春の話に穏やかにうなずき、やさしく笑って返す（<chuckle> / <short pause>）", "数字や手順は「ポイントは3つ」「たとえば小平市内では…」と簡潔に整理する", "小平市の街の歴史や地域の人への温かなリスペクトがある"], "tts": {"gemini_voice": "Algieba", "default_style": "warm, gentle, reassuring, friendly Japanese radio co-host", "edge_voice": "ja-JP-KeitaNeural", "edge_rate": "+2%", "edge_pitch": "-1Hz", "pan": 0.1}, "ui": {"color": "#2563eb", "bg_soft": "#eff6ff"}}], "days": [{"weekday_ja": "月曜日", "is_weekend": false, "theme_name": "地震・建築・地盤", "theme_badge": "月曜テーマ：地震・建築・地盤", "bgm_mood": "bgm_news", "guest": {"id": "guest_iwaki", "name": "岩城 剛", "reading": "いわき つよし", "title": "耐震構造・地盤工学研究家（工学博士・架空ゲスト）", "voice_name": "Orus", "edge_voice": "ja-JP-KeitaNeural", "default_style": "confident, steady, warm-hearted veteran Japanese engineering professor", "personality": "岩のように頼りがいがあり、難しい建築力学や地盤の話を身近な例え（「プリンと羊羹」「積み木と筋交い」など）で笑顔を引き出しながら説明してくれる先生。", "kodaira_connection": "小平市が位置する武蔵野台地の関東ローム層や、玉川上水周辺の地盤の特徴、昭和〜令和の住宅耐震化を語るのが得意。", "keywords_bank": ["耐震等級1・2・3", "耐震・制震・免震の違い", "旧耐震基準（1981年以前）と2000年基準", "武蔵野台地・関東ローム層の揺れ特性", "微動探査装置（常時微動計）", "ピロティ構造と直下率", "筋交いとホールダウン金物", "家具のL字金具・突っ張り棒・耐震マットと重心配置", "長周期地震動と高層住宅の揺れ", "応急危険度判定士"], "ui": {"color": "#0f766e", "bg_soft": "#f0fdfa"}}}, {"weekday_ja": "火曜日", "is_weekend": false, "theme_name": "気象・水害・都市河川", "theme_badge": "火曜テーマ：気象・水害・都市河川", "bgm_mood": "bgm_warm", "guest": {"id": "guest_amamiya", "name": "雨宮 栞", "reading": "あまみや しおり", "title": "気象防災アドバイザー（元気象台予報官・架空ゲスト）", "voice_name": "Despina", "edge_voice": "ja-JP-NanamiNeural", "default_style": "clear, gentle, expressive and reassuring Japanese female weather specialist", "personality": "穏やかで知的な語り口ながら、雲や雨の話題になると目を輝かせて楽しく解説してくれるお姉さん的存在。小春とのテンポ良い掛け合いが魅力。", "kodaira_connection": "小平市内の河川氾濫よりも特に注意したいゲリラ豪雨・内水氾濫や、玉川上水・野火止用水・石神井川源流域の雨水の流れと防災を分かりやすく解説。", "keywords_bank": ["線状降水帯と積乱雲（バックビルディング現象）", "内水氾濫と外水氾濫の違い", "気象庁キキクル（危険度分布）", "XRAIN（XバンドMPレーダ雨量観測）", "5段階の警戒レベル（レベル3・4・5）", "マイ・タイムライン（自分の避難行動計画）", "水平避難と垂直避難の判断基準", "ヒートアイランド現象と短時間強雨", "湿度・実効湿度と乾燥注意報", "気象防災アドバイザー制度"], "ui": {"color": "#0369a1", "bg_soft": "#f0f9ff"}}}, {"weekday_ja": "水曜日", "is_weekend": false, "theme_name": "火災・電気・特殊消防機材", "theme_badge": "水曜テーマ：火災・電気・特殊消防機材", "bgm_mood": "bgm_feature", "guest": {"id": "guest_hinohara", "name": "火ノ原 鉄平", "reading": "ひのはら てっぺい", "title": "防火防災アドバイザー（元消防司令・架空ゲスト）", "voice_name": "Algenib", "edge_voice": "ja-JP-KeitaNeural", "default_style": "deep, energetic, passionate and friendly veteran Japanese firefighter", "personality": "声に力がありつつユーモアも忘れない現場叩き上げのベテラン。消防車や救助機材の豆知識を語ると止まらない熱血派で、小春の大好きなコーナー常連。", "kodaira_connection": "小平消防署の活動や住宅密集地での延焼防止、秋の火災予防運動・冬の暖房・ごみ収集車のリチウムイオン電池火災対策を熱くわかりやすく解説。", "keywords_bank": ["通電火災と感震ブレーカー（分電盤型・簡易型）", "リチウムイオン電池の熱暴走と絶縁処分", "トラッキング現象（コンセントのホコリ火災）", "住宅用火災警報器（煙式・熱式と10年交換目安）", "ABC粉末消火器と強化液消火器・使用期限", "サーモグラフィカメラ（熱画像直視装置）", "可搬消防ポンプと街角の消火栓・防火水槽", "防炎品（カーテン・寝具）の効果", "火災の煙と一酸化炭素の危険性（低い姿勢での避難）", "初期消火の限界（天井に火が回る前まで）"], "ui": {"color": "#c2410c", "bg_soft": "#fff7ed"}}}, {"weekday_ja": "木曜日", "is_weekend": false, "theme_name": "災害医療・応急手当・こころのケア", "theme_badge": "木曜テーマ：災害医療・応急手当・こころのケア", "bgm_mood": "bgm_warm", "guest": {"id": "guest_shirakawa", "name": "白川 優子", "reading": "しらかわ ゆうこ", "title": "災害看護・救護専門官（看護師・DMAT経験者・架空ゲスト）", "voice_name": "Sulafat", "edge_voice": "ja-JP-NanamiNeural", "default_style": "warm, calm, compassionate and soothing Japanese medical specialist", "personality": "包み込むような優しさと現場で培った的確な判断力を併せ持つ先生。こわい話になりがちな医療トピックも、安心できる実践ワザに変えて伝えてくれる。", "kodaira_connection": "小平市内の救急搬送や救護所、災害時に地域の医療・薬局・訪問看護とつながる工夫、冬の感染症と避難時の健康管理を解説。", "keywords_bank": ["DMAT（災害派遣医療チーム）の役割", "トリアージと4色トリアージタッグ（黒・赤・黄・緑）", "クラッシュ症候群（挫滅症候群）の怖さと対処", "エコノミークラス症候群（深部静脈血栓症）と水分・ふくらはぎ運動", "AEDと胸骨圧迫（1分間100〜120回）", "お薬手帳・処方薬（最低1週間分）とマイナ保険証・お薬情報", "災害時の口腔ケア（誤嚥性肺炎予防・少量の水での歯磨き）", "PFA（サイコロジカル・ファーストエイド／心理的応急処置）", "三角巾・ラップ・清潔なタオルを使った止血と固定", "低体温症予防（アルミブランケット・新聞紙活用）"], "ui": {"color": "#047857", "bg_soft": "#ecfdf5"}}}, {"weekday_ja": "金曜日", "is_weekend": false, "theme_name": "食・備蓄・ライフライン", "theme_badge": "金曜テーマ：食・備蓄・ライフライン", "bgm_mood": "bgm_warm", "guest": {"id": "guest_izumo", "name": "出雲 健太", "reading": "いずも けんた", "title": "ライフライン防災研究家（備蓄・生活インフラ担当・架空ゲスト）", "voice_name": "Sadaltager", "edge_voice": "ja-JP-KeitaNeural", "default_style": "knowledgeable, cheerful, practical Japanese lifestyle expert", "personality": "「おいしい防災ごはん」と現実的なインフラ復旧知識に精通した気さくなお兄さん。食いしん坊な小春と「これ作ってみよう！」と盛り上がる名コンビ。", "kodaira_connection": "小平市の給水拠点（小川浄水所・上水南浄水所・津田二号水源・小中学校の貯水槽）や地元農産物を活かしたローリングストックを提案。", "keywords_bank": ["ローリングストックとフェーズフリー", "ポリ袋調理（パッククッキング／高密度ポリエチレン袋）", "カセットコンロとボンベの適正備蓄本数・使用期限", "携帯トイレ・凝固剤（1人1日5〜7回×7日分）", "飲料水1人1日3リットルと生活用水の確保", "応急給水拠点と加圧式給水車・ウォーターバッグ", "ポータブル電源（リン酸鉄リチウムイオン）と折りたたみソーラーパネル", "停電時の冷蔵庫保冷術と冷凍ペットボトル活用", "下水道の被害と災害時トイレNG行動", "防災庁の備蓄推奨と東京備蓄ナビ"], "ui": {"color": "#b45309", "bg_soft": "#fffbeb"}}}, {"weekday_ja": "土曜日", "is_weekend": true, "theme_name": "地域コミュニティ・避難所運営・ペット・福祉防災", "theme_badge": "土曜15分特集：地域コミュニティ・避難所・ペット防災", "bgm_mood": "bgm_feature", "guest": {"id": "guest_yuki", "name": "結城 美咲", "reading": "ゆうき みさき", "title": "地域防災コーディネーター（避難所運営・福祉防災・架空ゲスト）", "voice_name": "Aoede", "edge_voice": "ja-JP-NanamiNeural", "default_style": "breezy, empathetic, articulate and inclusive Japanese community specialist", "personality": "人と人をつなぐ達人で、明るい笑顔と確かな現場経験を持つコミュニティのリーダー。小春と平蔵の会話に地域の温もりを添える。", "kodaira_connection": "小平市内の自主防災組織、小中学校避難所、小川パレットやアトラスタワー小平小川の帰宅困難者受け入れ、子どもキャンプ場でのペット防災相談など地域のつながりを語る。", "keywords_bank": ["自主防災組織とご近所の共助", "避難所運営ゲーム（HUG）の考え方", "在宅避難・分散避難・福祉避難所", "ペット同行避難と同伴避難の違い・しつけ・ワクチン証明", "個別避難計画（要配慮者支援）", "災害ボランティアセンター（社協との連携）", "TKB（トイレ・キッチン・ベッド／段ボールベッドとパーティション）", "帰宅困難者対策（むやみに移動を開始しない原則）", "安否確認手段（災害用伝言ダイヤル171・Web171）", "多文化共生・やさしい日本語による災害情報"], "ui": {"color": "#7c3aed", "bg_soft": "#f5f3ff"}}}, {"weekday_ja": "日曜日", "is_weekend": true, "theme_name": "防災テック・ハザードマップ・衛星・最新情報", "theme_badge": "日曜15分特集：防災テック・ハザードマップ・最新情報", "bgm_mood": "bgm_feature", "guest": {"id": "guest_hoshino", "name": "星野 創", "reading": "ほしの そう", "title": "防災テック＆GISエンジニア（地理情報・衛星通信・架空ゲスト）", "voice_name": "Charon", "edge_voice": "ja-JP-KeitaNeural", "default_style": "informative, calm, curious and enthusiastic Japanese tech specialist", "personality": "衛星や地図アプリ、ドローンなどの最先端テクノロジーが大好き。ちょっとオタク気質でワクワクしながら仕組みを話し、小春の素朴なツッコミに照れ笑いしながら分かりやすく言い換える。", "kodaira_connection": "小平市にも施設がある情報通信研究機構（NICT）周辺の広域避難場所や、小平市防災マップアプリ（オフラインGPS）、JアラートやSNS情報のリテラシーを楽しく深掘り。", "keywords_bank": ["GIS（地理情報システム）と重ねるハザードマップ", "オフラインGPS地図キャッシュ（通信圏外でも現在地把握）", "Jアラート（全国瞬時警報システム）の衛星通信・地上ルート二重化", "可搬型低軌道衛星通信（Starlink等）と移動基地局車", "災害時ドローンマッピングとオルソ画像生成", "みちびき（準天頂衛星システム）の災害・危機管理通報サービス", "緊急速報メール（エリアメール）と防災行政無線テレホンサービス", "災害時の偽情報・インフォデミック対策（一次情報確認）", "スマホバッテリー節電術（省電力モード・ダークモード・機内モード切替）", "防災DXと個人情報保護・不審メール警戒"], "ui": {"color": "#4338ca", "bg_soft": "#eef2ff"}}}], "entries": [{"date": "2026-11-22", "weekday": "日曜日", "theme": "防災テック・ハザードマップ・衛星・最新情報", "guest_name": "星野 創", "learned_points": ["GIS（地理情報システム）とカラーユニバーサルデザインでハザードマップや小平市防災マップアプリの仕組みがぐっと見やすくなっていること", "Jアラートは衛星と地上回線の二重ルートで届き、窓を閉めて聞き逃しても小平市防災行政無線テレホンサービス（042-341-0793）で確認できること", "防災アプリやDXは便利な一方、問合せ情報漏えいのようなセキュリティ事例も踏まえて公式の一次情報を落ち着いて確認することが大切なこと"], "kodaira_discovery": "小川駅西口の「小川パレット」と「アトラスタワー小平小川」が11月に本格始動し、図書館や出張所だけでなく5階共用空間での帰宅困難者受け入れや防災センターなど、暮らしと防災が一体化していること。"}]}</script>
+  <script type="application/json" id="char-data">{"entries": [{"date": "2026-11-22", "weekday": "日曜日", "theme": "防災テック・ハザードマップ・衛星・最新情報", "guest_name": "星野 創", "learned_points": ["GIS（地理情報システム）とカラーユニバーサルデザインでハザードマップや小平市防災マップアプリの仕組みがぐっと見やすくなっていること", "Jアラートは衛星と地上回線の二重ルートで届き、窓を閉めて聞き逃しても小平市防災行政無線テレホンサービス（042-341-0793）で確認できること", "防災アプリやDXは便利な一方、問合せ情報漏えいのようなセキュリティ事例も踏まえて公式の一次情報を落ち着いて確認することが大切なこと"], "kodaira_discovery": "小川駅西口の「小川パレット」と「アトラスタワー小平小川」が11月に本格始動し、図書館や出張所だけでなく5階共用空間での帰宅困難者受け入れや防災センターなど、暮らしと防災が一体化していること。"}]}</script>
   <script>
     (function () {
       const data = JSON.parse(document.getElementById("char-data").textContent);
-      const hostsGrid = document.getElementById("hosts-grid");
-      data.hosts.forEach((h) => {
-        const c = document.createElement("div");
-        c.className = "archive-card";
-        c.style.borderTop = "4px solid " + (h.ui ? h.ui.color : "#1b5e3c");
-        const title = document.createElement("h3");
-        title.style.margin = "0";
-        title.textContent = h.name + "（" + h.reading + "）";
-        const role = document.createElement("div");
-        role.className = "pill-tag";
-        role.textContent = h.role;
-        const p = document.createElement("p");
-        p.style.margin = "0";
-        p.style.fontSize = "0.86rem";
-        p.textContent = h.personality;
-        c.appendChild(role);
-        c.appendChild(title);
-        c.appendChild(p);
-        hostsGrid.appendChild(c);
-      });
-
-      const guestsGrid = document.getElementById("guests-grid");
-      data.days.forEach((d) => {
-        const g = d.guest;
-        const c = document.createElement("div");
-        c.className = "archive-card";
-        c.style.borderLeft = "4px solid " + (g.ui ? g.ui.color : "#4338ca");
-        const tag = document.createElement("span");
-        tag.className = "pill-tag";
-        tag.textContent = d.weekday_ja + "（" + (d.is_weekend ? "15分特集" : "10分") + "）: " + d.theme_name;
-        const title = document.createElement("h3");
-        title.style.margin = "0";
-        title.style.fontSize = "1rem";
-        title.textContent = g.name + "（" + g.reading + "）";
-        const role = document.createElement("div");
-        role.style.fontSize = "0.8rem";
-        role.style.color = "var(--muted)";
-        role.textContent = g.title;
-        const desc = document.createElement("p");
-        desc.style.margin = "0";
-        desc.style.fontSize = "0.85rem";
-        desc.textContent = g.personality + " " + g.kodaira_connection;
-        c.appendChild(tag);
-        c.appendChild(title);
-        c.appendChild(role);
-        c.appendChild(desc);
-        guestsGrid.appendChild(c);
-      });
-
       const logList = document.getElementById("log-list");
       data.entries.forEach((e) => {
         const box = document.createElement("div");
