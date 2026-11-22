@@ -1,10 +1,9 @@
-"""Build GitHub Pages and local file:// compatible portal in docs/ plus script.md."""
+"""Build GitHub Pages and local file:// compatible mobile-first portal in docs/ plus script.md."""
 
 from __future__ import annotations
 
 import html
 import json
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -153,7 +152,7 @@ def generate_script_md(bundle: dict[str, Any]) -> None:
         f"- **放送日**: {meta['episode_date']}（{meta.get('weekday_ja', '')}・第{meta['episode_number']}回）",
         f"- **テーマ**: {meta.get('theme_name', '')}",
         f"- **想定/収録時間**: {mf_meta['total_duration_formatted']}（{mf_meta['total_duration_sec']:.1f}秒）{est_label}",
-        f"- **レギュラー出演**: 小春（メインパーソナリティ）／ 平蔵（パートナーキャスター）",
+        "- **レギュラー出演**: 小春（メインパーソナリティ）／ 平蔵（パートナーキャスター）",
         f"- **本日の専門家ゲスト**: {guest.get('name', 'なし')}（{guest.get('title', '')}）",
         f"- **音声ファイル**: `docs/audio/{meta['output_filename']}`",
         "",
@@ -222,7 +221,7 @@ COMMON_CSS = """
   --heizo-soft: #eff6ff;
   --guest: var(--guest-color, #4338ca);
   --guest-soft: var(--guest-bg, #eef2ff);
-  --shadow: 0 8px 24px rgba(18, 64, 40, 0.08);
+  --shadow: 0 6px 20px rgba(18, 64, 40, 0.08);
 }
 * { box-sizing: border-box; }
 body {
@@ -231,47 +230,66 @@ body {
   background: var(--paper);
   color: var(--ink);
   line-height: 1.65;
+  -webkit-tap-highlight-color: transparent;
 }
 a { color: var(--forest); }
+
+/* Compact app-style header */
 header {
   background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest) 65%, #2b7a50 100%);
   color: #ffffff;
-  border-bottom: 4px solid var(--amber);
+  border-bottom: 3px solid var(--amber);
 }
 .header-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1.15rem 1.25rem 1.45rem;
+  padding: 0.65rem 1rem 0.75rem;
 }
-.top-nav {
+.brand-bar {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.9rem;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
 }
 .brand {
   font-weight: 800;
-  font-size: 1.05rem;
+  font-size: clamp(0.98rem, 4vw, 1.22rem);
   color: #fff;
   text-decoration: none;
-  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.01em;
+}
+.time-pill {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.16rem 0.55rem;
+  border-radius: 999px;
+  background: var(--amber);
+  color: #fff;
 }
 .nav-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
 }
 .nav-links a {
-  color: rgba(255,255,255,0.92);
+  color: rgba(255, 255, 255, 0.94);
   text-decoration: none;
-  font-size: 0.86rem;
-  font-weight: 600;
-  padding: 0.32rem 0.78rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.34rem 0.3rem;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.28);
-  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition: background 0.15s;
 }
 .nav-links a:hover, .nav-links a.active {
@@ -279,40 +297,22 @@ header {
   color: var(--forest-dark);
   border-color: #ffffff;
 }
-.badge-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  margin-bottom: 0.55rem;
-  font-size: 0.78rem;
+.page-subhead {
+  margin: 0.55rem 0 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.9);
 }
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.18rem 0.65rem;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.16);
-  border: 1px solid rgba(255,255,255,0.28);
-  font-weight: 600;
+.page-h1 {
+  margin: 0.45rem 0 0;
+  font-size: clamp(1.08rem, 4vw, 1.45rem);
+  line-height: 1.3;
 }
-.badge.accent {
-  background: var(--amber);
-  border-color: var(--amber);
-  color: #fff;
-}
-h1 {
-  margin: 0 0 0.25rem;
-  font-size: clamp(1.3rem, 2.5vw, 1.85rem);
-}
-.subtitle {
-  margin: 0;
-  color: rgba(255,255,255,0.9);
-  font-size: 0.94rem;
-}
+
+/* Main layout */
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1.25rem;
+  padding: 1rem 1.25rem;
   display: grid;
   grid-template-columns: minmax(0, 1.65fr) minmax(310px, 0.95fr);
   gap: 1.25rem;
@@ -320,9 +320,6 @@ h1 {
 }
 .container.single {
   grid-template-columns: 1fr;
-}
-@media (max-width: 920px) {
-  .container { grid-template-columns: 1fr; }
 }
 .card {
   background: var(--card);
@@ -332,8 +329,34 @@ h1 {
   overflow: hidden;
   margin-bottom: 1rem;
 }
+.ep-hero {
+  padding: 0.78rem 1rem;
+  border-left: 4px solid var(--amber);
+}
+.ep-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.theme-pill {
+  display: inline-block;
+  padding: 0.14rem 0.55rem;
+  border-radius: 999px;
+  background: var(--guest-soft);
+  color: var(--guest);
+  font-weight: 700;
+}
+.ep-title {
+  margin: 0.35rem 0 0;
+  font-size: clamp(0.98rem, 3.6vw, 1.22rem);
+  line-height: 1.38;
+  color: var(--forest-dark);
+}
 .section-head {
-  padding: 0.8rem 1.1rem;
+  padding: 0.75rem 1rem;
   background: #fcfcfa;
   border-bottom: 1px solid var(--border);
   display: flex;
@@ -343,70 +366,73 @@ h1 {
 }
 .section-head h2 {
   margin: 0;
-  font-size: 0.98rem;
+  font-size: 0.96rem;
   color: var(--forest-dark);
 }
 .hint {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: var(--muted);
 }
+
+/* Slim sticky player */
 .player-card {
   position: sticky;
-  top: 0.65rem;
-  z-index: 20;
-  padding: 1rem 1.15rem;
-  border-top: 4px solid var(--forest);
+  top: 0;
+  z-index: 30;
+  padding: 0.72rem 1rem;
+  border-top: 3px solid var(--forest);
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(8px);
 }
 .audio-pending-banner {
   background: var(--amber-soft);
   border: 1px solid #f59e0b;
   color: #92400e;
   border-radius: 8px;
-  padding: 0.55rem 0.8rem;
-  font-size: 0.83rem;
-  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.55rem;
 }
 .now-playing {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  gap: 0.75rem;
-  margin-bottom: 0.45rem;
-}
-.now-label {
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: var(--forest);
+  align-items: center;
+  gap: 0.5rem;
 }
 .now-chapter {
-  font-size: 0.96rem;
+  font-size: 0.88rem;
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 .time-readout {
   font-variant-numeric: tabular-nums;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: var(--heizo);
   white-space: nowrap;
+  flex: 0 0 auto;
 }
 .scrubber {
   width: 100%;
   accent-color: var(--forest);
   cursor: pointer;
-  height: 6px;
-  margin: 0.35rem 0 0.7rem;
+  height: 22px;
+  margin: 0.2rem 0 0.35rem;
 }
 .controls {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 .btn-group {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
 }
 button {
   font-family: inherit;
@@ -415,23 +441,22 @@ button {
   border: 1px solid var(--border);
   background: #fff;
   color: var(--ink);
-  padding: 0.4rem 0.72rem;
-  font-size: 0.83rem;
-  font-weight: 600;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  min-height: 36px;
+  white-space: nowrap;
 }
 button:hover:not(:disabled) {
   background: var(--forest-soft);
   border-color: var(--forest);
 }
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+button:disabled { opacity: 0.5; cursor: not-allowed; }
 button.primary {
   background: var(--forest);
   border-color: var(--forest);
   color: #fff;
-  padding: 0.46rem 1.05rem;
+  padding: 0.42rem 0.95rem;
 }
 button.primary:hover:not(:disabled) { background: var(--forest-dark); }
 button.active-toggle {
@@ -444,19 +469,51 @@ button.active-toggle {
   color: #fff;
   border-color: var(--forest);
 }
+.speed-cycle-btn {
+  display: none;
+}
+
+/* Mobile 3-tab bar */
+.mobile-tabs {
+  display: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+  background: #ecefe9;
+  padding: 0.3rem;
+  border-radius: 12px;
+}
+.mobile-tabs button {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.8rem;
+  min-height: 36px;
+  padding: 0.35rem 0.25rem;
+  border-radius: 9px;
+}
+.mobile-tabs button.active {
+  background: #ffffff;
+  color: var(--forest-dark);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Chapters */
 .chapter-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.5rem;
-  padding: 0.85rem 1.05rem;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.45rem;
+  padding: 0.75rem 0.95rem;
 }
 .chapter-btn {
   text-align: left;
-  padding: 0.55rem 0.7rem;
+  padding: 0.5rem 0.65rem;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
-  gap: 0.18rem;
+  gap: 0.14rem;
+  white-space: normal;
+  min-height: auto;
 }
 .chapter-btn.active {
   background: var(--forest-soft);
@@ -464,43 +521,49 @@ button.active-toggle {
   box-shadow: inset 3px 0 0 var(--forest);
 }
 .chapter-tc {
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   font-variant-numeric: tabular-nums;
   color: var(--heizo);
   font-weight: 700;
 }
 .chapter-title {
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   line-height: 1.35;
 }
+
+/* Transcript */
 .transcript-body {
-  padding: 0.85rem 1.05rem 1.3rem;
+  padding: 0.8rem 0.95rem 1.25rem;
   max-height: 68vh;
   overflow-y: auto;
 }
 .seg-divider {
-  margin: 1.1rem 0 0.6rem;
-  padding: 0.42rem 0.72rem;
+  margin: 1rem 0 0.55rem;
+  padding: 0.42rem 0.7rem;
   background: var(--forest-soft);
   border-left: 4px solid var(--forest);
   border-radius: 6px;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--forest-dark);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.4rem;
+  scroll-margin-top: 150px;
 }
 .seg-divider:first-child { margin-top: 0; }
 .line-item {
   display: grid;
   grid-template-columns: 48px 86px minmax(0, 1fr);
+  grid-template-areas: "tc speaker text";
   gap: 0.5rem;
   padding: 0.52rem 0.6rem;
   border-radius: 10px;
   cursor: pointer;
   border: 1px solid transparent;
   align-items: baseline;
+  scroll-margin-top: 150px;
 }
 .line-item:hover { background: #f3f5f2; }
 .line-item.active {
@@ -508,16 +571,18 @@ button.active-toggle {
   border-color: #f59e0b;
 }
 .line-tc {
+  grid-area: tc;
   font-variant-numeric: tabular-nums;
   font-size: 0.76rem;
   color: var(--muted);
   font-weight: 600;
 }
 .speaker-pill {
+  grid-area: speaker;
   font-size: 0.74rem;
   font-weight: 700;
   text-align: center;
-  padding: 0.12rem 0.4rem;
+  padding: 0.14rem 0.48rem;
   border-radius: 999px;
   white-space: nowrap;
   overflow: hidden;
@@ -526,27 +591,31 @@ button.active-toggle {
 .speaker-koharu { background: var(--koharu-soft); color: var(--koharu); }
 .speaker-heizo { background: var(--heizo-soft); color: var(--heizo); }
 .speaker-guest { background: var(--guest-soft); color: var(--guest); }
-.line-text { font-size: 0.93rem; }
+.line-text {
+  grid-area: text;
+  font-size: 0.94rem;
+}
+
+/* Right panels & cards */
 .panel-body {
-  padding: 0.85rem 1rem;
+  padding: 0.8rem 0.95rem;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: 0.6rem;
 }
 .link-card {
   display: block;
   text-decoration: none;
   color: inherit;
-  padding: 0.7rem 0.85rem;
+  padding: 0.72rem 0.85rem;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: #fcfcfa;
-  transition: border-color 0.15s, background 0.15s, transform 0.08s;
+  transition: border-color 0.15s, background 0.15s;
 }
 .link-card:hover {
   border-color: var(--forest);
   background: var(--forest-soft);
-  transform: translateY(-1px);
 }
 .pill-tag {
   display: inline-block;
@@ -556,13 +625,13 @@ button.active-toggle {
   border-radius: 999px;
   background: var(--forest-soft);
   color: var(--forest-dark);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.22rem;
 }
 .link-title {
-  font-size: 0.89rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--forest-dark);
-  margin: 0 0 0.2rem;
+  margin: 0 0 0.18rem;
 }
 .link-note {
   font-size: 0.8rem;
@@ -574,14 +643,19 @@ button.active-toggle {
   border-radius: 10px;
   background: #fcfcfa;
   border: 1px solid var(--border);
-  font-size: 0.85rem;
+  font-size: 0.86rem;
 }
 .note-box ul {
   margin: 0.35rem 0 0.45rem;
   padding-left: 1.15rem;
 }
+.tel-link {
+  color: var(--heizo);
+  font-weight: 700;
+  text-decoration: underline;
+}
 .guest-card {
-  padding: 0.85rem 1rem;
+  padding: 0.8rem 0.95rem;
   border-left: 4px solid var(--guest);
   background: var(--guest-soft);
   border-radius: 10px;
@@ -602,14 +676,14 @@ button.active-toggle {
 }
 .archive-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 0.85rem;
+  padding: 0.9rem;
 }
 .archive-card {
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 0.95rem;
+  padding: 0.9rem;
   background: #fff;
   display: flex;
   flex-direction: column;
@@ -620,9 +694,9 @@ button.active-toggle {
   text-decoration: none;
   background: var(--forest);
   color: #fff;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 700;
-  padding: 0.38rem 0.8rem;
+  padding: 0.48rem 0.85rem;
   border-radius: 8px;
   text-align: center;
 }
@@ -630,26 +704,112 @@ button.active-toggle {
 footer {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem 1.25rem 2.2rem;
-  font-size: 0.8rem;
+  padding: 0.9rem 1rem 2rem;
+  font-size: 0.78rem;
   color: var(--muted);
   text-align: center;
+}
+
+/* Mobile breakpoint (<= 920px): single column + tab switching */
+@media (max-width: 920px) {
+  .container {
+    grid-template-columns: 1fr;
+    padding: 0.65rem 0.75rem;
+    gap: 0;
+  }
+  .mobile-tabs {
+    display: grid;
+  }
+  .player-card {
+    margin: 0 -0.75rem 0.65rem;
+    border-radius: 0 0 14px 14px;
+    padding: 0.6rem 0.85rem;
+  }
+  main[data-active-tab="script"] #tab-panel-script { display: block; }
+  main[data-active-tab="script"] .col-side { display: none; }
+
+  main[data-active-tab="links"] #tab-panel-script { display: none; }
+  main[data-active-tab="links"] .col-side { display: block; }
+  main[data-active-tab="links"] #tab-panel-links { display: block; }
+  main[data-active-tab="links"] #tab-panel-notes { display: none; }
+
+  main[data-active-tab="notes"] #tab-panel-script { display: none; }
+  main[data-active-tab="notes"] .col-side { display: block; }
+  main[data-active-tab="notes"] #tab-panel-links { display: none; }
+  main[data-active-tab="notes"] #tab-panel-notes { display: block; }
+}
+
+/* Narrow phone breakpoint (<= 640px): single-row controls, horizontal chapters, 2-row transcript */
+@media (max-width: 640px) {
+  .header-inner { padding: 0.55rem 0.75rem 0.62rem; }
+  .brand-bar { margin-bottom: 0.45rem; }
+  .ep-hero { padding: 0.62rem 0.78rem; margin-bottom: 0.6rem; }
+  .speed-group { display: none; }
+  .speed-cycle-btn { display: inline-flex; align-items: center; }
+  button { padding: 0.36rem 0.55rem; font-size: 0.78rem; min-height: 36px; }
+  button.primary { padding: 0.36rem 0.78rem; }
+
+  .chapter-list {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.65rem 0.75rem;
+    gap: 0.45rem;
+  }
+  .chapter-btn {
+    flex: 0 0 auto;
+    min-width: 175px;
+    max-width: 225px;
+  }
+
+  .transcript-body {
+    max-height: none;
+    overflow-y: visible;
+    padding: 0.65rem 0.75rem 1.2rem;
+  }
+  .line-item {
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "speaker tc"
+      "text text";
+    gap: 0.28rem 0.55rem;
+    padding: 0.55rem 0.55rem;
+    border-bottom: 1px solid #f0f2ee;
+  }
+  .line-tc {
+    justify-self: end;
+    font-size: 0.74rem;
+  }
+  .line-text {
+    font-size: 0.95rem;
+    line-height: 1.72;
+  }
 }
 """
 
 
-def _render_nav(root_prefix: str, active: str) -> str:
+def _render_nav(root_prefix: str, active: str, subhead: str = "", page_h1: str = "") -> str:
     def cls(key: str) -> str:
         return ' class="active"' if active == key else ""
 
+    extra = ""
+    if page_h1:
+        extra += f'<h1 class="page-h1">{html.escape(page_h1)}</h1>'
+    if subhead:
+        extra += f'<p class="page-subhead">{html.escape(subhead)}</p>'
+
     return (
-        f'<nav class="top-nav">'
-        f'<a class="brand" href="{root_prefix}index.html">毎朝7時！こだいら防災＆まちラジオ</a>'
-        f'<div class="nav-links">'
-        f'<a href="{root_prefix}index.html"{cls("latest")}>最新回を聴く</a>'
-        f'<a href="{root_prefix}archive.html"{cls("archive")}>バックナンバー</a>'
-        f'<a href="{root_prefix}characters.html"{cls("characters")}>出演者＆防災ノート</a>'
-        f'</div></nav>'
+        f'<div class="brand-bar">'
+        f'<a class="brand" href="{root_prefix}index.html">こだいら防災＆まちラジオ</a>'
+        f'<span class="time-pill">毎朝7時</span>'
+        f'</div>'
+        f'<nav class="nav-links" aria-label="メインメニュー">'
+        f'<a href="{root_prefix}index.html"{cls("latest")}>最新回</a>'
+        f'<a href="{root_prefix}archive.html"{cls("archive")}>過去回</a>'
+        f'<a href="{root_prefix}characters.html"{cls("characters")}>出演者・ノート</a>'
+        f'</nav>'
+        f'{extra}'
     )
 
 
@@ -695,8 +855,10 @@ def _render_episode_page(
     subtitle_esc = html.escape(meta["subtitle"])
     theme_badge_esc = html.escape(meta.get("theme_badge", meta.get("theme_name", "")))
     date_esc = html.escape(meta["episode_date"])
+    weekday_short = html.escape((meta.get("weekday_ja", "") or "")[:1])
     dur_esc = html.escape(mf_meta["total_duration_formatted"])
     est_suffix = "（予定）" if mf_meta.get("estimated") else ""
+    guest_name_esc = html.escape(guest.get("name", ""))
     nav_html = _render_nav(root_prefix, "latest" if is_home else "archive")
 
     return f"""<!DOCTYPE html>
@@ -717,37 +879,34 @@ def _render_episode_page(
   <header>
     <div class="header-inner">
       {nav_html}
-      <div class="badge-row">
-        <span class="badge accent">{theme_badge_esc}</span>
-        <span class="badge">放送日: {date_esc}（{html.escape(meta.get("weekday_ja", ""))}）</span>
-        <span class="badge">収録時間: {dur_esc}{est_suffix}</span>
-        <span class="badge">ゲスト: {html.escape(guest.get("name", ""))}</span>
-      </div>
-      <h1>{title_esc}</h1>
-      <p class="subtitle">{subtitle_esc}</p>
     </div>
   </header>
 
-  <main class="container">
-    <section>
+  <main class="container" id="main-root" data-active-tab="script">
+    <section class="col-main">
+      <div class="card ep-hero">
+        <div class="ep-meta-row">
+          <span class="theme-pill">{theme_badge_esc}</span>
+          <span>{date_esc}（{weekday_short}）・{dur_esc}{est_suffix}・ゲスト: {guest_name_esc}</span>
+        </div>
+        <h1 class="ep-title">{subtitle_esc}</h1>
+      </div>
+
       <div class="card player-card">
         <div id="audio-pending" class="audio-pending-banner" style="display:none;">
           この回のMP3音声はまだ生成されていません（<code>.env</code> に <code>GEMINI_API_KEY</code> を設定し <code>build_radio.py</code> を実行すると音声再生ができます）。下の台本・タイムライン・関連リンクはそのままお読みいただけます。
         </div>
         <audio id="radio-audio" preload="metadata"></audio>
         <div class="now-playing">
-          <div>
-            <div class="now-label">再生中のコーナー</div>
-            <div class="now-chapter" id="now-chapter">再生ボタンを押してお聴きください</div>
-          </div>
+          <div class="now-chapter" id="now-chapter">再生ボタンを押してお聴きください</div>
           <div class="time-readout" id="time-readout">00:00 / {dur_esc}</div>
         </div>
         <input type="range" class="scrubber" id="scrubber" min="0" max="100" step="0.1" value="0" aria-label="再生位置シークバー" />
         <div class="controls">
           <div class="btn-group">
             <button type="button" class="primary" id="btn-play">▶ 再生</button>
-            <button type="button" id="btn-back">↺ 15秒</button>
-            <button type="button" id="btn-fwd">15秒 ↻</button>
+            <button type="button" id="btn-back">-15s</button>
+            <button type="button" id="btn-fwd">+15s</button>
           </div>
           <div class="btn-group speed-group" id="speed-group">
             <button type="button" data-rate="0.9">0.9x</button>
@@ -755,58 +914,73 @@ def _render_episode_page(
             <button type="button" data-rate="1.15">1.15x</button>
             <button type="button" data-rate="1.25">1.25x</button>
           </div>
-          <button type="button" id="btn-autoscroll" class="active-toggle">自動スクロール: ON</button>
+          <div class="btn-group">
+            <button type="button" id="btn-speed-cycle" class="speed-cycle-btn">1.0x</button>
+            <button type="button" id="btn-autoscroll" class="active-toggle">追従ON</button>
+          </div>
         </div>
       </div>
 
-      <div class="card">
-        <div class="section-head">
-          <h2>チャプタージャンプ</h2>
-          <span class="hint">クリックで各コーナーへ移動</span>
-        </div>
-        <div class="chapter-list" id="chapter-list"></div>
+      <div class="mobile-tabs" id="mobile-tabs" role="tablist" aria-label="表示切替">
+        <button type="button" role="tab" data-tab="script" class="active">台本・目次</button>
+        <button type="button" role="tab" data-tab="links">リンク・天気</button>
+        <button type="button" role="tab" data-tab="notes">ノート・過去回</button>
       </div>
 
-      <div class="card">
-        <div class="section-head">
-          <h2>同期台本タイムライン</h2>
-          <span class="hint">小春（ピンク）・平蔵（ブルー）・ゲスト色分け</span>
+      <div id="tab-panel-script">
+        <div class="card">
+          <div class="section-head">
+            <h2>チャプター</h2>
+            <span class="hint">タップで移動</span>
+          </div>
+          <div class="chapter-list" id="chapter-list"></div>
         </div>
-        <div class="transcript-body" id="transcript-body"></div>
+
+        <div class="card">
+          <div class="section-head">
+            <h2>同期台本</h2>
+            <span class="hint">セリフをタップで再生</span>
+          </div>
+          <div class="transcript-body" id="transcript-body"></div>
+        </div>
       </div>
     </section>
 
-    <aside>
-      <div class="card">
-        <div class="section-head">
-          <h2>本日のゲスト＆天気</h2>
-          <span class="hint">曜日テーマ</span>
+    <aside class="col-side">
+      <div id="tab-panel-links">
+        <div class="card">
+          <div class="section-head">
+            <h2>本日のゲスト＆天気</h2>
+            <span class="hint">曜日テーマ</span>
+          </div>
+          <div class="panel-body" id="guest-weather-panel"></div>
         </div>
-        <div class="panel-body" id="guest-weather-panel"></div>
+
+        <div class="card">
+          <div class="section-head">
+            <h2>今日の話題・関連リンク</h2>
+            <span class="hint">タップで公式ページへ</span>
+          </div>
+          <div class="panel-body" id="links-panel"></div>
+        </div>
       </div>
 
-      <div class="card">
-        <div class="section-head">
-          <h2>今日の話題・関連リンク</h2>
-          <span class="hint">クリックで公式ページへ</span>
+      <div id="tab-panel-notes">
+        <div class="card">
+          <div class="section-head">
+            <h2>小春＆平蔵の防災ノート</h2>
+            <span class="hint">今日の学び・連絡先</span>
+          </div>
+          <div class="panel-body" id="notes-panel"></div>
         </div>
-        <div class="panel-body" id="links-panel"></div>
-      </div>
 
-      <div class="card">
-        <div class="section-head">
-          <h2>小春＆平蔵の防災ノート</h2>
-          <span class="hint">今日の学び</span>
+        <div class="card">
+          <div class="section-head">
+            <h2>バックナンバー</h2>
+            <a href="{root_prefix}archive.html" class="hint">一覧を見る →</a>
+          </div>
+          <div class="panel-body" id="recent-panel"></div>
         </div>
-        <div class="panel-body" id="notes-panel"></div>
-      </div>
-
-      <div class="card">
-        <div class="section-head">
-          <h2>バックナンバー</h2>
-          <a href="{root_prefix}archive.html" class="hint">一覧を見る →</a>
-        </div>
-        <div class="panel-body" id="recent-panel"></div>
       </div>
     </aside>
   </main>
@@ -819,18 +993,23 @@ def _render_episode_page(
   <script>
     (function () {{
       const data = JSON.parse(document.getElementById("episode-data").textContent);
+      const mainRoot = document.getElementById("main-root");
       const audio = document.getElementById("radio-audio");
       const btnPlay = document.getElementById("btn-play");
       const btnBack = document.getElementById("btn-back");
       const btnFwd = document.getElementById("btn-fwd");
       const btnAutoScroll = document.getElementById("btn-autoscroll");
+      const btnSpeedCycle = document.getElementById("btn-speed-cycle");
       const scrubber = document.getElementById("scrubber");
       const timeReadout = document.getElementById("time-readout");
       const nowChapter = document.getElementById("now-chapter");
       const chapterList = document.getElementById("chapter-list");
       const transcriptBody = document.getElementById("transcript-body");
       const speedButtons = Array.from(document.querySelectorAll("#speed-group button"));
+      const mobileTabButtons = Array.from(document.querySelectorAll("#mobile-tabs button"));
 
+      const speedRates = [1.0, 1.15, 1.25, 1.5, 0.9];
+      let speedIdx = 0;
       let autoScroll = true;
       let isScrubbing = false;
       let lastActiveLineIdx = -1;
@@ -839,6 +1018,26 @@ def _render_episode_page(
       function fmtTime(sec) {{
         const s = Math.max(0, Math.floor(sec || 0));
         return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+      }}
+
+      function appendContactWithTelLinks(container, text) {{
+        const phoneRe = /(0\\d{{1,4}}-\\d{{1,4}}-\\d{{3,4}})/g;
+        let last = 0;
+        let m;
+        while ((m = phoneRe.exec(text)) !== null) {{
+          if (m.index > last) {{
+            container.appendChild(document.createTextNode(text.slice(last, m.index)));
+          }}
+          const a = document.createElement("a");
+          a.className = "tel-link";
+          a.href = "tel:" + m[1];
+          a.textContent = m[1];
+          container.appendChild(a);
+          last = phoneRe.lastIndex;
+        }}
+        if (last < text.length) {{
+          container.appendChild(document.createTextNode(text.slice(last)));
+        }}
       }}
 
       if (data.has_audio) {{
@@ -917,7 +1116,6 @@ def _render_episode_page(
         }});
       }});
 
-      // Guest & Weather panel
       const gwPanel = document.getElementById("guest-weather-panel");
       const gCard = document.createElement("div");
       gCard.className = "guest-card";
@@ -945,7 +1143,6 @@ def _render_episode_page(
         const wToday = data.weather.daily[0];
         const wBox = document.createElement("div");
         wBox.className = "note-box";
-        wBox.innerHTML = "";
         const wHead = document.createElement("strong");
         wHead.textContent = "今朝の小平市のお天気（" + wToday.date + "）";
         const wText = document.createElement("div");
@@ -957,7 +1154,6 @@ def _render_episode_page(
         gwPanel.appendChild(wBox);
       }}
 
-      // Clickable links panel
       const linksPanel = document.getElementById("links-panel");
       (data.links || []).forEach((lk) => {{
         const a = document.createElement("a");
@@ -980,7 +1176,6 @@ def _render_episode_page(
         linksPanel.appendChild(a);
       }});
 
-      // Learned notes & memos panel
       const notesPanel = document.getElementById("notes-panel");
       const nBox = document.createElement("div");
       nBox.className = "note-box";
@@ -1016,10 +1211,10 @@ def _render_episode_page(
         rDet.style.color = "var(--muted)";
         rDet.textContent = ref.detail || "";
         const rCon = document.createElement("div");
-        rCon.style.fontSize = "0.8rem";
+        rCon.style.fontSize = "0.84rem";
         rCon.style.fontWeight = "700";
-        rCon.style.color = "var(--heizo)";
-        rCon.textContent = ref.contact || "";
+        rCon.style.marginTop = "0.2rem";
+        appendContactWithTelLinks(rCon, ref.contact || "");
         rBox.appendChild(rTag);
         rBox.appendChild(rTitle);
         rBox.appendChild(rDet);
@@ -1027,7 +1222,6 @@ def _render_episode_page(
         notesPanel.appendChild(rBox);
       }});
 
-      // Recent episodes panel
       const recentPanel = document.getElementById("recent-panel");
       (data.recent_episodes || []).forEach((ep) => {{
         const a = document.createElement("a");
@@ -1048,6 +1242,22 @@ def _render_episode_page(
         recentPanel.appendChild(a);
       }});
 
+      mobileTabButtons.forEach((tb) => {{
+        tb.addEventListener("click", () => {{
+          const tab = tb.dataset.tab || "script";
+          mainRoot.dataset.activeTab = tab;
+          mobileTabButtons.forEach((b) => b.classList.toggle("active", b === tb));
+        }});
+      }});
+
+      function applySpeed(rate) {{
+        audio.playbackRate = rate;
+        btnSpeedCycle.textContent = rate + "x";
+        speedButtons.forEach((b) => {{
+          b.classList.toggle("is-selected", parseFloat(b.dataset.rate || "1") === rate);
+        }});
+      }}
+
       function updateSyncUI() {{
         const cur = audio.currentTime || 0;
         const total = Number.isFinite(audio.duration) ? audio.duration : totalEst;
@@ -1066,7 +1276,8 @@ def _render_episode_page(
             chapterButtons.get(lastActiveSegId).classList.remove("active");
           }}
           if (chapterButtons.has(activeSeg.id)) {{
-            chapterButtons.get(activeSeg.id).classList.add("active");
+            const chEl = chapterButtons.get(activeSeg.id);
+            chEl.classList.add("active");
           }}
           nowChapter.textContent = activeSeg.title;
           lastActiveSegId = activeSeg.id;
@@ -1088,7 +1299,7 @@ def _render_episode_page(
           if (activeLineIdx >= 0 && flatLines[activeLineIdx]) {{
             const activeEl = flatLines[activeLineIdx].el;
             activeEl.classList.add("active");
-            if (autoScroll && !audio.paused) {{
+            if (autoScroll && !audio.paused && mainRoot.dataset.activeTab === "script") {{
               activeEl.scrollIntoView({{ block: "center", behavior: "smooth" }});
             }}
           }}
@@ -1114,15 +1325,20 @@ def _render_episode_page(
       }});
       btnAutoScroll.addEventListener("click", () => {{
         autoScroll = !autoScroll;
-        btnAutoScroll.textContent = "自動スクロール: " + (autoScroll ? "ON" : "OFF");
+        btnAutoScroll.textContent = autoScroll ? "追従ON" : "追従OFF";
         btnAutoScroll.classList.toggle("active-toggle", autoScroll);
       }});
       speedButtons.forEach((btn) => {{
         btn.addEventListener("click", () => {{
           const rate = parseFloat(btn.dataset.rate || "1");
-          audio.playbackRate = rate;
-          speedButtons.forEach((b) => b.classList.toggle("is-selected", b === btn));
+          const found = speedRates.indexOf(rate);
+          if (found >= 0) speedIdx = found;
+          applySpeed(rate);
         }});
+      }});
+      btnSpeedCycle.addEventListener("click", () => {{
+        speedIdx = (speedIdx + 1) % speedRates.length;
+        applySpeed(speedRates[speedIdx]);
       }});
       scrubber.addEventListener("input", () => {{
         isScrubbing = true;
@@ -1134,7 +1350,7 @@ def _render_episode_page(
         isScrubbing = false;
         updateSyncUI();
       }});
-      audio.addEventListener("play", () => {{ btnPlay.textContent = "❚❚ 一時停止"; }});
+      audio.addEventListener("play", () => {{ btnPlay.textContent = "❚❚ 停止"; }});
       audio.addEventListener("pause", () => {{ btnPlay.textContent = "▶ 再生"; }});
       audio.addEventListener("ended", () => {{ btnPlay.textContent = "▶ 再生"; }});
       audio.addEventListener("timeupdate", updateSyncUI);
@@ -1172,7 +1388,12 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
             }
         )
 
-    nav_html = _render_nav("", "archive")
+    nav_html = _render_nav(
+        "",
+        "archive",
+        page_h1="バックナンバー",
+        subhead="これまでの放送をいつでも聴く・読むことができます",
+    )
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1183,25 +1404,30 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
     {COMMON_CSS}
     .filter-bar {{
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      padding: 0.9rem 1rem;
+      flex-direction: column;
+      gap: 0.55rem;
+      padding: 0.75rem 0.9rem;
       border-bottom: 1px solid var(--border);
       background: #fcfcfa;
-      align-items: center;
     }}
     .search-input {{
-      flex: 1 1 240px;
-      padding: 0.45rem 0.75rem;
+      width: 100%;
+      padding: 0.5rem 0.75rem;
       border-radius: 8px;
       border: 1px solid var(--border);
-      font-size: 0.9rem;
+      font-size: 16px;
       font-family: inherit;
     }}
     .day-pills {{
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       gap: 0.35rem;
+      padding-bottom: 0.15rem;
+    }}
+    .day-pills button {{
+      flex: 0 0 auto;
     }}
     .day-pills button.active {{
       background: var(--forest);
@@ -1214,15 +1440,13 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
   <header>
     <div class="header-inner">
       {nav_html}
-      <h1>バックナンバー アーカイブ</h1>
-      <p class="subtitle">これまでの放送回をいつでも聴く・読むことができます</p>
     </div>
   </header>
 
   <main class="container single">
     <div class="card">
       <div class="filter-bar">
-        <input type="search" id="search-input" class="search-input" placeholder="キーワード検索（例：GIS、小川パレット、星野、防災庁…）" />
+        <input type="search" id="search-input" class="search-input" placeholder="キーワード検索（例：GIS、小川パレット、星野…）" />
         <div class="day-pills" id="day-pills">
           <button type="button" data-day="all" class="active">すべて</button>
           <button type="button" data-day="monday">月</button>
@@ -1271,8 +1495,6 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
         filtered.forEach((it) => {{
           const card = document.createElement("article");
           card.className = "archive-card";
-          const top = document.createElement("div");
-          top.innerHTML = "";
           const tag = document.createElement("span");
           tag.className = "pill-tag";
           tag.textContent = "第" + it.episode_number + "回 ・ " + it.date + "（" + it.weekday_ja + "）";
@@ -1286,7 +1508,7 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
           sub.textContent = it.subtitle;
           const g = document.createElement("div");
           g.style.fontSize = "0.82rem";
-          g.textContent = "ゲスト: " + it.guest_name + " ／ 時間: " + it.duration + (it.has_audio ? "（音声あり）" : "（台本）");
+          g.textContent = "ゲスト: " + it.guest_name + " ／ " + it.duration + (it.has_audio ? "（音声あり）" : "（台本）");
           const btn = document.createElement("a");
           btn.className = "btn-link";
           btn.href = it.href;
@@ -1326,7 +1548,12 @@ def _render_characters_page(
         "days": list(themes["days"].values()),
         "entries": list(reversed(knowledge_log.get("entries", []))),
     }
-    nav_html = _render_nav("", "characters")
+    nav_html = _render_nav(
+        "",
+        "characters",
+        page_h1="出演者＆防災ノート",
+        subhead="小春と平蔵、そして7人の専門家ゲスト図鑑・累積ノート",
+    )
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1339,8 +1566,6 @@ def _render_characters_page(
   <header>
     <div class="header-inner">
       {nav_html}
-      <h1>キャスター ＆ 曜日別専門家図鑑・防災ノート</h1>
-      <p class="subtitle">小春と平蔵、そして7人の専門家が毎日小平市の暮らしと防災を楽しくお届けします</p>
     </div>
   </header>
 
@@ -1355,7 +1580,7 @@ def _render_characters_page(
     <div class="card">
       <div class="section-head">
         <h2>曜日別テーマ ＆ 専門家ゲスト（月〜日）</h2>
-        <span class="hint">平日は約10分 ／ 土日は約15分特集</span>
+        <span class="hint">平日10分／土日15分</span>
       </div>
       <div class="archive-grid" id="guests-grid"></div>
     </div>
@@ -1387,7 +1612,7 @@ def _render_characters_page(
         role.textContent = h.role;
         const p = document.createElement("p");
         p.style.margin = "0";
-        p.style.fontSize = "0.88rem";
+        p.style.fontSize = "0.86rem";
         p.textContent = h.personality;
         c.appendChild(role);
         c.appendChild(title);
