@@ -57,12 +57,14 @@ def _resolve_redirect_url(url: str, timeout: float = 4.0) -> str:
 
 
 def _next_episode_number(target_date: str) -> int:
-    """Compute sequential episode number across existing episodes."""
+    """Compute sequential episode number across regular YYYY-MM-DD broadcast episodes."""
     existing_dates = (
         sorted(
             p.name
             for p in EPISODES_DIR.iterdir()
-            if p.is_dir() and (p / "episode.json").exists()
+            if p.is_dir()
+            and re.fullmatch(r"\d{4}-\d{2}-\d{2}", p.name)
+            and (p / "episode.json").exists()
         )
         if EPISODES_DIR.exists()
         else []

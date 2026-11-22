@@ -704,7 +704,7 @@ footer {
 
   <footer>毎朝7時！こだいら防災＆まちラジオ（東京都小平市）</footer>
 
-  <script type="application/json" id="archive-data">[{"date": "2026-11-22", "episode_number": 1, "weekday": "sunday", "weekday_ja": "日曜日", "theme_name": "防災テック・ハザードマップ・衛星・最新情報", "edition_label": "", "is_holiday": false, "special_title": "", "subtitle": "第1回・2026年11月22日（日曜日）朝7時号 ― 日曜15分特集：防災テックとGISで歩く小平のまち", "guest_name": "星野 創", "guest_title": "防災テック＆GISエンジニア（地理情報・衛星通信・架空ゲスト）", "duration": "14:37", "has_audio": true, "href": "episodes/2026-11-22/index.html", "learned_points": ["GIS（地理情報システム）とカラーユニバーサルデザインでハザードマップや小平市防災マップアプリの仕組みがぐっと見やすくなっていること", "Jアラートは衛星と地上回線の二重ルートで届き、窓を閉めて聞き逃しても小平市防災行政無線テレホンサービス（042-341-0793）で確認できること", "防災アプリやDXは便利な一方、問合せ情報漏えいのようなセキュリティ事例も踏まえて公式の一次情報を落ち着いて確認することが大切なこと"], "keywords": ["GIS（地理情報システム）", "オフラインGPS地図キャッシュ", "Jアラート衛星＆地上二重ルート", "災害時ドローンマッピング＆低軌道衛星通信"]}]</script>
+  <script type="application/json" id="archive-data">[{"date": "2026-11-22", "episode_number": 0, "episode_label": "スピンオフ特別編", "is_spinoff": true, "weekday": "sunday", "weekday_ja": "日曜日", "theme_name": "スピンオフ特集：小川パレット徹底ガイド", "edition_label": "スピンオフ特別企画（約10分）", "is_holiday": false, "special_title": "", "subtitle": "スピンオフ特別企画 ― 行ってみたくなる！「小川パレット」まるわかりガイド", "guest_name": "", "guest_title": "", "duration": "10:09", "has_audio": true, "href": "episodes/2026-11-22-spinoff-ogawa-palette/index.html", "learned_points": ["市民投票（1,187票中527票）で選ばれた「小川パレット」は、絵の具のパレットのように多様な人が集う小川駅西口徒歩1分の複合拠点", "4階はカフェ・児童書・防音スタジオ・西部出張所など賑わいフロア、5階は一般書架・1時間100円の個人スペース・和室や調理室など学びのフロア（4階から西武線が見えるスポットも！）", "4階マガジンカフェ「BLUE & BERRY」は蓋つきドリンクで本や雑誌が読め、ムサビ生コラボ珈琲や地元グルメも楽しめる（金〜日は夜21時まで）", "駐輪場は最初の1時間無料・駐車場はパレット利用割引なし／有料スペース予約は他施設と別に小川パレットでの新規登録が必要"], "keywords": ["小川パレット（4F・5F）", "BLUE & BERRY カフェ", "1時間100円 個人スペース", "鏡張り防音スタジオ", "トレインビュー＆駐輪1時間無料"]}, {"date": "2026-11-22", "episode_number": 1, "episode_label": "第1回", "is_spinoff": false, "weekday": "sunday", "weekday_ja": "日曜日", "theme_name": "防災テック・ハザードマップ・衛星・最新情報", "edition_label": "", "is_holiday": false, "special_title": "", "subtitle": "第1回・2026年11月22日（日曜日）朝7時号 ― 日曜15分特集：防災テックとGISで歩く小平のまち", "guest_name": "星野 創", "guest_title": "防災テック＆GISエンジニア（地理情報・衛星通信・架空ゲスト）", "duration": "14:37", "has_audio": true, "href": "episodes/2026-11-22/index.html", "learned_points": ["GIS（地理情報システム）とカラーユニバーサルデザインでハザードマップや小平市防災マップアプリの仕組みがぐっと見やすくなっていること", "Jアラートは衛星と地上回線の二重ルートで届き、窓を閉めて聞き逃しても小平市防災行政無線テレホンサービス（042-341-0793）で確認できること", "防災アプリやDXは便利な一方、問合せ情報漏えいのようなセキュリティ事例も踏まえて公式の一次情報を落ち着いて確認することが大切なこと"], "keywords": ["GIS（地理情報システム）", "オフラインGPS地図キャッシュ", "Jアラート衛星＆地上二重ルート", "災害時ドローンマッピング＆低軌道衛星通信"]}]</script>
   <script>
     (function () {
       const items = JSON.parse(document.getElementById("archive-data").textContent);
@@ -737,9 +737,9 @@ footer {
           card.className = "archive-card";
           const tag = document.createElement("span");
           tag.className = "pill-tag";
-          tag.textContent = "第" + it.episode_number + "回 ・ " + it.date + "（" + it.weekday_ja + "）";
+          tag.textContent = it.episode_label + " ・ " + it.date + "（" + it.weekday_ja + "）";
           card.appendChild(tag);
-          if (it.is_holiday || it.special_title) {
+          if (it.is_holiday || it.special_title || it.is_spinoff) {
             const ed = document.createElement("span");
             ed.className = "edition-pill";
             ed.style.fontSize = "0.72rem";
@@ -756,7 +756,7 @@ footer {
           sub.textContent = it.subtitle;
           const g = document.createElement("div");
           g.style.fontSize = "0.82rem";
-          g.textContent = "ゲスト: " + it.guest_name + " ／ " + it.duration + (it.has_audio ? "（音声あり）" : "（台本）");
+          g.textContent = (it.guest_name ? ("ゲスト: " + it.guest_name) : "小春＆平蔵スペシャル") + " ／ " + it.duration + (it.has_audio ? "（音声あり）" : "（台本）");
           const btn = document.createElement("a");
           btn.className = "btn-link";
           btn.href = it.href;

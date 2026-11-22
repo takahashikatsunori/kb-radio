@@ -214,6 +214,7 @@ def _load_episode_bundle(ep_dir: Path) -> dict[str, Any]:
     has_audio = mp3_path.exists() and mp3_path.stat().st_size > 1024
     return {
         "dir": ep_dir,
+        "slug": episode["meta"].get("episode_slug") or ep_dir.name,
         "episode": episode,
         "manifest": manifest,
         "has_audio": has_audio,
@@ -229,17 +230,23 @@ def generate_script_md(bundle: dict[str, Any]) -> None:
     guest = episode.get("guest", {})
     ep_dir: Path = bundle["dir"]
     est_label = "（推定尺・音声未生成）" if mf_meta.get("estimated") else ""
+    ep_label = meta.get("episode_label") or f"第{meta['episode_number']}回"
+    guest_desc = (
+        f"{guest['name']}（{guest.get('title', '')}）"
+        if guest.get("name")
+        else "なし（小春＆平蔵スピンオフ特別回）"
+    )
 
     lines_out: list[str] = [
         f"# {meta['title']}",
         "",
         f"**{meta['subtitle']}**",
         "",
-        f"- **放送日**: {meta['episode_date']}（{meta.get('weekday_ja', '')}・第{meta['episode_number']}回）",
+        f"- **放送日**: {meta['episode_date']}（{meta.get('weekday_ja', '')}・{ep_label}）",
         f"- **テーマ**: {meta.get('theme_name', '')}",
         f"- **想定/収録時間**: {mf_meta['total_duration_formatted']}（{mf_meta['total_duration_sec']:.1f}秒）{est_label}",
         "- **レギュラー出演**: 小春（メインパーソナリティ）／ 平蔵（パートナーキャスター）",
-        f"- **本日の専門家ゲスト**: {guest.get('name', 'なし')}（{guest.get('title', '')}）",
+        f"- **本日の専門家ゲスト**: {guest_desc}",
         f"- **音声ファイル**: `docs/audio/{meta['output_filename']}`",
         "",
         "## チャプター目次",
@@ -969,11 +976,13 @@ def _render_episode_page(
     guest_ui = meta["voices"].get("guest", {}).get("ui", {"color": "#4338ca", "bg_soft": "#eef2ff"})
 
     audio_rel = f"{root_prefix}audio/{meta['output_filename']}"
+    is_spinoff = bool(meta.get("is_spinoff"))
+    ep_label = meta.get("episode_label") or f"第{meta['episode_number']}回"
     payload = {
         "meta": meta,
         "manifest_meta": mf_meta,
         "guest": guest,
-        "cast_href": f"{root_prefix}cast.html#{guest.get('id', '')}",
+        "cast_href": f"{root_prefix}cast.html#{guest['id']}" if guest.get("id") else f"{root_prefix}cast.html",
         "has_audio": bundle["has_audio"],
         "audio_src": audio_rel,
         "weather": episode.get("weather_summary", {}),
@@ -987,7 +996,7 @@ def _render_episode_page(
                 "weekday_ja": b["episode"]["meta"].get("weekday_ja", ""),
                 "theme": b["episode"]["meta"].get("theme_name", ""),
                 "guest_name": b["episode"].get("guest", {}).get("name", ""),
-                "href": f"{root_prefix}episodes/{b['episode']['meta']['episode_date']}/index.html",
+                "href": f"{root_prefix}episodes/{b['slug']}/index.html",
                 "has_audio": b["has_audio"],
             }
             for b in reversed(all_bundles[-7:])
@@ -1001,11 +1010,14 @@ def _render_episode_page(
     weekday_short = html.escape((meta.get("weekday_ja", "") or "")[:1])
     dur_esc = html.escape(mf_meta["total_duration_formatted"])
     est_suffix = "（予定）" if mf_meta.get("estimated") else ""
-    guest_name_esc = html.escape(guest.get("name", ""))
+    guest_suffix = f"・ゲスト: {html.escape(guest['name'])}" if guest.get("name") else "・小春＆平蔵スペシャル"
+    side_panel_title = "今回のピックアップ＆出演" if is_spinoff else "本日のゲスト＆天気"
+    side_panel_hint = "特別企画" if is_spinoff else "曜日テーマ"
+    notes_panel_title = "小春＆平蔵のまとめメモ" if is_spinoff else "小春＆平蔵の防災ノート"
     nav_html = _render_nav(root_prefix, "latest" if is_home else "archive")
 
     special_pills_html = ""
-    if meta.get("is_holiday") or meta.get("special_feature"):
+    if meta.get("is_holiday") or meta.get("special_feature") or is_spinoff:
         ed_text = meta.get("edition_label") or ""
         if ed_text:
             special_pills_html += f'<span class="edition-pill">{html.escape(ed_text)}</span>'
@@ -1021,7 +1033,7 @@ def _render_episode_page(
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{title_esc} | {date_esc}</title>
+  <title>{title_esc} | {html.escape(ep_label)} ({date_esc})</title>
   <style>
     :root {{
       --guest-color: {html.escape(guest_ui.get("color", "#4338ca"))};
@@ -1043,7 +1055,7 @@ def _render_episode_page(
         <div class="ep-meta-row">
           <span class="theme-pill">{theme_badge_esc}</span>
           {special_pills_html}
-          <span>{date_esc}（{weekday_short}）・{dur_esc}{est_suffix}・ゲスト: {guest_name_esc}</span>
+          <span>{date_esc}（{weekday_short}）・{dur_esc}{est_suffix}{guest_suffix}</span>
         </div>
         <h1 class="ep-title">{subtitle_esc}</h1>
       </div>
@@ -1106,8 +1118,8 @@ def _render_episode_page(
       <div id="tab-panel-links">
         <div class="card">
           <div class="section-head">
-            <h2>本日のゲスト＆天気</h2>
-            <span class="hint">曜日テーマ</span>
+            <h2>{html.escape(side_panel_title)}</h2>
+            <span class="hint">{html.escape(side_panel_hint)}</span>
           </div>
           <div class="panel-body" id="guest-weather-panel"></div>
         </div>
@@ -1124,7 +1136,7 @@ def _render_episode_page(
       <div id="tab-panel-notes">
         <div class="card">
           <div class="section-head">
-            <h2>小春＆平蔵の防災ノート</h2>
+            <h2>{html.escape(notes_panel_title)}</h2>
             <span class="hint">今日の学び・連絡先</span>
           </div>
           <div class="panel-body" id="notes-panel"></div>
@@ -1285,14 +1297,21 @@ def _render_episode_page(
       gCard.className = "guest-card";
       const gTitle = document.createElement("div");
       gTitle.style.fontWeight = "700";
-      gTitle.textContent = (data.guest.name || "") + "（" + (data.guest.title || "") + "）";
+      if (data.guest && data.guest.name) {{
+        gTitle.textContent = data.guest.name + "（" + (data.guest.title || "") + "）";
+      }} else {{
+        gTitle.textContent = (data.meta && data.meta.theme_badge) || "小春＆平蔵 スピンオフ特別企画";
+      }}
       const gDesc = document.createElement("div");
       gDesc.style.fontSize = "0.82rem";
       gDesc.style.marginTop = "0.25rem";
-      gDesc.textContent = data.guest.personality || "";
+      gDesc.textContent = (data.guest && data.guest.personality) || "";
       const kwWrap = document.createElement("div");
       kwWrap.className = "kw-wrap";
-      (data.guest.keywords_featured || []).forEach((kw) => {{
+      const chipList = (data.guest && data.guest.keywords_featured && data.guest.keywords_featured.length > 0)
+        ? data.guest.keywords_featured
+        : ((data.meta && data.meta.kodaira_topics) || []);
+      chipList.forEach((kw) => {{
         const chip = document.createElement("span");
         chip.className = "kw-chip";
         chip.textContent = kw;
@@ -1408,7 +1427,7 @@ def _render_episode_page(
         title.textContent = ep.theme;
         const note = document.createElement("p");
         note.className = "link-note";
-        note.textContent = "ゲスト: " + ep.guest_name + (ep.has_audio ? " ／ 音声あり" : " ／ 台本公開");
+        note.textContent = (ep.guest_name ? ("ゲスト: " + ep.guest_name) : "小春＆平蔵スペシャル") + (ep.has_audio ? " ／ 音声あり" : " ／ 台本公開");
         a.appendChild(tag);
         a.appendChild(title);
         a.appendChild(note);
@@ -1548,6 +1567,8 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
             {
                 "date": meta["episode_date"],
                 "episode_number": meta["episode_number"],
+                "episode_label": meta.get("episode_label") or f"第{meta['episode_number']}回",
+                "is_spinoff": bool(meta.get("is_spinoff")),
                 "weekday": meta.get("weekday", ""),
                 "weekday_ja": meta.get("weekday_ja", ""),
                 "theme_name": meta.get("theme_name", ""),
@@ -1559,7 +1580,7 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
                 "guest_title": guest.get("title", ""),
                 "duration": mf["meta"]["total_duration_formatted"],
                 "has_audio": b["has_audio"],
-                "href": f"episodes/{meta['episode_date']}/index.html",
+                "href": f"episodes/{b['slug']}/index.html",
                 "learned_points": notes.get("learned_points", []),
                 "keywords": guest.get("keywords_featured", []),
             }
@@ -1672,9 +1693,9 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
           card.className = "archive-card";
           const tag = document.createElement("span");
           tag.className = "pill-tag";
-          tag.textContent = "第" + it.episode_number + "回 ・ " + it.date + "（" + it.weekday_ja + "）";
+          tag.textContent = it.episode_label + " ・ " + it.date + "（" + it.weekday_ja + "）";
           card.appendChild(tag);
-          if (it.is_holiday || it.special_title) {{
+          if (it.is_holiday || it.special_title || it.is_spinoff) {{
             const ed = document.createElement("span");
             ed.className = "edition-pill";
             ed.style.fontSize = "0.72rem";
@@ -1691,7 +1712,7 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
           sub.textContent = it.subtitle;
           const g = document.createElement("div");
           g.style.fontSize = "0.82rem";
-          g.textContent = "ゲスト: " + it.guest_name + " ／ " + it.duration + (it.has_audio ? "（音声あり）" : "（台本）");
+          g.textContent = (it.guest_name ? ("ゲスト: " + it.guest_name) : "小春＆平蔵スペシャル") + " ／ " + it.duration + (it.has_audio ? "（音声あり）" : "（台本）");
           const btn = document.createElement("a");
           btn.className = "btn-link";
           btn.href = it.href;
@@ -2542,8 +2563,8 @@ def build_site() -> None:
 
     for bundle in bundles:
         generate_script_md(bundle)
-        ep_date = bundle["episode"]["meta"]["episode_date"]
-        ep_out_dir = DOCS_DIR / "episodes" / ep_date
+        ep_slug = bundle["slug"]
+        ep_out_dir = DOCS_DIR / "episodes" / ep_slug
         ep_out_dir.mkdir(parents=True, exist_ok=True)
         ep_html = _render_episode_page(bundle, bundles, root_prefix="../../", is_home=False)
         (ep_out_dir / "index.html").write_text(ep_html, encoding="utf-8")
