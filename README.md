@@ -21,7 +21,7 @@
   - [config/special_days.json](config/special_days.json) の防災記念日（1/17、3/11、9/1防災の日 等）や小平市の重要イベントが近づくと、数日前からカウントダウン特別コーナーを追加して放送尺を拡張します（前日のエンディングで事前予告も行います）。
   - 大きな地震・重大気象警報・ビッグニュースが発生した日も、`special_feature` コーナーを自動追加して拡大版でお届けします。
 - **ハイブリッドAI制作パイプライン ＆ 週1回編集長AI**
-  - 調査・ニュース選定は **`gemini-4-hydrogen` + Google検索グラウンディング**、台本JSON執筆は **`gemini-4-neon`**、音声合成は **`gemini-3.8-flash-tts`** が連携し、最新情報と自然な掛け合いを両立しています。
+  - Phase A 調査（**`gemini-4-hydrogen` + Google検索**）→ Phase B 台本執筆（**`gemini-4-neon`**）→ Phase C ファクトチェック＆自動校閲（**`gemini-4-hydrogen` + Google検索**）→ 音声合成（**`gemini-3.8-flash-tts`**）が連携し、正確性と自然な掛け合いを両立しています。
   - [data/topic_history.json](data/topic_history.json) により直近14日間の小平トピック重複と各専門家ゲスト過去3か月（90日）の専門用語重複を自動防止します。
   - 毎週日曜21時（JST）に編集長AI（[weekly-editorial.yml](.github/workflows/weekly-editorial.yml)）が向こう2週間の小平イベント・季節感を調べ、翌週分のワクワク特集・週間編成（[data/editorial_plan.json](data/editorial_plan.json)）を企画します。
 - **Gemini 3.8 Flash TTS による豊かな感情表現**

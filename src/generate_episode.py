@@ -1,4 +1,4 @@
-"""Daily Kodaira radio episode generator using Gemini 4 Hydrogen (research + Search) and Gemini 4 Neon (script)."""
+"""Daily Kodaira radio episode generator: Hydrogen research -> Neon script -> Hydrogen fact-check."""
 
 from __future__ import annotations
 
@@ -31,6 +31,7 @@ DATA_DIR = ROOT_DIR / "data"
 EPISODES_DIR = ROOT_DIR / "episodes"
 DEFAULT_RESEARCH_MODEL = "gemini-4-hydrogen"
 DEFAULT_SCRIPT_MODEL = "gemini-4-neon"
+DEFAULT_FACTCHECK_MODEL = "gemini-4-hydrogen"
 RECENT_LOCAL_DEDUP_DAYS = 14
 EXPERT_HISTORY_DAYS = 90
 
@@ -378,6 +379,7 @@ Google検索を使って、以下4点を最新の公式情報・地域ニュー�
 3. 【全国の最新防災・気象トピック】直近1週間の地震・気象・防災庁や国の防災関連ニュース。
 4. 【本日の専門テーマ掘り下げ資料】「{day_cfg['theme_name']}」に関して過去90日と被らない専門用語・技術・機材・制度で小平市民の暮らしに役立つ正確な豆知識。
 
+※【開催年・事実の厳密確認】イベント日時・開催期間を挙げる際は必ず {target_date[:4]}年（令和{int(target_date[:4]) - 2018}年）の公式情報であることを確認し、前年以前の開催日を今年の日程として記載しないでください。確認できない日時・店舗営業情報は書かないでください。
 ※確認できた事実と日付だけを挙げ、推測でイベント日時や数値を作らないでください。
 
 最後に必ず以下の区切り行とJSONだけを出力し、本日「臨時の拡大特別コーナーを設けるべき重大な防災ニュース・災害警報・大規模防災イベント」があるか判定してください（通常の小規模ニュースのみなら false にしてください）:
@@ -453,6 +455,11 @@ def build_script_prompt(
 - `heizo`（平蔵）: {heizo['personality']}
 - `guest`（{guest['name']} / {guest['title']}）: {guest['personality']} 小平とのつながり: {guest['kodaira_connection']}
 - 今回優先すべき未解説キーワード候補（この中から2〜4個を必ず噛み砕いて解説）: {fresh_kws_str}
+
+### ★ 発言の信頼性・事実厳守ルール（超重要）
+- **嘘・捏造ゼロ原則**: イベント日時（特に「{target_date[:4]}年」の正確な日程か）、小平市内の施設場所・開館情報・店舗情報、電話番号、防災数値は上記調査と公式データで確認できた事実のみを書くこと。不確かな具体日時や未確認イベントは絶対に書かない。
+- **小春（`koharu`）の表現方針**: 防災初心者として「〜かも？」「〜なのかな？」とお茶目に予想・質問するのは大歓迎です。ただし、小春が迷ったり勘違いしそうなセリフを入れた場合は、**直後のターンで必ず平蔵または専門家ゲストが正しい事実をやさしく補足・訂正し、リスナーに誤認を残さない構成**にすること。また小春も、架空のイベント日時や実在しない店舗情報は絶対に口にしないこと。
+- **平蔵（`heizo`）・専門家ゲスト（`guest`）の厳格信頼性**: 専門知識・数値（耐震基準年、応急手当の回数・手順、備蓄基準量、警戒レベル、法律・行政制度など）や小平市の施設・イベント日時・電話番号は **一切推測や誇張・脚色をせず、確認できた正確な事実のみ** を語ること。
 
 ## 3. 重複禁止ルール（厳守）
 - **直近14日間の小平ローカル話題（同じネタ・場所の繰り返し禁止）**:
@@ -608,6 +615,7 @@ def _assemble_and_validate_episode(
     fallback_links: list[dict[str, str]],
     research_model: str = DEFAULT_RESEARCH_MODEL,
     script_model: str = DEFAULT_SCRIPT_MODEL,
+    factcheck_model: str = DEFAULT_FACTCHECK_MODEL,
 ) -> dict[str, Any]:
     """Wrap generated segments with full program metadata and validate every line."""
     day_cfg = day_plan["day_cfg"]
@@ -759,6 +767,7 @@ def _assemble_and_validate_episode(
             "models": {
                 "research": research_model,
                 "script": script_model,
+                "factcheck": factcheck_model,
             },
             "voices": voices,
         },
@@ -780,6 +789,331 @@ def _assemble_and_validate_episode(
         "learned_notes": learned_notes,
         "segments": cleaned_segments,
     }
+
+
+def _format_episode_for_factcheck(episode: dict[str, Any]) -> str:
+    """Render episode script, references, notes, and links with exact indices for auditing."""
+    meta = episode.get("meta", {})
+    out: list[str] = [f"[subtitle] {meta.get('subtitle', '')}", ""]
+
+    out.append("## 台本セリフ一覧")
+    for s_idx, seg in enumerate(episode.get("segments") or []):
+        out.append(f"### Segment {s_idx}: {seg.get('id', '')} | {seg.get('title', '')}")
+        for l_idx, line in enumerate(seg.get("lines") or []):
+            out.append(
+                f"[seg:{s_idx} line:{l_idx}] {line.get('speaker', '')} | {line.get('text', '')}"
+            )
+        out.append("")
+
+    notes = episode.get("learned_notes") or {}
+    out.append("## 防災ノート")
+    for n_idx, pt in enumerate(notes.get("learned_points") or []):
+        out.append(f"[learned_point:{n_idx}] {pt}")
+    if notes.get("kodaira_discovery"):
+        out.append(f"[kodaira_discovery] {notes['kodaira_discovery']}")
+
+    refs = episode.get("references") or []
+    if refs:
+        out.append("\n## 防災メモ・連絡先")
+        for r_idx, ref in enumerate(refs):
+            out.append(
+                f"[reference:{r_idx}] {ref.get('category', '')} | {ref.get('title', '')} | "
+                f"{ref.get('detail', '')} | contact={ref.get('contact', '')}"
+            )
+
+    links = episode.get("links") or []
+    if links:
+        out.append("\n## 関連リンク")
+        for l_idx, lk in enumerate(links):
+            out.append(
+                f"[link:{l_idx}] {lk.get('category', '')} | {lk.get('title', '')} | "
+                f"{lk.get('url', '')} | {lk.get('note', '')}"
+            )
+
+    return "\n".join(out)
+
+
+def build_factcheck_prompt(
+    episode: dict[str, Any],
+    live_bundle: dict[str, Any],
+    research_summary: str,
+) -> str:
+    """Build Phase C fact-check and surgical correction prompt using Google Search grounding."""
+    meta = episode.get("meta", {})
+    guest = episode.get("guest", {})
+    ep_date = str(meta.get("episode_date") or "")
+    year_str = ep_date[:4] or str(datetime.now(JST).year)
+    weekday_ja = str(meta.get("weekday_ja") or "")
+    formatted_ep = _format_episode_for_factcheck(episode)
+    weather_json = json.dumps(live_bundle.get("weather") or {}, ensure_ascii=False)
+    quakes_json = json.dumps((live_bundle.get("earthquakes") or [])[:5], ensure_ascii=False)
+
+    return f"""あなたは東京都小平市のラジオ番組「こだいら防災＆まちラジオ」の厳格なファクトチェッカー（校閲責任者）です。
+Google検索ツールを使って、以下の放送台本・防災メモ・関連リンクに含まれる具体的な事実主張を徹底的に裏取りし、誤情報や根拠のない日付・数値があればピンポイントの修正案を出力してください。
+
+対象放送日: {ep_date}（{weekday_ja} / {year_str}年）
+担当専門家ゲスト: {guest.get('name', '')}（{guest.get('title', '')}）
+
+## 監査の4つの観点（厳守）
+1. **小平のイベント日程・開催年・施設情報の照合（最重要）**:
+   - 台本・ノート内のイベント名、施設名、所在地・最寄駅、営業時間・開館日、開催日時をGoogle検索で実際に確認すること。
+   - **特に「前年の開催日や曜日を {year_str}年（本日 {ep_date}）の開催と混同していないか」** を必ず検索して確認すること（例：昨年は11/23開催でも今年は11/22開催など）。本日開催と書いてあるイベントが別日開催や終了済みなら `severity: "critical"` とし、正しい日付へ修正するか、裏付けが取れない具体日時は削除・一般的な常設案内へ書き換えること。
+2. **平蔵（`heizo`）・専門家（`guest`）の発言および防災ノートの厳格検証**:
+   - 防災知識、数値基準、ガイドライン、法律・耐震基準年、応急手当の回数・手順（例：胸骨圧迫の回数、備蓄水・トイレ量、警戒レベル等）、小平市の公式窓口・電話番号に誤りがないかGoogle検索で裏取りすること。
+   - 誤った数値・制度説明は必ず正しい公式情報へ修正すること。
+3. **小春（`koharu`）のキャラクター配慮**:
+   - 小春が防災初心者として「〜かも？」「〜なのかな？」とお茶目に予想・質問しているだけで、**直後のターン（次のセリフ等）で平蔵や専門家が正しく訂正・補足している場合は演出として許容し、修正不要**。
+   - ただし、**誰も訂正しないまま放置された誤認識** や、**小春が根拠のない架空イベント日時・店名を言い切っている箇所** は `issues` として修正すること。
+4. **気象・地震・リンクの整合性**:
+   - 下記の公式気象・地震データと矛盾する天気・気温・地震情報、または無効・誤った参照情報がないか確認すること。
+   - 問題が見つからない項目まで無理に粗探しして書き換えないこと（キャラクターの口調・`<laugh>`等の感情タグ・かな読みはできるだけ維持する）。
+
+参考ライブ気象データ:
+{weather_json}
+
+参考直近地震データ:
+{quakes_json}
+
+参考Phase A調査メモ:
+{research_summary}
+
+## 検査対象の台本・付帯情報
+{formatted_ep}
+
+## 出力形式
+最初に簡潔な監査メモを書いたあと、**必ず最後に以下の区切り行とJSONオブジェクトのみ**を出力してください。
+問題がない場合は `"status": "passed"`、`"issues": []` としてください。修正が必要な場合は `"status": "patched"` として `issues` に該当箇所ごとの修正データを入れてください。
+
+`issues` 内の各要素で使える `target_type`:
+- `"line"`: `seg_index`(整数), `line_index`(整数), `fixed_text`(表示用・`<...>`タグ禁止), `fixed_tts_text`(読み上げ用・必要に応じタグ維持)
+- `"subtitle"`: `fixed_value`
+- `"learned_point"`: `index`(整数), `fixed_value`
+- `"kodaira_discovery"`: `fixed_value`
+- `"reference"`: `index`(整数), `action`(`"replace"` または `"remove"`), `fixed_title`, `fixed_detail`, `fixed_contact`
+- `"link"`: `index`(整数), `action`(`"replace"` または `"remove"`), `fixed_url`(`https://...`), `fixed_title`, `fixed_note`
+
+=== FACT_CHECK_JSON ===
+{{
+  "status": "passed",
+  "checked_claims_count": 10,
+  "issues": [
+    {{
+      "severity": "critical",
+      "target_type": "line",
+      "seg_index": 0,
+      "line_index": 0,
+      "claim": "問題のある主張の抜粋",
+      "reason": "検索で確認した誤りの理由",
+      "verified_fact": "確認できた正しい事実",
+      "fixed_text": "自然な修正後の表示セリフ（タグなし）",
+      "fixed_tts_text": "修正後のTTS読み上げセリフ"
+    }}
+  ],
+  "summary": "全体のファクトチェック総評（1〜2文）"
+}}"""
+
+
+def _parse_fact_check_result(raw_text: str) -> dict[str, Any]:
+    """Extract structured JSON from Phase C fact-check output safely."""
+    marker = "=== FACT_CHECK_JSON ==="
+    candidates: list[str] = []
+    if marker in raw_text:
+        candidates.append(raw_text.rsplit(marker, 1)[1])
+    candidates.append(raw_text)
+
+    decoder = json.JSONDecoder()
+    for block in candidates:
+        cleaned = block.strip()
+        if cleaned.startswith("```"):
+            cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned, flags=re.IGNORECASE)
+            cleaned = re.sub(r"\s*```$", "", cleaned)
+        try:
+            obj = json.loads(cleaned)
+            if isinstance(obj, dict):
+                return obj
+        except json.JSONDecodeError:
+            pass
+        for idx in (m.start() for m in re.finditer(r"\{", cleaned)):
+            try:
+                obj, _ = decoder.raw_decode(cleaned, idx)
+                if isinstance(obj, dict) and ("issues" in obj or "status" in obj):
+                    return obj
+            except json.JSONDecodeError:
+                continue
+
+    return {
+        "status": "parse_warning",
+        "checked_claims_count": 0,
+        "issues": [],
+        "summary": "Fact-check JSON parse failed; kept original draft.",
+    }
+
+
+def _apply_fact_check_patches(
+    episode: dict[str, Any],
+    fc_result: dict[str, Any],
+    factcheck_model: str,
+) -> dict[str, Any]:
+    """Apply validated Phase C surgical corrections to episode and record audit metadata."""
+    issues = [it for it in (fc_result.get("issues") or []) if isinstance(it, dict)]
+    segments = episode.get("segments") or []
+    notes = episode.setdefault("learned_notes", {})
+    learned_pts = notes.get("learned_points") or []
+    refs = episode.get("references") or []
+    links = episode.get("links") or []
+
+    patches_applied = 0
+    ref_removals: set[int] = set()
+    link_removals: set[int] = set()
+
+    for it in issues:
+        t_type = str(it.get("target_type") or "").strip()
+        if t_type == "line":
+            try:
+                s_idx = int(it["seg_index"])
+                l_idx = int(it["line_index"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            if not (0 <= s_idx < len(segments)):
+                continue
+            lines = segments[s_idx].get("lines") or []
+            if not (0 <= l_idx < len(lines)):
+                continue
+            fixed_text = _strip_tags(str(it.get("fixed_text") or ""))
+            if not fixed_text:
+                continue
+            fixed_tts = str(it.get("fixed_tts_text") or fixed_text).strip() or fixed_text
+            lines[l_idx]["text"] = fixed_text
+            lines[l_idx]["tts_text"] = fixed_tts
+            patches_applied += 1
+        elif t_type == "subtitle":
+            val = _strip_tags(str(it.get("fixed_value") or ""))
+            if val:
+                episode["meta"]["subtitle"] = val
+                patches_applied += 1
+        elif t_type == "learned_point":
+            try:
+                idx = int(it["index"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            val = _strip_tags(str(it.get("fixed_value") or ""))
+            if 0 <= idx < len(learned_pts) and val:
+                learned_pts[idx] = val
+                patches_applied += 1
+        elif t_type == "kodaira_discovery":
+            val = _strip_tags(str(it.get("fixed_value") or ""))
+            if val:
+                notes["kodaira_discovery"] = val
+                patches_applied += 1
+        elif t_type == "reference":
+            try:
+                idx = int(it["index"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            if not (0 <= idx < len(refs)):
+                continue
+            action = str(it.get("action") or "replace").lower()
+            if action == "remove":
+                ref_removals.add(idx)
+                patches_applied += 1
+            else:
+                if it.get("fixed_title"):
+                    refs[idx]["title"] = _strip_tags(str(it["fixed_title"]))
+                if it.get("fixed_detail"):
+                    refs[idx]["detail"] = _strip_tags(str(it["fixed_detail"]))
+                if "fixed_contact" in it and it["fixed_contact"] is not None:
+                    refs[idx]["contact"] = _strip_tags(str(it["fixed_contact"]))
+                patches_applied += 1
+        elif t_type == "link":
+            try:
+                idx = int(it["index"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            if not (0 <= idx < len(links)):
+                continue
+            action = str(it.get("action") or "replace").lower()
+            if action == "remove":
+                link_removals.add(idx)
+                patches_applied += 1
+            else:
+                new_url = str(it.get("fixed_url") or "").strip()
+                if new_url.startswith("https://"):
+                    links[idx]["url"] = new_url
+                if it.get("fixed_title"):
+                    links[idx]["title"] = _strip_tags(str(it["fixed_title"]))
+                if it.get("fixed_note"):
+                    links[idx]["note"] = _strip_tags(str(it["fixed_note"]))
+                patches_applied += 1
+
+    for idx in sorted(ref_removals, reverse=True):
+        if 0 <= idx < len(refs):
+            refs.pop(idx)
+    for idx in sorted(link_removals, reverse=True):
+        if 0 <= idx < len(links) and len(links) > 1:
+            links.pop(idx)
+
+    raw_status = str(fc_result.get("status") or "").strip()
+    if patches_applied > 0:
+        final_status = "patched"
+    elif raw_status:
+        final_status = raw_status
+    else:
+        final_status = "passed"
+
+    episode.setdefault("meta", {})["fact_check"] = {
+        "model": factcheck_model,
+        "status": final_status,
+        "checked_claims_count": int(fc_result.get("checked_claims_count") or 0),
+        "issues_found": len(issues),
+        "patches_applied": patches_applied,
+        "summary": str(fc_result.get("summary") or "").strip(),
+        "issues": [
+            {
+                "severity": str(it.get("severity") or "warning"),
+                "claim": str(it.get("claim") or "")[:160],
+                "reason": str(it.get("reason") or "")[:240],
+                "verified_fact": str(it.get("verified_fact") or "")[:240],
+            }
+            for it in issues[:12]
+        ],
+    }
+    return episode
+
+
+def run_fact_check(
+    client: genai.Client,
+    episode: dict[str, Any],
+    live_bundle: dict[str, Any],
+    research_summary: str,
+    factcheck_model: str = DEFAULT_FACTCHECK_MODEL,
+) -> dict[str, Any]:
+    """Execute Phase C grounded fact-check audit and apply surgical patches before saving/TTS."""
+    fc_prompt = build_factcheck_prompt(episode, live_bundle, research_summary)
+    fc_cfg_kwargs: dict[str, Any] = {"tools": [{"google_search": {}}]}
+    if factcheck_model.startswith("gemini-4"):
+        fc_cfg_kwargs["thinking_config"] = types.ThinkingConfig(
+            thinking_level=types.ThinkingLevel.MEDIUM,
+        )
+
+    print(f"Phase C: Auditing facts & dates via {factcheck_model} + Google Search...")
+    fc_resp = client.models.generate_content(
+        model=factcheck_model,
+        contents=fc_prompt,
+        config=types.GenerateContentConfig(**fc_cfg_kwargs),
+    )
+    print(f"Phase C usage   : {_format_usage(fc_resp)}")
+
+    raw_fc = getattr(fc_resp, "text", "") or ""
+    fc_result = _parse_fact_check_result(raw_fc)
+    patched = _apply_fact_check_patches(episode, fc_result, factcheck_model)
+    fc_meta = patched["meta"]["fact_check"]
+    print(
+        f"Phase C result  : status={fc_meta['status']} | claims={fc_meta['checked_claims_count']} | "
+        f"issues={fc_meta['issues_found']} | patched={fc_meta['patches_applied']}"
+    )
+    if fc_meta["summary"]:
+        print(f"Phase C summary : {fc_meta['summary']}")
+    return patched
 
 
 def _update_knowledge_log(episode: dict[str, Any]) -> None:
@@ -866,13 +1200,24 @@ def main() -> None:
         help="Gemini model for Phase B JSON script writing",
     )
     parser.add_argument(
+        "--factcheck-model",
+        default=DEFAULT_FACTCHECK_MODEL,
+        help="Gemini model for Phase C grounded fact-check audit",
+    )
+    parser.add_argument(
+        "--skip-factcheck",
+        action="store_true",
+        help="Skip Phase C grounded fact-check pass",
+    )
+    parser.add_argument(
         "--model",
         default=None,
-        help="Optional single model override for both Phase A and Phase B",
+        help="Optional single model override for Phase A, B, and C",
     )
     args = parser.parse_args()
     research_model = args.model or args.research_model
     script_model = args.model or args.script_model
+    factcheck_model = args.model or args.factcheck_model
 
     load_dotenv(ROOT_DIR / ".env")
     target_date = args.date
@@ -949,7 +1294,8 @@ def main() -> None:
         )
         print("\n=== DRY RUN CONFIG SUMMARY ===")
         print(f"Date            : {target_date} ({plan_preview['weekday_ja']}) | Episode #{ep_num}")
-        print(f"Models          : research={research_model} | script={script_model}")
+        fc_label = "SKIPPED" if args.skip_factcheck else factcheck_model
+        print(f"Models          : research={research_model} | script={script_model} | factcheck={fc_label}")
         print(f"Edition         : {plan_preview['edition_label']}")
         print(f"Holiday         : {plan_preview['is_holiday']} ({plan_preview['holiday_name'] or '-'})")
         print(f"Target          : {plan_preview['target_duration_sec']}s / ~{plan_preview['target_chars']} chars ({plan_preview['min_chars']}~{plan_preview['max_chars']})")
@@ -1030,7 +1376,17 @@ def main() -> None:
         fallback_links=grounded_links,
         research_model=research_model,
         script_model=script_model,
+        factcheck_model="skipped" if args.skip_factcheck else factcheck_model,
     )
+
+    if not args.skip_factcheck:
+        episode = run_fact_check(
+            client=client,
+            episode=episode,
+            live_bundle=live_bundle,
+            research_summary=research_text,
+            factcheck_model=factcheck_model,
+        )
 
     ep_dir.mkdir(parents=True, exist_ok=True)
     ep_json_path.write_text(json.dumps(episode, ensure_ascii=False, indent=2), encoding="utf-8")

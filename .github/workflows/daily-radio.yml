@@ -23,6 +23,10 @@ on:
         description: 'Phase B 台本執筆モデル (デフォルト: gemini-4-neon)'
         required: false
         default: 'gemini-4-neon'
+      factcheck_model:
+        description: 'Phase C ファクトチェックモデル (デフォルト: gemini-4-hydrogen)'
+        required: false
+        default: 'gemini-4-hydrogen'
 
 permissions:
   contents: write
@@ -63,7 +67,7 @@ jobs:
           echo "target_date=$TARGET_DATE" >> "$GITHUB_OUTPUT"
           echo "Broadcast target date (JST): $TARGET_DATE"
 
-      - name: Generate daily script (Gemini 4 Hydrogen research + Gemini 4 Neon script)
+      - name: Generate & fact-check daily script (Hydrogen research + Neon script + Hydrogen fact-check)
         env:
           PYTHONUTF8: '1'
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -74,12 +78,15 @@ jobs:
           fi
           RESEARCH_MODEL="${{ inputs.research_model }}"
           SCRIPT_MODEL="${{ inputs.script_model }}"
+          FACTCHECK_MODEL="${{ inputs.factcheck_model }}"
           [ -z "$RESEARCH_MODEL" ] && RESEARCH_MODEL="gemini-4-hydrogen"
           [ -z "$SCRIPT_MODEL" ] && SCRIPT_MODEL="gemini-4-neon"
+          [ -z "$FACTCHECK_MODEL" ] && FACTCHECK_MODEL="gemini-4-hydrogen"
           python src/generate_episode.py \
             --date "${{ steps.meta.outputs.target_date }}" \
             --research-model "$RESEARCH_MODEL" \
             --script-model "$SCRIPT_MODEL" \
+            --factcheck-model "$FACTCHECK_MODEL" \
             $FORCE_FLAG
 
       - name: Synthesize audio & master MP3 (Gemini 3.8 Flash TTS)
