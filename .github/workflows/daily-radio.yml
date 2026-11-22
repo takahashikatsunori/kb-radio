@@ -15,6 +15,14 @@ on:
         type: boolean
         required: false
         default: false
+      research_model:
+        description: 'Phase A 調査モデル (デフォルト: gemini-4-hydrogen)'
+        required: false
+        default: 'gemini-4-hydrogen'
+      script_model:
+        description: 'Phase B 台本執筆モデル (デフォルト: gemini-4-neon)'
+        required: false
+        default: 'gemini-4-neon'
 
 permissions:
   contents: write
@@ -55,7 +63,7 @@ jobs:
           echo "target_date=$TARGET_DATE" >> "$GITHUB_OUTPUT"
           echo "Broadcast target date (JST): $TARGET_DATE"
 
-      - name: Generate daily script (Gemini 3.8 Flash + Search Grounding)
+      - name: Generate daily script (Gemini 4 Hydrogen research + Gemini 4 Neon script)
         env:
           PYTHONUTF8: '1'
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -64,7 +72,15 @@ jobs:
           if [ "${{ inputs.force_script }}" = "true" ]; then
             FORCE_FLAG="--force"
           fi
-          python src/generate_episode.py --date "${{ steps.meta.outputs.target_date }}" $FORCE_FLAG
+          RESEARCH_MODEL="${{ inputs.research_model }}"
+          SCRIPT_MODEL="${{ inputs.script_model }}"
+          [ -z "$RESEARCH_MODEL" ] && RESEARCH_MODEL="gemini-4-hydrogen"
+          [ -z "$SCRIPT_MODEL" ] && SCRIPT_MODEL="gemini-4-neon"
+          python src/generate_episode.py \
+            --date "${{ steps.meta.outputs.target_date }}" \
+            --research-model "$RESEARCH_MODEL" \
+            --script-model "$SCRIPT_MODEL" \
+            $FORCE_FLAG
 
       - name: Synthesize audio & master MP3 (Gemini 3.8 Flash TTS)
         env:

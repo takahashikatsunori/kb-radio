@@ -1,4 +1,4 @@
-"""Daily Kodaira radio episode generator using Gemini 3.8 Flash + Google Search grounding."""
+"""Daily Kodaira radio episode generator using Gemini 4 Hydrogen (research + Search) and Gemini 4 Neon (script)."""
 
 from __future__ import annotations
 
@@ -29,6 +29,8 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 CONFIG_DIR = ROOT_DIR / "config"
 DATA_DIR = ROOT_DIR / "data"
 EPISODES_DIR = ROOT_DIR / "episodes"
+DEFAULT_RESEARCH_MODEL = "gemini-4-hydrogen"
+DEFAULT_SCRIPT_MODEL = "gemini-4-neon"
 
 
 def _load_json(path: Path) -> Any:
@@ -405,6 +407,34 @@ def _strip_tags(text: str) -> str:
     return re.sub(r"<[^>]+>", "", text).strip()
 
 
+def _parse_json_response(raw_text: str) -> dict[str, Any]:
+    """Parse JSON from model output, tolerating optional markdown code fences."""
+    cleaned = raw_text.strip()
+    if cleaned.startswith("```"):
+        cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned, flags=re.IGNORECASE)
+        cleaned = re.sub(r"\s*```$", "", cleaned)
+    return json.loads(cleaned)
+
+
+def _format_usage(resp: Any) -> str:
+    """Safely format token counts from response.usage_metadata for logs."""
+    usage = getattr(resp, "usage_metadata", None)
+    if not usage:
+        return "usage=n/a"
+    fields = (
+        ("in", "prompt_token_count"),
+        ("out", "candidates_token_count"),
+        ("think", "thoughts_token_count"),
+        ("total", "total_token_count"),
+    )
+    parts: list[str] = []
+    for label, attr in fields:
+        val = getattr(usage, attr, None)
+        if val is not None:
+            parts.append(f"{label}={val}")
+    return ", ".join(parts) if parts else "usage=n/a"
+
+
 def _assemble_and_validate_episode(
     raw_generated: dict[str, Any],
     target_date: str,
@@ -415,6 +445,8 @@ def _assemble_and_validate_episode(
     tomorrow_preview: dict[str, Any],
     live_bundle: dict[str, Any],
     fallback_links: list[dict[str, str]],
+    research_model: str = DEFAULT_RESEARCH_MODEL,
+    script_model: str = DEFAULT_SCRIPT_MODEL,
 ) -> dict[str, Any]:
     """Wrap generated segments with full program metadata and validate every line."""
     day_cfg = day_plan["day_cfg"]
@@ -553,6 +585,10 @@ def _assemble_and_validate_episode(
             "theme_badge": day_cfg["theme_badge"],
             "target_duration_sec": int(day_plan["target_duration_sec"]),
             "output_filename": f"kodaira_radio_{date_compact}.mp3",
+            "models": {
+                "research": research_model,
+                "script": script_model,
+            },
             "voices": voices,
         },
         "guest": {
@@ -614,11 +650,23 @@ def main() -> None:
         help="Print research/generation prompts without calling Gemini API",
     )
     parser.add_argument(
+        "--research-model",
+        default=DEFAULT_RESEARCH_MODEL,
+        help="Gemini model for Phase A research & Google Search grounding",
+    )
+    parser.add_argument(
+        "--script-model",
+        default=DEFAULT_SCRIPT_MODEL,
+        help="Gemini model for Phase B JSON script writing",
+    )
+    parser.add_argument(
         "--model",
-        default="gemini-3.8-flash",
-        help="Gemini text model for research & script generation",
+        default=None,
+        help="Optional single model override for both Phase A and Phase B",
     )
     args = parser.parse_args()
+    research_model = args.model or args.research_model
+    script_model = args.model or args.script_model
 
     load_dotenv(ROOT_DIR / ".env")
     target_date = args.date
@@ -669,6 +717,7 @@ def main() -> None:
         )
         print("\n=== DRY RUN CONFIG SUMMARY ===")
         print(f"Date            : {target_date} ({plan_preview['weekday_ja']}) | Episode #{ep_num}")
+        print(f"Models          : research={research_model} | script={script_model}")
         print(f"Edition         : {plan_preview['edition_label']}")
         print(f"Holiday         : {plan_preview['is_holiday']} ({plan_preview['holiday_name'] or '-'})")
         print(f"Target          : {plan_preview['target_duration_sec']}s / ~{plan_preview['target_chars']} chars ({plan_preview['min_chars']}~{plan_preview['max_chars']})")
@@ -688,21 +737,29 @@ def main() -> None:
 
     client = genai.Client(api_key=api_key)
 
-    print(f"Phase A: Researching latest Kodaira & disaster news via {args.model} + Google Search...")
+    research_cfg_kwargs: dict[str, Any] = {
+        "tools": [{"google_search": {}}],
+    }
+    if research_model.startswith("gemini-4"):
+        research_cfg_kwargs["thinking_config"] = types.ThinkingConfig(
+            thinking_level=types.ThinkingLevel.MEDIUM,
+        )
+    print(f"Phase A: Researching latest Kodaira & disaster news via {research_model} + Google Search...")
     research_resp = client.models.generate_content(
-        model=args.model,
+        model=research_model,
         contents=research_prompt,
-        config=types.GenerateContentConfig(
-            tools=[{"google_search": {}}],
-            temperature=0.4,
-        ),
+        config=types.GenerateContentConfig(**research_cfg_kwargs),
     )
+    print(f"Phase A usage   : {_format_usage(research_resp)}")
     raw_research = getattr(research_resp, "text", "") or ""
     research_text, breaking_special = _parse_breaking_special(raw_research, live_quake_special)
     grounded_links = _extract_grounding_links(research_resp, live_bundle["verified_links"])
 
     final_plan, special_meta = _apply_breaking_extension(day_plan, breaking_special)
-    print(f"Phase B: Generating script ({final_plan['edition_label']}, target ~{final_plan['target_chars']} chars)...")
+    print(
+        f"Phase B: Generating script via {script_model} "
+        f"({final_plan['edition_label']}, target ~{final_plan['target_chars']} chars)..."
+    )
 
     script_prompt = build_script_prompt(
         target_date=target_date,
@@ -717,14 +774,14 @@ def main() -> None:
         grounded_links=grounded_links,
     )
     script_resp = client.models.generate_content(
-        model=args.model,
+        model=script_model,
         contents=script_prompt,
         config=types.GenerateContentConfig(
             response_mime_type="application/json",
-            temperature=0.75,
         ),
     )
-    raw_json = json.loads(script_resp.text)
+    print(f"Phase B usage   : {_format_usage(script_resp)}")
+    raw_json = _parse_json_response(getattr(script_resp, "text", "") or "")
     episode = _assemble_and_validate_episode(
         raw_generated=raw_json,
         target_date=target_date,
@@ -735,6 +792,8 @@ def main() -> None:
         tomorrow_preview=tomorrow_preview,
         live_bundle=live_bundle,
         fallback_links=grounded_links,
+        research_model=research_model,
+        script_model=script_model,
     )
 
     ep_dir.mkdir(parents=True, exist_ok=True)

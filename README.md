@@ -20,6 +20,8 @@
   - `jpholiday` で日本の祝日・振替休日を自動判定し、祝日も15分拡大版として放送します。
   - [config/special_days.json](config/special_days.json) の防災記念日（1/17、3/11、9/1防災の日 等）や小平市の重要イベントが近づくと、数日前からカウントダウン特別コーナーを追加して放送尺を拡張します（前日のエンディングで事前予告も行います）。
   - 大きな地震・重大気象警報・ビッグニュースが発生した日も、`special_feature` コーナーを自動追加して拡大版でお届けします。
+- **ハイブリッドAI制作パイプライン**
+  - 調査・ニュース選定は **`gemini-4-hydrogen` + Google検索グラウンディング**、台本JSON執筆は **`gemini-4-neon`**、音声合成は **`gemini-3.8-flash-tts`** が連携し、最新情報と自然な掛け合いを両立しています。
 - **Gemini 3.8 Flash TTS による豊かな感情表現**
   - `<laugh>`・`<chuckle>`・`<giggle>`・`<short pause>` 等のインラインタグと `speech_metadata.style` 演技指示、2話者マルチスピーカー合成により、笑い・うなずき・自然な間合いを再現します。
 - **ローカルPC ＆ GitHub Pages 両対応ポータル（`docs/`）**
