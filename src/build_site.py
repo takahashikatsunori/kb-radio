@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import html
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -42,6 +43,13 @@ def _safe_json_for_html(obj: Any) -> str:
 
 def _load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _strip_tts_tag_hints(text: str) -> str:
+    """Remove parenthetical technical TTS markup (e.g. '（<laugh> / <chuckle>）') for display."""
+    cleaned = re.sub(r"[（(][^）)]*<[^>]+>[^）)]*[）)]", "", text)
+    cleaned = re.sub(r"<[^>]+>", "", cleaned)
+    return re.sub(r"\s{2,}", " ", cleaned).strip()
 
 
 def _write_placeholder_svg(
@@ -1777,6 +1785,8 @@ def _render_cast_page(
 
     hosts_out: list[dict[str, Any]] = []
     for h in characters.get("hosts", {}).values():
+        clean_habits = [_strip_tts_tag_hints(s) for s in h.get("speaking_habits", [])]
+        clean_habits = [s for s in clean_habits if s]
         hosts_out.append(
             build_member_payload(
                 cid=h["id"],
@@ -1788,8 +1798,8 @@ def _render_cast_page(
                 jump_label=h["name"],
                 personality=h["personality"],
                 sub_detail_label="トーク・進行の特徴",
-                sub_detail=" ／ ".join(h.get("speaking_habits", [])),
-                fallback_chips=h.get("speaking_habits", []),
+                sub_detail=" ／ ".join(clean_habits),
+                fallback_chips=clean_habits,
                 voice_name=h["tts"]["gemini_voice"],
                 ui_cfg=h.get("ui", {}),
             )
