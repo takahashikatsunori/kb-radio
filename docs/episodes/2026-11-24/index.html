@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>毎朝7時！こだいら防災＆まちラジオ | 第3回 (2026-11-24)</title>
+  <style>
+    :root {
+      --guest-color: #0369a1;
+      --guest-bg: #f0f9ff;
+    }
+    
+:root {
+  --forest: #1b5e3c;
+  --forest-dark: #124028;
+  --forest-soft: #e7f4ec;
+  --paper: #f8f7f3;
+  --card: #ffffff;
+  --ink: #1f2937;
+  --muted: #5b6472;
+  --border: #dfe4de;
+  --amber: #d97706;
+  --amber-soft: #fef3c7;
+  --koharu: #e11d48;
+  --koharu-soft: #fff1f2;
+  --heizo: #2563eb;
+  --heizo-soft: #eff6ff;
+  --guest: var(--guest-color, #4338ca);
+  --guest-soft: var(--guest-bg, #eef2ff);
+  --shadow: 0 6px 20px rgba(18, 64, 40, 0.08);
+}
+* { box-sizing: border-box; }
+html, body {
+  overflow-x: clip;
+  max-width: 100%;
+}
+body {
+  margin: 0;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", system-ui, -apple-system, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.65;
+  -webkit-tap-highlight-color: transparent;
+}
+a { color: var(--forest); }
+
+/* Compact app-style header */
+header {
+  background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest) 65%, #2b7a50 100%);
+  color: #ffffff;
+  border-bottom: 3px solid var(--amber);
+}
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.65rem 1rem 0.75rem;
+}
+.brand-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+.brand {
+  font-weight: 800;
+  font-size: clamp(0.98rem, 4vw, 1.22rem);
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.01em;
+}
+.time-pill {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.16rem 0.55rem;
+  border-radius: 999px;
+  background: var(--amber);
+  color: #fff;
+}
+.nav-links {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.32rem;
+}
+.nav-links a {
+  color: rgba(255, 255, 255, 0.94);
+  text-decoration: none;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.34rem 0.2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.15s;
+}
+.nav-links a:hover, .nav-links a.active {
+  background: #ffffff;
+  color: var(--forest-dark);
+  border-color: #ffffff;
+}
+.page-subhead {
+  margin: 0.55rem 0 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+.page-h1 {
+  margin: 0.45rem 0 0;
+  font-size: clamp(1.08rem, 4vw, 1.45rem);
+  line-height: 1.3;
+}
+
+/* Main layout */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(310px, 0.95fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+.container.single {
+  grid-template-columns: minmax(0, 1fr);
+}
+.col-main, .col-side, .card, .now-playing, .section-head, .seg-divider, .mobile-tabs {
+  min-width: 0;
+  max-width: 100%;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.ep-hero {
+  padding: 0.78rem 1rem;
+  border-left: 4px solid var(--amber);
+}
+.ep-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.theme-pill {
+  display: inline-block;
+  padding: 0.14rem 0.55rem;
+  border-radius: 999px;
+  background: var(--guest-soft);
+  color: var(--guest);
+  font-weight: 700;
+}
+.edition-pill {
+  display: inline-block;
+  padding: 0.14rem 0.55rem;
+  border-radius: 999px;
+  background: var(--amber-soft);
+  color: #92400e;
+  font-weight: 700;
+}
+.ep-title {
+  margin: 0.35rem 0 0;
+  font-size: clamp(0.98rem, 3.6vw, 1.22rem);
+  line-height: 1.38;
+  color: var(--forest-dark);
+  overflow-wrap: anywhere;
+}
+.section-head {
+  padding: 0.75rem 1rem;
+  background: #fcfcfa;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.3rem 0.6rem;
+}
+.section-head h2 {
+  margin: 0;
+  font-size: 0.96rem;
+  color: var(--forest-dark);
+  flex: 1 1 180px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.hint {
+  font-size: 0.76rem;
+  color: var(--muted);
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* Slim sticky player */
+.player-card {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding: 0.72rem 1rem;
+  border-top: 3px solid var(--forest);
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(8px);
+}
+.audio-pending-banner {
+  background: var(--amber-soft);
+  border: 1px solid #f59e0b;
+  color: #92400e;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.55rem;
+}
+.now-playing {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+.now-chapter {
+  flex: 1 1 auto;
+  font-size: 0.88rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.time-readout {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--heizo);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.scrubber {
+  width: 100%;
+  accent-color: var(--forest);
+  cursor: pointer;
+  height: 22px;
+  margin: 0.2rem 0 0.35rem;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--ink);
+  padding: 0.4rem 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  min-height: 36px;
+  white-space: nowrap;
+}
+button:hover:not(:disabled) {
+  background: var(--forest-soft);
+  border-color: var(--forest);
+}
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+button.primary {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #fff;
+  padding: 0.42rem 0.95rem;
+}
+button.primary:hover:not(:disabled) { background: var(--forest-dark); }
+button.active-toggle {
+  background: var(--heizo-soft);
+  border-color: var(--heizo);
+  color: var(--heizo);
+}
+.speed-group button.is-selected {
+  background: var(--forest);
+  color: #fff;
+  border-color: var(--forest);
+}
+.speed-cycle-btn {
+  display: none;
+}
+
+/* Mobile 3-tab bar */
+.mobile-tabs {
+  display: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+  background: #ecefe9;
+  padding: 0.3rem;
+  border-radius: 12px;
+}
+.mobile-tabs button {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.8rem;
+  min-height: 36px;
+  padding: 0.35rem 0.25rem;
+  border-radius: 9px;
+}
+.mobile-tabs button.active {
+  background: #ffffff;
+  color: var(--forest-dark);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Chapters accordion */
+.chapter-summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+.chapter-summary h2 {
+  flex: 1 1 auto;
+}
+.chapter-summary .hint {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.chapter-summary::-webkit-details-marker {
+  display: none;
+}
+.chapter-summary .hint::after {
+  content: " ▼";
+  font-size: 0.7rem;
+}
+.chapter-details[open] .chapter-summary .hint::after {
+  content: " ▲";
+}
+.chapter-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.45rem;
+  padding: 0.75rem 0.95rem;
+}
+.chapter-btn {
+  text-align: left;
+  padding: 0.5rem 0.65rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.14rem;
+  white-space: normal;
+  min-height: auto;
+}
+.chapter-btn.active {
+  background: var(--forest-soft);
+  border-color: var(--forest);
+  box-shadow: inset 3px 0 0 var(--forest);
+}
+.chapter-tc {
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--heizo);
+  font-weight: 700;
+  flex: 0 0 auto;
+}
+.chapter-title {
+  font-size: 0.82rem;
+  line-height: 1.35;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Transcript */
+.transcript-body {
+  padding: 0.8rem 0.95rem 1.25rem;
+  max-height: 68vh;
+  overflow-y: auto;
+}
+.seg-divider {
+  margin: 1rem 0 0.55rem;
+  padding: 0.42rem 0.7rem;
+  background: var(--forest-soft);
+  border-left: 4px solid var(--forest);
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--forest-dark);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+  scroll-margin-top: 150px;
+}
+.seg-divider > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.seg-divider:first-child { margin-top: 0; }
+.line-item {
+  display: grid;
+  grid-template-columns: 48px 86px minmax(0, 1fr);
+  grid-template-areas: "tc speaker text";
+  gap: 0.5rem;
+  padding: 0.52rem 0.6rem;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  align-items: baseline;
+  scroll-margin-top: 150px;
+}
+.line-item:hover { background: #f3f5f2; }
+.line-item.active {
+  background: var(--amber-soft);
+  border-color: #f59e0b;
+}
+.line-tc {
+  grid-area: tc;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.76rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.speaker-pill {
+  grid-area: speaker;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.14rem 0.48rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.speaker-koharu { background: var(--koharu-soft); color: var(--koharu); }
+.speaker-heizo { background: var(--heizo-soft); color: var(--heizo); }
+.speaker-guest { background: var(--guest-soft); color: var(--guest); }
+.line-text {
+  grid-area: text;
+  font-size: 0.94rem;
+  overflow-wrap: anywhere;
+}
+
+/* Right panels & cards */
+.panel-body {
+  padding: 0.8rem 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.link-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 0.72rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fcfcfa;
+  transition: border-color 0.15s, background 0.15s;
+}
+.link-card:hover {
+  border-color: var(--forest);
+  background: var(--forest-soft);
+}
+.pill-tag {
+  display: inline-block;
+  font-size: 0.71rem;
+  font-weight: 700;
+  padding: 0.1rem 0.48rem;
+  border-radius: 999px;
+  background: var(--forest-soft);
+  color: var(--forest-dark);
+  margin-bottom: 0.22rem;
+}
+.link-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--forest-dark);
+  margin: 0 0 0.18rem;
+  overflow-wrap: anywhere;
+}
+.link-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.note-box {
+  padding: 0.72rem 0.85rem;
+  border-radius: 10px;
+  background: #fcfcfa;
+  border: 1px solid var(--border);
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+.note-box ul {
+  margin: 0.35rem 0 0.45rem;
+  padding-left: 1.15rem;
+}
+.tel-link {
+  color: var(--heizo);
+  font-weight: 700;
+  text-decoration: underline;
+}
+.guest-card {
+  padding: 0.8rem 0.95rem;
+  border-left: 4px solid var(--guest);
+  background: var(--guest-soft);
+  border-radius: 10px;
+}
+.kw-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+.kw-chip {
+  font-size: 0.74rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.archive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: 0.85rem;
+  padding: 0.9rem;
+}
+.archive-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.9rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  overflow-wrap: anywhere;
+}
+.btn-link {
+  display: inline-block;
+  text-decoration: none;
+  background: var(--forest);
+  color: #fff;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 0.48rem 0.85rem;
+  border-radius: 8px;
+  text-align: center;
+}
+.btn-link:hover { background: var(--forest-dark); }
+footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.9rem 1rem 2rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Mobile breakpoint (<= 920px): single column + tab switching */
+@media (max-width: 920px) {
+  .container {
+    display: block;
+    width: 100%;
+    padding: 0.65rem 0.7rem;
+  }
+  .mobile-tabs {
+    display: grid;
+  }
+  .player-card {
+    margin: 0 0 0.65rem;
+    border-radius: 12px;
+    padding: 0.6rem 0.78rem;
+  }
+  main[data-active-tab="script"] #tab-panel-script { display: block; }
+  main[data-active-tab="script"] .col-side { display: none; }
+
+  main[data-active-tab="links"] #tab-panel-script { display: none; }
+  main[data-active-tab="links"] .col-side { display: block; }
+  main[data-active-tab="links"] #tab-panel-links { display: block; }
+  main[data-active-tab="links"] #tab-panel-notes { display: none; }
+
+  main[data-active-tab="notes"] #tab-panel-script { display: none; }
+  main[data-active-tab="notes"] .col-side { display: block; }
+  main[data-active-tab="notes"] #tab-panel-links { display: none; }
+  main[data-active-tab="notes"] #tab-panel-notes { display: block; }
+}
+
+/* Narrow phone breakpoint (<= 640px): vertical-only controls, accordion chapters, 2-row transcript */
+@media (max-width: 640px) {
+  .header-inner { padding: 0.55rem 0.7rem 0.62rem; }
+  .brand-bar { margin-bottom: 0.45rem; }
+  .nav-links { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.25rem; }
+  .nav-links a { font-size: 0.72rem; padding: 0.34rem 0.14rem; }
+  .ep-hero { padding: 0.62rem 0.75rem; margin-bottom: 0.6rem; }
+  .controls { gap: 0.25rem; }
+  .btn-group { gap: 0.25rem; }
+  .speed-group { display: none; }
+  .speed-cycle-btn { display: inline-flex; align-items: center; }
+  button { padding: 0.34rem 0.48rem; font-size: 0.76rem; min-height: 36px; }
+  button.primary { padding: 0.34rem 0.68rem; }
+
+  .chapter-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0.6rem 0.75rem;
+    gap: 0.38rem;
+  }
+  .chapter-btn {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.45rem;
+    width: 100%;
+    padding: 0.48rem 0.62rem;
+  }
+  .chapter-tc {
+    flex: 0 0 auto;
+  }
+
+  .transcript-body {
+    max-height: none;
+    overflow-y: visible;
+    padding: 0.65rem 0.75rem 1.2rem;
+  }
+  .line-item {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "speaker tc"
+      "text text";
+    gap: 0.28rem 0.55rem;
+    padding: 0.55rem 0.55rem;
+    border-bottom: 1px solid #f0f2ee;
+  }
+  .line-tc {
+    justify-self: end;
+    font-size: 0.74rem;
+  }
+  .line-text {
+    font-size: 0.95rem;
+    line-height: 1.72;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="brand-bar"><a class="brand" href="../../index.html">こだいら防災＆まちラジオ</a><span class="time-pill">毎朝7時</span></div><nav class="nav-links" aria-label="メインメニュー"><a href="../../index.html">最新回</a><a href="../../calendar.html">カレンダー</a><a href="../../archive.html" class="active">過去回</a><a href="../../cast.html">出演者</a><a href="../../characters.html">防災ノート</a><a href="../../tech.html">番組のしくみ</a></nav>
+    </div>
+  </header>
+
+  <main class="container" id="main-root" data-active-tab="script">
+    <section class="col-main">
+      <div class="card ep-hero">
+        <div class="ep-meta-row">
+          <span class="theme-pill">火曜テーマ：気象・水害・都市河川</span>
+          <span class="edition-pill">特別コーナー拡大版（約13分）</span><span class="edition-pill">特別特集: 地下25mの大冒険！ふれあい下水道館と鷹の台パンさんぽで知る『小平の水のヒミツ』（編集長ワクワク特集）</span>
+          <span>2026-11-24（火）・15:46・ゲスト: 雨宮 栞</span>
+        </div>
+        <h1 class="ep-title">第3回・2026-11-24（火曜日）朝7時号 ― 地下25mの下水道館と鷹の台パンさんぽ！内水氾濫とXRAINのヒミツ</h1>
+      </div>
+
+      <div class="card player-card">
+        <div id="audio-pending" class="audio-pending-banner" style="display:none;">
+          この回のMP3音声はまだ生成されていません（<code>.env</code> に <code>GEMINI_API_KEY</code> を設定し <code>build_radio.py</code> を実行すると音声再生ができます）。下の台本・タイムライン・関連リンクはそのままお読みいただけます。
+        </div>
+        <audio id="radio-audio" preload="metadata"></audio>
+        <div class="now-playing">
+          <div class="now-chapter" id="now-chapter">再生ボタンを押してお聴きください</div>
+          <div class="time-readout" id="time-readout">00:00 / 15:46</div>
+        </div>
+        <input type="range" class="scrubber" id="scrubber" min="0" max="100" step="0.1" value="0" aria-label="再生位置シークバー" />
+        <div class="controls">
+          <div class="btn-group">
+            <button type="button" class="primary" id="btn-play">▶ 再生</button>
+            <button type="button" id="btn-back">-15s</button>
+            <button type="button" id="btn-fwd">+15s</button>
+          </div>
+          <div class="btn-group speed-group" id="speed-group">
+            <button type="button" data-rate="0.9">0.9x</button>
+            <button type="button" data-rate="1" class="is-selected">1.0x</button>
+            <button type="button" data-rate="1.15">1.15x</button>
+            <button type="button" data-rate="1.25">1.25x</button>
+          </div>
+          <div class="btn-group">
+            <button type="button" id="btn-speed-cycle" class="speed-cycle-btn">1.0x</button>
+            <button type="button" id="btn-autoscroll" class="active-toggle">追従ON</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mobile-tabs" id="mobile-tabs" role="tablist" aria-label="表示切替">
+        <button type="button" role="tab" data-tab="script" class="active">台本・目次</button>
+        <button type="button" role="tab" data-tab="links">リンク・天気</button>
+        <button type="button" role="tab" data-tab="notes">ノート・過去回</button>
+      </div>
+
+      <div id="tab-panel-script">
+        <details id="chapter-details" class="card chapter-details">
+          <summary class="section-head chapter-summary">
+            <h2>チャプター目次</h2>
+            <span class="hint">開閉</span>
+          </summary>
+          <div class="chapter-list" id="chapter-list"></div>
+        </details>
+
+        <div class="card">
+          <div class="section-head">
+            <h2>同期台本</h2>
+            <span class="hint">セリフをタップで再生</span>
+          </div>
+          <div class="transcript-body" id="transcript-body"></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="col-side">
+      <div id="tab-panel-links">
+        <div class="card">
+          <div class="section-head">
+            <h2>本日のゲスト＆天気</h2>
+            <span class="hint">曜日テーマ</span>
+          </div>
+          <div class="panel-body" id="guest-weather-panel"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <h2>今日の話題・関連リンク</h2>
+            <span class="hint">タップで公式ページへ</span>
+          </div>
+          <div class="panel-body" id="links-panel"></div>
+        </div>
+      </div>
+
+      <div id="tab-panel-notes">
+        <div class="card">
+          <div class="section-head">
+            <h2>小春＆平蔵の防災ノート</h2>
+            <span class="hint">今日の学び・連絡先</span>
+          </div>
+          <div class="panel-body" id="notes-panel"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <h2>バックナンバー</h2>
+            <a href="../../archive.html" class="hint">一覧を見る →</a>
+          </div>
+          <div class="panel-body" id="recent-panel"></div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    毎朝7時！こだいら防災＆まちラジオ（東京都小平市）／ 小春 ＆ 平蔵
+  </footer>
+
+  <script type="application/json" id="episode-data">{"meta": {"title": "毎朝7時！こだいら防災＆まちラジオ", "subtitle": "第3回・2026-11-24（火曜日）朝7時号 ― 地下25mの下水道館と鷹の台パンさんぽ！内水氾濫とXRAINのヒミツ", "episode_date": "2026-11-24", "episode_number": 3, "weekday": "tuesday", "weekday_ja": "火曜日", "is_weekend": false, "is_holiday": false, "holiday_name": "", "edition_label": "特別コーナー拡大版（約13分）", "special_feature": {"kind": "scheduled_countdown", "title": "地下25mの大冒険！ふれあい下水道館と鷹の台パンさんぽで知る『小平の水のヒミツ』", "phase_label": "編集長ワクワク特集", "focus": "天候を気にせず晩秋のお出かけに最適な「小平市ふれあい下水道館」の地下25m体験の魅力を小春と平蔵が臨場感たっぷりに紹介し、鷹の台駅周辺の焼きたてパン情報とともに、普段見えない地下インフラが小平の暮らしと水害対策を支えている面白さを楽しく掘り下げます。", "extra_minutes": 3}, "tomorrow_preview": {"date": "2026-11-25", "edition_label": "特別コーナー拡大版（約13分）", "is_holiday": false, "holiday_name": "", "has_special": true}, "theme_name": "気象・水害・都市河川", "theme_badge": "火曜テーマ：気象・水害・都市河川", "target_duration_sec": 780, "output_filename": "kodaira_radio_20261124.mp3", "kodaira_topics": ["小平市ふれあい下水道館（地下25m本物の下水道管体験＆「列車のトイレ写真展～日本全国編～」※本日11/24は休館日）", "鷹の台駅周辺の地元ベーカリーさんぽ（「しょう'sベーカリー」「torpet」）", "大沼町「ファームショップ中村園」小平発祥キウイ『東京ゴールド』直売", "武蔵野美術大学美術館「助教・助手展2026」開催＆本日トークイベント", "令和8年度版小平市防災マップ・防災マップアプリ＆防災庁「事前防災徹底のための緊急要請」"], "kodaira_areas": ["鷹の台駅周辺", "上水本町（小平市ふれあい下水道館）", "たかの台", "大沼町（ファームショップ中村園）", "小川町（武蔵野美術大学美術館）", "鈴木中通り"], "models": {"research": "gemini-4-hydrogen", "script": "gemini-4-neon", "factcheck": "gemini-4-hydrogen"}, "voices": {"koharu": {"name": "小春", "reading": "こはる", "role": "メインパーソナリティ（「小平」の「小」）", "gemini_voice": "Leda", "edge_voice": "ja-JP-NanamiNeural", "edge_rate": "+4%", "edge_pitch": "+1Hz", "default_style": "bright, cheerful, lively, smiling Japanese morning radio host", "pan": -0.1, "ui": {"color": "#e11d48", "bg_soft": "#fff1f2"}}, "heizo": {"name": "平蔵", "reading": "へいぞう", "role": "パートナーキャスター（「小平」の「平」）", "gemini_voice": "Algieba", "edge_voice": "ja-JP-KeitaNeural", "edge_rate": "+2%", "edge_pitch": "-1Hz", "default_style": "warm, gentle, reassuring, friendly Japanese radio co-host", "pan": 0.1, "ui": {"color": "#2563eb", "bg_soft": "#eff6ff"}}, "guest": {"name": "雨宮 栞", "reading": "あまみや しおり", "role": "気象防災アドバイザー（元気象台予報官・架空ゲスト）", "gemini_voice": "Despina", "edge_voice": "ja-JP-NanamiNeural", "edge_rate": "+1%", "edge_pitch": "+0Hz", "default_style": "clear, gentle, expressive and reassuring Japanese female weather specialist", "pan": 0.0, "ui": {"color": "#0369a1", "bg_soft": "#f0f9ff"}}}, "fact_check": {"model": "gemini-4-hydrogen", "status": "patched", "checked_claims_count": 24, "issues_found": 2, "patches_applied": 2, "summary": "台本・防災ノート・防災メモのイベント日程（ふれあい下水道館の本日11/24休館日、鷹の台周辺店舗の定休日等）、防災知識（XRAIN・防災庁・携帯トイレ35回分・警戒レベル4危険警報）、気象・地震データはすべて公式情報と一致しました。関連リンクの防災マップ／ハザードマップURL（link:2, link:3）のみ取り違え・無効URLがあったため正しい公式URLへ修正しました。", "issues": [{"severity": "major", "claim": "小平市防災マップ（避難所・給水拠点・備え）のURLが https://www.city.kodaira.tokyo.jp/kurashi/012/012389.html となっている", "reason": "012389.html は「小平市ハザードマップ（浸水予想区域図・土砂災害警戒区域図）」のページであり、防災マップ情報面のページと取り違えられている", "verified_fact": "令和8年度版 小平市防災マップ（情報面ダウンロード・防災マップ関連リンク集）の公式URLは https://www.city.kodaira.tokyo.jp/kurashi/036/036337.html である"}, {"severity": "major", "claim": "小平市ハザードマップ（浸水予想・土砂災害警戒）のURLが https://www.city.kodaira.tokyo.jp/kurashi/012/012467.html となっている", "reason": "012467.html は小平市公式サイト上で確認できない無効なURLであり、ハザードマップの正しいURLは 012389.html である", "verified_fact": "小平市ハザードマップ（浸水予想区域図・土砂災害警戒区域図）の公式URLは https://www.city.kodaira.tokyo.jp/kurashi/012/012389.html である"}]}}, "manifest_meta": {"title": "毎朝7時！こだいら防災＆まちラジオ", "subtitle": "第3回・2026-11-24（火曜日）朝7時号 ― 地下25mの下水道館と鷹の台パンさんぽ！内水氾濫とXRAINのヒミツ", "episode_date": "2026-11-24", "episode_number": 3, "output_filename": "kodaira_radio_20261124.mp3", "tts_engine": "gemini", "tts_model": "gemini-3.8-flash-tts", "tts_requests": 20, "total_duration_sec": 945.92, "total_duration_formatted": "15:46", "line_count": 52, "estimated": false}, "guest": {"id": "guest_amamiya", "name": "雨宮 栞", "reading": "あまみや しおり", "title": "気象防災アドバイザー（元気象台予報官・架空ゲスト）", "theme": "気象・水害・都市河川", "voice_name": "Despina", "personality": "穏やかで知的な語り口ながら、雲や雨の話題になると目を輝かせて楽しく解説してくれるお姉さん的存在。小春とのテンポ良い掛け合いが魅力。", "keywords_featured": ["内水氾濫と外水氾濫の違い", "XRAIN（XバンドMPレーダ雨量観測）", "気象庁キキクル（危険度分布）"]}, "cast_href": "../../cast.html#guest_amamiya", "has_audio": true, "audio_src": "../../audio/kodaira_radio_20261124.mp3", "weather": {"ok": true, "source": "Open-Meteo (小平市座標)", "fetched_at_jst": "2026-11-24T06:39:05+09:00", "current": {"temperature_c": 10.4, "humidity_pct": 65, "weather": "晴れ時々曇り", "wind_speed_kmh": 9.9}, "daily": [{"date": "2026-11-24", "weather": "雨", "temp_max_c": 17.9, "temp_min_c": 5.7, "precip_prob_max": 100}, {"date": "2026-11-25", "weather": "おおむね晴れ", "temp_max_c": 12.6, "temp_min_c": 5.6, "precip_prob_max": 51}, {"date": "2026-11-26", "weather": "曇り", "temp_max_c": 13.7, "temp_min_c": 3.6, "precip_prob_max": 0}], "advisories": ["朝晩と日中の寒暖差が大きいので服装調整に注意", "降水確率が高めのため雨具や路面の安全に注意"]}, "links": [{"category": "小平施設", "title": "小平市ふれあい下水道館 施設概要", "url": "https://kodaira-sewer.jp/overview", "note": "地下25mの本物の下水道管を見学できる日本唯一の施設（入館無料・休館日に注意）"}, {"category": "小平イベント", "title": "小平市ふれあい下水道館「列車のトイレ写真展～日本全国編～」", "url": "https://kodaira-sewer.jp/events/2600", "note": "2026年10月6日〜11月29日開催の企画展情報"}, {"category": "防災マップ", "title": "小平市防災マップ情報面のダウンロード（令和8年度版）", "url": "https://www.city.kodaira.tokyo.jp/kurashi/036/036337.html", "note": "令和8年度版小平市防災マップのPDFや防災マップ・アプリ案内ページへのリンク"}, {"category": "ハザードマップ", "title": "小平市ハザードマップ（浸水予想区域図・土砂災害警戒区域図）", "url": "https://www.city.kodaira.tokyo.jp/kurashi/012/012389.html", "note": "内水浸水リスクや浸水予想区域図・土砂災害警戒区域図の確認に活用"}, {"category": "気象・地震", "title": "気象庁ホームページ", "url": "https://www.jma.go.jp/jma/index.html", "note": "気象警報・注意報、キキクル（危険度分布）、1か月予報の公式発表"}, {"category": "備蓄チェック", "title": "東京備蓄ナビ（東京都）", "url": "https://www.bichiku.metro.tokyo.lg.jp/", "note": "携帯トイレなど家庭ごとの備蓄量をシミュレーション"}, {"category": "小平市公式", "title": "東京都小平市 公式ホームページ", "url": "https://www.city.kodaira.tokyo.jp/", "note": "市報こだいら・防災メールマガジン・義援金案内などの一次発信元"}, {"category": "最新検索ソース", "title": "museum.or.jp", "url": "https://www.museum.or.jp/museum/2270", "note": "番組リサーチ時の参照公式・関連ページ"}], "references": [{"category": "水害・気象情報", "title": "内水氾濫への備えとXRAIN・キキクル活用", "detail": "短時間強雨で下水道の排水が追いつかない内水氾濫に注意。250mメッシュ・1分間隔のXRAINと、危険度を色分け表示する気象庁キキクルを併用し、分流式エリアでは屋外流し等への簡易水のう対策も有効。", "contact": "気象庁ホームページ / 国土交通省XRAIN / 小平市ハザードマップ"}, {"category": "施設・お出かけ注意", "title": "小平市ふれあい下水道館・鷹の台パンさんぽ営業メモ", "detail": "小平市ふれあい下水道館（上水本町1-25-31・入館無料・10:00〜16:00）は祝日の翌日のため本日11/24（火）休館、明日11/25（水）以降に開館。しょう'sベーカリーは日水定休（本日営業予定）、torpetは火水定休（木曜以降営業）。", "contact": "小平市ふれあい下水道館公式サイト"}, {"category": "備蓄・自治体サービス", "title": "携帯トイレ備蓄と令和8年度版小平市防災マップ", "detail": "防災庁「事前防災徹底のための緊急要請」では携帯トイレ1人1日5回×1週間＝35回分を推奨。警戒レベル4「危険警報」等を反映した令和8年度版小平市防災マップ、オフラインGPS対応の防災マップアプリ、防災メールマガジンを活用。", "contact": "小平市公式ホームページ（防災・防犯緊急情報）"}], "learned_notes": {"learned_points": ["河川があふれる外水氾濫に対し、都市部で警戒したい内水氾濫は短時間の強雨で下水道や排水路の処理能力を超えてあふれる水害であり、小平市の合流式・分流式エリアの特徴や簡易水のう対策を知っておくことが大切であること", "国土交通省のXRAINは水平・垂直2種類の電波で雨粒のつぶれ具合から雨量を直接算出するため、250mメッシュ・1分間隔という高精度・高頻度で局地的な豪雨を捉えられ、気象庁キキクルと併用すると早めの判断に役立つこと", "防災庁の緊急要請でも呼びかけられている携帯トイレ（1人1日5回×1週間＝35回分）の備蓄や、新たな警戒レベル4「危険警報」を反映した令和8年度版小平市防災マップ・防災マップアプリの事前確認が安心につながること"], "kodaira_discovery": "鷹の台駅近くの「小平市ふれあい下水道館」で地下25mの本物の下水道管を体感し、周辺ベーカリーの美味しいパン巡りと合わせて楽しむことで、普段見えない地下インフラが小平の暮らしと水害対策を支えている魅力を身近に感じられること。"}, "segments": [{"id": "opening", "title": "朝7時のごあいさつ＆今朝の小平お天気・地震情報", "bgm": "bgm_warm", "intro_jingle": "opening_jingle", "outro_jingle": null, "start_sec": 0.0, "speech_start_sec": 5.0, "end_sec": 111.19, "duration_sec": 111.19, "lines": [{"index": 0, "global_index": 0, "speaker": "koharu", "speaker_name": "小春", "text": "おはようございます！11月24日、火曜日、朝7時になりました！「毎朝7時！こだいら防災＆まちラジオ」第3回、元気にお届けします小春です！", "start_sec": 5.0, "end_sec": 18.274, "duration_sec": 13.274}, {"index": 1, "global_index": 1, "speaker": "heizo", "speaker_name": "平蔵", "text": "おはようございます、平蔵です。3連休明けの火曜日ですね。小春さん、今朝は少しひんやりしつつも、まだ空は明るくて気持ちいいですね。", "start_sec": 18.274, "end_sec": 30.767, "duration_sec": 12.493}, {"index": 2, "global_index": 2, "speaker": "koharu", "speaker_name": "小春", "text": "そうなんですよ！朝6時台の小平は晴れ時々曇りって感じだったんですけど、このあとお天気が崩れるって聞いて、慌てて傘を玄関に出しました！", "start_sec": 30.767, "end_sec": 43.65, "duration_sec": 12.883}, {"index": 3, "global_index": 3, "speaker": "heizo", "speaker_name": "平蔵", "text": "ナイス判断です！朝6時台の小平市は気温10.4度、湿度65パーセントですが、今日は晴れ・のち・雨の予報で、降水確率も100パーセント。最高気温は17.9度、最低気温は5.7度と寒暖差が大きいので、雨具と脱ぎ着しやすい羽織りもの、濡れた路面への注意をお忘れなく。", "start_sec": 43.93, "end_sec": 67.199, "duration_sec": 23.269}, {"index": 4, "global_index": 4, "speaker": "koharu", "speaker_name": "小春", "text": "はーい、しっかり準備します！そして平蔵さん、最近の地震情報も確認しておきたいです。", "start_sec": 67.199, "end_sec": 74.537, "duration_sec": 7.338}, {"index": 5, "global_index": 5, "speaker": "heizo", "speaker_name": "平蔵", "text": "はい。今朝1時12分頃と6時ちょうどに、熊本県天草・芦北地方を震源とする最大震度3・マグニチュード3.9と、最大震度2の地震がありました。いずれも津波の心配はありません。昨日は長野県中部で震度2がありましたが、東京や関東での有感地震はありませんでした。", "start_sec": 74.537, "end_sec": 97.09, "duration_sec": 22.553}, {"index": 6, "global_index": 6, "speaker": "koharu", "speaker_name": "小春", "text": "熊本のみなさん、引き続きお気をつけください。さあ今日は特別コーナー拡大版！雨と下水道のヒミツ、そして鷹の台グルメまでたっぷりお届けしますよ！", "start_sec": 97.44, "end_sec": 110.79, "duration_sec": 13.35}]}, {"id": "kodaira_life", "title": "小平が好きになる！晩秋の旬キウイ＆アートとお天気の知恵", "bgm": "bgm_news", "intro_jingle": "stinger", "outro_jingle": null, "start_sec": 111.19, "speech_start_sec": 113.39, "end_sec": 234.75, "duration_sec": 123.56, "lines": [{"index": 0, "global_index": 7, "speaker": "heizo", "speaker_name": "平蔵", "text": "さて、まずは小平の最新まちトピックです。小春さん、今ちょうど小平ならではの甘くて黄色い秋の味覚が旬を迎えているのをご存じですか？", "start_sec": 113.39, "end_sec": 125.896, "duration_sec": 12.506}, {"index": 1, "global_index": 8, "speaker": "koharu", "speaker_name": "小春", "text": "えっ、甘くて黄色い秋の味覚？ゆず？それとも……あ！小平発祥のキウイ、「東京ゴールド」じゃないですか！？", "start_sec": 125.896, "end_sec": 135.863, "duration_sec": 9.967}, {"index": 2, "global_index": 9, "speaker": "heizo", "speaker_name": "平蔵", "text": "大正解！大沼町にある「ファームショップ中村園」さんは、果肉が黄色くて先端がきゅっととがった新品種「東京ゴールド」発祥の農園なんです。11月4日に収穫されて、今11月から12月にかけて追熟させながら庭先直売で販売中ですよ。秋冬野菜も並んでいます。", "start_sec": 135.863, "end_sec": 159.703, "duration_sec": 23.84}, {"index": 3, "global_index": 10, "speaker": "koharu", "speaker_name": "小春", "text": "うわあ、食べたい！ただ雨の日は原則お休みとのことなので、今日みたいに雨が降る日じゃなくて、晴れた日を狙って買いに行きたいですね！", "start_sec": 159.703, "end_sec": 172.21, "duration_sec": 12.507}, {"index": 4, "global_index": 11, "speaker": "heizo", "speaker_name": "平蔵", "text": "そして雨の日でも楽しめるアート情報も！小川町の武蔵野美術大学美術館では、11月20日から12月19日まで「助教・助手展2026」が入館無料で開催中です。日曜休館ですが、鷹の台駅からもアクセスできて、なんと本日17時から18時には出展者と教員のトークイベントも予定されています。", "start_sec": 172.51, "end_sec": 198.214, "duration_sec": 25.704}, {"index": 5, "global_index": 12, "speaker": "koharu", "speaker_name": "小春", "text": "入館無料で大学のアート展を楽しめるなんて贅沢ですね！それにしても11月も終盤なのに、日中はぽかぽかしたり朝晩ぐっと冷えたり、服装選びが難しいですよね。", "start_sec": 198.214, "end_sec": 212.184, "duration_sec": 13.97}, {"index": 6, "global_index": 13, "speaker": "heizo", "speaker_name": "平蔵", "text": "気象庁が11月19日に発表した1か月予報でも、最近の強い寒気は一時的で、11月26日頃からは一転して全国的に高温傾向になる見通しなんです。12月中旬にかけて寒暖差が大きくなりますから、体調管理に気をつけながら晩秋の小平を楽しみたいですね。", "start_sec": 212.184, "end_sec": 234.35, "duration_sec": 22.166}]}, {"id": "guest_talk", "title": "気象防災アドバイザー雨宮栞さんと学ぶ！内水氾濫とXRAINのヒミツ", "bgm": "bgm_warm", "intro_jingle": "guest_jingle", "outro_jingle": null, "start_sec": 234.75, "speech_start_sec": 237.25, "end_sec": 505.98, "duration_sec": 271.23, "lines": [{"index": 0, "global_index": 14, "speaker": "heizo", "speaker_name": "平蔵", "text": "ここからは火曜日の専門テーマ「気象・水害・都市河川」です。本日のゲストは、元気象台予報官で気象防災アドバイザーの雨宮栞さんです。よろしくお願いします！", "start_sec": 237.25, "end_sec": 249.729, "duration_sec": 12.479}, {"index": 1, "global_index": 15, "speaker": "guest", "speaker_name": "雨宮 栞", "text": "おはようございます、雨宮栞です。今日はこれから雨が降る予報なので、雲や雨のお話をたっぷりできるのが楽しみです。よろしくお願いします。", "start_sec": 249.729, "end_sec": 260.71, "duration_sec": 10.981}, {"index": 2, "global_index": 16, "speaker": "koharu", "speaker_name": "小春", "text": "雨宮さん、よろしくお願いします！あの、すごく素朴な疑問なんですけど、小平って大きな川がドーンと流れているイメージがあまりないので、大雨の水害ってそこまで心配しなくてもいいのかな？なんて思っちゃって……。", "start_sec": 261.01, "end_sec": 279.482, "duration_sec": 18.472}, {"index": 3, "global_index": 17, "speaker": "guest", "speaker_name": "雨宮 栞", "text": "小春さん、まさにそこが都市部でいちばん大切なポイントなんです！水害には「外水氾濫」と「内水氾濫」の2つがあります。大雨で川の水位が上がって堤防を越える「越水」や「決壊」が外水氾濫。一方で、短時間の強い雨で下水道や排水路の処理能力を超え、雨水を川へ流せずマンホールや側溝、低地からあふれ出すのが内水氾濫なんです。", "start_sec": 279.482, "end_sec": 307.829, "duration_sec": 28.347}, {"index": 4, "global_index": 18, "speaker": "koharu", "speaker_name": "小春", "text": "わあ、なるほど！大きな川が近くになくても、地面の下の排水が追いつかなくなると道路やマンホールからあふれちゃうんですね！", "start_sec": 307.829, "end_sec": 318.62, "duration_sec": 10.791}, {"index": 5, "global_index": 19, "speaker": "guest", "speaker_name": "雨宮 栞", "text": "その通りです。小平市は平成2年度に汚水下水道普及率100パーセントを達成した先進的なまちですが、市内は2つの方式に分かれています。多摩川方面へ汚水と雨水を同じ管で流す「合流式」の北多摩一号処理区と、柳瀬川方面へ別々の管で流す「分流式」の荒川右岸処理区なんですよ。", "start_sec": 318.9, "end_sec": 344.331, "duration_sec": 25.431}, {"index": 6, "global_index": 20, "speaker": "heizo", "speaker_name": "平蔵", "text": "分流式エリアでは、豪雨のときに屋外の流しなどから汚水管に雨水が入り込む「雨天時浸入水」が、マンホールからの溢水につながることもあるんですよね。東京都下水道局も屋外の流しに簡易水のうを置く対策を呼びかけていますし、小平市でも鈴木中通りの雨水浸水対策バイパス工事などが進んでいますね。", "start_sec": 344.331, "end_sec": 371.51, "duration_sec": 27.179}, {"index": 7, "global_index": 21, "speaker": "guest", "speaker_name": "雨宮 栞", "text": "平蔵さん、お詳しいですね！そんな局地的なゲリラ豪雨や内水氾濫を素早くキャッチするのに大活躍しているのが、国土交通省の「XRAIN」、正式には「XバンドMPレーダ雨量観測」なんです。", "start_sec": 371.83, "end_sec": 388.346, "duration_sec": 16.516}, {"index": 8, "global_index": 22, "speaker": "koharu", "speaker_name": "小春", "text": "エックスレイン！なんだか戦隊ヒーローの必殺技みたいでカッコいいですね！普通の雨雲レーダとは何が違うんですか？", "start_sec": 388.346, "end_sec": 398.256, "duration_sec": 9.91}, {"index": 9, "global_index": 23, "speaker": "guest", "speaker_name": "雨宮 栞", "text": "ふふっ、本当に頼もしいヒーローですよ！従来のCバンドレーダが1キロメートル四方のメッシュだったのに対して、XRAINは250メートル四方、なんと空間分解能が16倍も細かくて、町丁目レベルで強い雨を捉えられるんです。しかも観測間隔は1分ごとで5倍の頻度、1分から2分でほぼリアルタイムに配信されます。", "start_sec": 398.256, "end_sec": 425.6, "duration_sec": 27.344}, {"index": 10, "global_index": 24, "speaker": "heizo", "speaker_name": "平蔵", "text": "すごい精度ですね。従来のレーダは地上の雨量計で補正するために配信まで5分から10分かかっていたそうですが、XRAINはなぜ補正なしでそんなに速くて正確なんでしょうか？", "start_sec": 425.92, "end_sec": 441.262, "duration_sec": 15.342}, {"index": 11, "global_index": 25, "speaker": "guest", "speaker_name": "雨宮 栞", "text": "そこがMP、マルチパラメータ技術の面白いところなんです！水平偏波と垂直偏波という2種類の電波を同時に出すんですが、大きな雨粒ほど落ちてくる空気抵抗で横に平たく、おまんじゅうみたいに扁平につぶれる性質があるんです。その縦と横の電波の戻り方の差から雨量を直接高精度に測れて、さらにドップラー機能で雨雲の動く向きや速さまで分かっちゃうんですよ！", "start_sec": 441.262, "end_sec": 472.5, "duration_sec": 31.238}, {"index": 12, "global_index": 26, "speaker": "koharu", "speaker_name": "小春", "text": "うわあ、おまんじゅうみたいにつぶれた雨粒を電波で見抜くなんてロマンがありますね！XRAINと一緒にチェックすると良い情報ってほかにもありますか？", "start_sec": 472.82, "end_sec": 484.221, "duration_sec": 11.401}, {"index": 13, "global_index": 27, "speaker": "guest", "speaker_name": "雨宮 栞", "text": "ぜひ気象庁の「キキクル（危険度分布）」も合わせて見てください。今どこで浸水や洪水、土砂災害の危険度が高まっているかが地図上で色分け表示されます。一昨日の放送でも話題になった「小平市防災マップアプリ」と一緒にブックマークしておくと、いざという時に落ち着いて行動できますよ。", "start_sec": 484.221, "end_sec": 505.6, "duration_sec": 21.379}]}, {"id": "special_feature", "title": "【特別特集】地下25mの大冒険！ふれあい下水道館と鷹の台パンさんぽ", "bgm": "bgm_feature", "intro_jingle": "stinger", "outro_jingle": null, "start_sec": 505.98, "speech_start_sec": 508.18, "end_sec": 720.72, "duration_sec": 214.74, "lines": [{"index": 0, "global_index": 28, "speaker": "koharu", "speaker_name": "小春", "text": "ここからは本日の特別拡大コーナー！「地下25メートルの大冒険！ふれあい下水道館と鷹の台パンさんぽで知る『小平の水のヒミツ』」をお届けしまーす！", "start_sec": 508.18, "end_sec": 522.468, "duration_sec": 14.288}, {"index": 1, "global_index": 29, "speaker": "heizo", "speaker_name": "平蔵", "text": "上水本町、西武国分寺線の鷹の台駅から徒歩7分にある「小平市ふれあい下水道館」。さきほど雨宮さんのお話にも出た平成2年度の公共下水道普及率100パーセント達成を記念して開館した施設で、なんと入館無料なんです。地下1階の微生物観察から、地下5階・地下25メートルまで降りて、本物の下水道管の中に入れる日本唯一の施設なんですよ。", "start_sec": 522.468, "end_sec": 554.869, "duration_sec": 32.401}, {"index": 2, "global_index": 30, "speaker": "koharu", "speaker_name": "小春", "text": "地下25メートルで本物の下水道管の中に入れるなんてワクワクしますね！でも、中に入ったらお水でびしょびしょになったりしないんですか？", "start_sec": 554.869, "end_sec": 567.95, "duration_sec": 13.081}, {"index": 3, "global_index": 31, "speaker": "heizo", "speaker_name": "平蔵", "text": "大丈夫です！直径4.5メートルの本物の下水道管の中に「ふれあい体験室」が整備されていて、安全に水の流れやにおいを五感で体感できます。さらに11月29日日曜日までは、NPO21世紀水倶楽部・清水洽さんによる「列車のトイレ写真展～日本全国編～」も開催中なんですよ。", "start_sec": 568.23, "end_sec": 591.889, "duration_sec": 23.659}, {"index": 4, "global_index": 32, "speaker": "guest", "speaker_name": "雨宮 栞", "text": "直径4.5メートルの本物の管を目の前で見たら、普段は見えない地下のインフラがどれだけ私たちの暮らしと水害対策を支えてくれているか、ぐっと実感が湧きそうですね！", "start_sec": 591.889, "end_sec": 606.266, "duration_sec": 14.377}, {"index": 5, "global_index": 33, "speaker": "heizo", "speaker_name": "平蔵", "text": "そうなんです。ただ大事なご注意が2つ。気象条件によっては管内見学ができない場合があります。そして開館は10時から16時で、月曜が祝日の場合は翌日が休館日になるため、昨日23日が勤労感謝の日だった関係で、本日11月24日火曜日は休館日です。ぜひ明日25日水曜日以降にお出かけくださいね！", "start_sec": 606.266, "end_sec": 632.11, "duration_sec": 25.844}, {"index": 6, "global_index": 34, "speaker": "koharu", "speaker_name": "小春", "text": "教えてもらってよかったです！危うく今日張り切って行っちゃうところでした！そして鷹の台エリアといえば、地元ベーカリーのパンさんぽも外せませんよね！まずは「しょう'sベーカリー」さん！", "start_sec": 632.43, "end_sec": 647.511, "duration_sec": 15.081}, {"index": 7, "global_index": 35, "speaker": "heizo", "speaker_name": "平蔵", "text": "たかの台にある「しょう'sベーカリー」さんは、なんと約70品目も並ぶ地域密着の人気店。マーガリンやショートニングを使わずバターを使った塩分・糖分控えめの優しいパンで、「有機粒あんぱん」や「やさしいクリームパン」、「くるみクロッカン」が評判です。朝9時から売り切れまで、日曜・水曜定休なので本日火曜日は営業予定ですよ。", "start_sec": 647.511, "end_sec": 673.987, "duration_sec": 26.476}, {"index": 8, "global_index": 36, "speaker": "koharu", "speaker_name": "小春", "text": "わあ、やさしいクリームパンにくるみクロッカン、想像しただけでお腹が空いちゃいます！もう一軒、鷹の台駅から徒歩2、3分の北欧風ベーカリー「torpet」さんも気になります！スウェーデン語でサマーハウスって意味なんですよね？", "start_sec": 673.987, "end_sec": 692.42, "duration_sec": 18.433}, {"index": 9, "global_index": 37, "speaker": "heizo", "speaker_name": "平蔵", "text": "よく知っていますね！カルダモンロールやシナモンロール、オリジナルブレンドのコーヒーが人気なんですが、こちらも定休日にご注意を。火曜と水曜がお休みなので、今日と明日はお休みです。木曜以降に、ふれあい下水道館とセットで鷹の台さんぽを計画するのがおすすめですよ。", "start_sec": 692.7, "end_sec": 713.885, "duration_sec": 21.185}, {"index": 10, "global_index": 38, "speaker": "guest", "speaker_name": "雨宮 栞", "text": "美味しいパンと地下25メートルの大冒険、私もお休みの日にぜひ巡ってみたいです！", "start_sec": 713.885, "end_sec": 720.34, "duration_sec": 6.455}]}, {"id": "daily_bousai", "title": "暮らしに直結！防災庁の緊急要請と小平市の最新防災ツール", "bgm": "bgm_news", "intro_jingle": "stinger", "outro_jingle": null, "start_sec": 720.72, "speech_start_sec": 722.92, "end_sec": 820.49, "duration_sec": 99.77, "lines": [{"index": 0, "global_index": 39, "speaker": "heizo", "speaker_name": "平蔵", "text": "続いては暮らしの防災チェックです。今月11月2日に、平時の事前防災から発災対応、復旧・復興までを一貫して指揮する司令塔「防災庁」が発足しました。これに合わせて細野防災大臣から「事前防災徹底のための緊急要請」が出されています。", "start_sec": 722.92, "end_sec": 743.131, "duration_sec": 20.211}, {"index": 1, "global_index": 40, "speaker": "koharu", "speaker_name": "小春", "text": "おおっ、防災庁！私たちがおうちで改めて点検しておきたいポイントって何ですか？", "start_sec": 743.131, "end_sec": 749.989, "duration_sec": 6.858}, {"index": 2, "global_index": 41, "speaker": "heizo", "speaker_name": "平蔵", "text": "家具の固定や水・食料の見直しはもちろんですが、特に呼びかけられているのが「携帯トイレ」です。1人1日5回かける1週間分で、なんと35回分の備蓄が推奨されています。地震や水害で下水道が使えないときに本当に頼りになります。", "start_sec": 749.989, "end_sec": 769.659, "duration_sec": 19.67}, {"index": 3, "global_index": 42, "speaker": "koharu", "speaker_name": "小春", "text": "35回分！今日の下水道のお話ともつながりますね。おうちにある分、帰ったらすぐ数えてみます！", "start_sec": 769.659, "end_sec": 777.78, "duration_sec": 8.121}, {"index": 4, "global_index": 43, "speaker": "heizo", "speaker_name": "平蔵", "text": "あわせて小平市では、今年5月29日運用開始の新たな防災気象情報、警戒レベル4「危険警報」などを反映した「令和8年度版 小平市防災マップ」が公開中です。通信が途絶えてもGPSで最寄りの避難場所が分かる「小平市防災マップアプリ」や「小平市メールマガジン」の登録もぜひ。", "start_sec": 778.06, "end_sec": 802.298, "duration_sec": 24.238}, {"index": 5, "global_index": 44, "speaker": "koharu", "speaker_name": "小春", "text": "それから市報こだいら11月20日号によると、令和8年熊本地震災害義援金の募金箱も市内施設で期間延長されているんですよね。今朝も熊本で地震がありましたし、私たちもできる形で応援していきたいですね。", "start_sec": 802.298, "end_sec": 820.11, "duration_sec": 17.812}]}, {"id": "ending", "title": "小春＆平蔵の防災ノート＆明日の予告", "bgm": "bgm_warm", "intro_jingle": "stinger", "outro_jingle": "outro_jingle", "start_sec": 820.49, "speech_start_sec": 822.689, "end_sec": 945.419, "duration_sec": 124.93, "lines": [{"index": 0, "global_index": 45, "speaker": "koharu", "speaker_name": "小春", "text": "あっという間にお別れの時間です。雨宮さん、今日は分かりやすくてワクワクするお話を本当にありがとうございました！", "start_sec": 822.689, "end_sec": 831.548, "duration_sec": 8.859}, {"index": 1, "global_index": 46, "speaker": "guest", "speaker_name": "雨宮 栞", "text": "こちらこそ楽しかったです！皆さん、今日は傘を忘れずに、濡れた足元にも気をつけてお過ごしくださいね。", "start_sec": 831.548, "end_sec": 839.439, "duration_sec": 7.891}, {"index": 2, "global_index": 47, "speaker": "heizo", "speaker_name": "平蔵", "text": "それでは今日の「小春＆平蔵の防災ノート」まとめです。1つ目、川があふれる外水氾濫だけでなく、排水が追いつかない内水氾濫にも注意し、小平の地下インフラを知ること。2つ目、250メートル・1分間隔で雨粒のつぶれから測るXRAINと気象庁キキクルを活用すること。3つ目、携帯トイレ35回分の備蓄と令和8年度版小平市防災マップを確認することです。", "start_sec": 839.739, "end_sec": 873.49, "duration_sec": 33.751}, {"index": 3, "global_index": 48, "speaker": "koharu", "speaker_name": "小春", "text": "そして明日、11月25日水曜日の予告です！テーマは「火災・電気・特殊消防機材」、ゲストは火ノ原鉄平さん！通電火災と分電盤型・簡易型の感震ブレーカー、住宅用火災警報器の煙式・熱式と10年交換目安をたっぷり学びます！", "start_sec": 873.49, "end_sec": 894.659, "duration_sec": 21.169}, {"index": 4, "global_index": 49, "speaker": "heizo", "speaker_name": "平蔵", "text": "さらに明日は「小平市 ペット防災相談会＆オリジナル防災マップ講座 締切スペシャル」あと3日に向けたカウントダウン特別コーナーを追加した約13分拡大版でお届けします！小平駅南口の地元パン屋「サンメリー」の朝風景や、12月1日から5日に市役所1階ロビーで開かれる「都市計画道路整備などに関するパネル展示」も先取りして、小平駅・花小金井駅付近の踏切対策や、避難路・延焼遮断機能としての道路の役割に注目しますよ。", "start_sec": 894.939, "end_sec": 927.845, "duration_sec": 32.906}, {"index": 5, "global_index": 50, "speaker": "koharu", "speaker_name": "小春", "text": "明日も盛りだくさんですね！それでは今日も寒暖差と雨に気をつけて、元気にお出かけください！", "start_sec": 927.845, "end_sec": 935.013, "duration_sec": 7.168}, {"index": 6, "global_index": 51, "speaker": "heizo", "speaker_name": "平蔵", "text": "いってらっしゃい！お気をつけて！", "start_sec": 935.013, "end_sec": 937.619, "duration_sec": 2.606}]}], "recent_episodes": [{"date": "2026-11-24", "weekday_ja": "火曜日", "theme": "気象・水害・都市河川", "guest_name": "雨宮 栞", "href": "../../episodes/2026-11-24/index.html", "has_audio": true}, {"date": "2026-11-23", "weekday_ja": "月曜日", "theme": "地震・建築・地盤", "guest_name": "岩城 剛", "href": "../../episodes/2026-11-23/index.html", "has_audio": true}, {"date": "2026-11-22", "weekday_ja": "日曜日", "theme": "スピンオフ特集：小川パレット徹底ガイド", "guest_name": "", "href": "../../episodes/2026-11-22-spinoff-ogawa-palette/index.html", "has_audio": true}, {"date": "2026-11-22", "weekday_ja": "日曜日", "theme": "防災テック・ハザードマップ・衛星・最新情報", "guest_name": "星野 創", "href": "../../episodes/2026-11-22/index.html", "has_audio": true}]}</script>
+  <script>
+    (function () {
+      const data = JSON.parse(document.getElementById("episode-data").textContent);
+      const mainRoot = document.getElementById("main-root");
+      const audio = document.getElementById("radio-audio");
+      const btnPlay = document.getElementById("btn-play");
+      const btnBack = document.getElementById("btn-back");
+      const btnFwd = document.getElementById("btn-fwd");
+      const btnAutoScroll = document.getElementById("btn-autoscroll");
+      const btnSpeedCycle = document.getElementById("btn-speed-cycle");
+      const scrubber = document.getElementById("scrubber");
+      const timeReadout = document.getElementById("time-readout");
+      const nowChapter = document.getElementById("now-chapter");
+      const chapterDetails = document.getElementById("chapter-details");
+      const chapterList = document.getElementById("chapter-list");
+      const transcriptBody = document.getElementById("transcript-body");
+      const speedButtons = Array.from(document.querySelectorAll("#speed-group button"));
+      const mobileTabButtons = Array.from(document.querySelectorAll("#mobile-tabs button"));
+
+      if (chapterDetails && window.innerWidth > 920) {
+        chapterDetails.open = true;
+      }
+
+      const speedRates = [1.0, 1.15, 1.25, 1.5, 0.9];
+      let speedIdx = 0;
+      let autoScroll = true;
+      let isScrubbing = false;
+      let lastActiveLineIdx = -1;
+      let lastActiveSegId = null;
+
+      function fmtTime(sec) {
+        const s = Math.max(0, Math.floor(sec || 0));
+        return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+      }
+
+      function appendContactWithTelLinks(container, text) {
+        const phoneRe = /(0\d{1,4}-\d{1,4}-\d{3,4})/g;
+        let last = 0;
+        let m;
+        while ((m = phoneRe.exec(text)) !== null) {
+          if (m.index > last) {
+            container.appendChild(document.createTextNode(text.slice(last, m.index)));
+          }
+          const a = document.createElement("a");
+          a.className = "tel-link";
+          a.href = "tel:" + m[1];
+          a.textContent = m[1];
+          container.appendChild(a);
+          last = phoneRe.lastIndex;
+        }
+        if (last < text.length) {
+          container.appendChild(document.createTextNode(text.slice(last)));
+        }
+      }
+
+      if (data.has_audio) {
+        audio.src = data.audio_src;
+      } else {
+        document.getElementById("audio-pending").style.display = "block";
+        btnPlay.disabled = true;
+        btnBack.disabled = true;
+        btnFwd.disabled = true;
+        scrubber.disabled = true;
+      }
+
+      const totalEst = data.manifest_meta.total_duration_sec || 600;
+      scrubber.max = String(totalEst);
+      timeReadout.textContent = "00:00 / " + fmtTime(totalEst);
+
+      const chapterButtons = new Map();
+      const flatLines = [];
+
+      data.segments.forEach((seg, segIdx) => {
+        const cBtn = document.createElement("button");
+        cBtn.type = "button";
+        cBtn.className = "chapter-btn";
+        const tcSpanTop = document.createElement("span");
+        tcSpanTop.className = "chapter-tc";
+        tcSpanTop.textContent = fmtTime(seg.start_sec) + " 〜 " + fmtTime(seg.end_sec);
+        const titleSpanTop = document.createElement("span");
+        titleSpanTop.className = "chapter-title";
+        titleSpanTop.textContent = (segIdx + 1) + ". " + seg.title;
+        cBtn.appendChild(tcSpanTop);
+        cBtn.appendChild(titleSpanTop);
+        cBtn.addEventListener("click", () => {
+          if (!data.has_audio) return;
+          audio.currentTime = seg.start_sec;
+          audio.play().catch(() => {});
+          if (chapterDetails && window.innerWidth <= 920) {
+            chapterDetails.open = false;
+          }
+        });
+        chapterList.appendChild(cBtn);
+        chapterButtons.set(seg.id, cBtn);
+
+        const divEl = document.createElement("div");
+        divEl.className = "seg-divider";
+        const sTitle = document.createElement("span");
+        sTitle.textContent = (segIdx + 1) + ". " + seg.title;
+        const sTc = document.createElement("span");
+        sTc.className = "chapter-tc";
+        sTc.textContent = fmtTime(seg.start_sec);
+        divEl.appendChild(sTitle);
+        divEl.appendChild(sTc);
+        transcriptBody.appendChild(divEl);
+
+        seg.lines.forEach((line) => {
+          const row = document.createElement("div");
+          row.className = "line-item";
+          const tc = document.createElement("span");
+          tc.className = "line-tc";
+          tc.textContent = fmtTime(line.start_sec);
+
+          const sp = document.createElement("span");
+          sp.className = "speaker-pill speaker-" + line.speaker;
+          sp.textContent = line.speaker_name;
+
+          const txt = document.createElement("span");
+          txt.className = "line-text";
+          txt.textContent = line.text;
+
+          row.appendChild(tc);
+          row.appendChild(sp);
+          row.appendChild(txt);
+          row.addEventListener("click", () => {
+            if (!data.has_audio) return;
+            audio.currentTime = line.start_sec;
+            audio.play().catch(() => {});
+          });
+          transcriptBody.appendChild(row);
+          flatLines.push({ ...line, segId: seg.id, segTitle: seg.title, el: row });
+        });
+      });
+
+      const gwPanel = document.getElementById("guest-weather-panel");
+      const gCard = document.createElement("div");
+      gCard.className = "guest-card";
+      const gTitle = document.createElement("div");
+      gTitle.style.fontWeight = "700";
+      if (data.guest && data.guest.name) {
+        gTitle.textContent = data.guest.name + "（" + (data.guest.title || "") + "）";
+      } else {
+        gTitle.textContent = (data.meta && data.meta.theme_badge) || "小春＆平蔵 スピンオフ特別企画";
+      }
+      const gDesc = document.createElement("div");
+      gDesc.style.fontSize = "0.82rem";
+      gDesc.style.marginTop = "0.25rem";
+      gDesc.textContent = (data.guest && data.guest.personality) || "";
+      const kwWrap = document.createElement("div");
+      kwWrap.className = "kw-wrap";
+      const chipList = (data.guest && data.guest.keywords_featured && data.guest.keywords_featured.length > 0)
+        ? data.guest.keywords_featured
+        : ((data.meta && data.meta.kodaira_topics) || []);
+      chipList.forEach((kw) => {
+        const chip = document.createElement("span");
+        chip.className = "kw-chip";
+        chip.textContent = kw;
+        kwWrap.appendChild(chip);
+      });
+      gCard.appendChild(gTitle);
+      gCard.appendChild(gDesc);
+      gCard.appendChild(kwWrap);
+      const gCastLink = document.createElement("a");
+      gCastLink.href = data.cast_href || "cast.html";
+      gCastLink.style.display = "inline-block";
+      gCastLink.style.marginTop = "0.55rem";
+      gCastLink.style.fontSize = "0.8rem";
+      gCastLink.style.fontWeight = "700";
+      gCastLink.style.textDecoration = "none";
+      gCastLink.textContent = "出演者プロフィール＆自己紹介を聴く →";
+      gCard.appendChild(gCastLink);
+      gwPanel.appendChild(gCard);
+
+      if (data.weather && data.weather.daily && data.weather.daily.length > 0) {
+        const wToday = data.weather.daily[0];
+        const wBox = document.createElement("div");
+        wBox.className = "note-box";
+        const wHead = document.createElement("strong");
+        wHead.textContent = "今朝の小平市のお天気（" + wToday.date + "）";
+        const wText = document.createElement("div");
+        wText.textContent =
+          wToday.weather + " ／ 最高 " + wToday.temp_max_c + "℃・最低 " + wToday.temp_min_c +
+          "℃ ／ 降水確率 " + wToday.precip_prob_max + "%";
+        wBox.appendChild(wHead);
+        wBox.appendChild(wText);
+        gwPanel.appendChild(wBox);
+      }
+
+      const linksPanel = document.getElementById("links-panel");
+      (data.links || []).forEach((lk) => {
+        const a = document.createElement("a");
+        a.className = "link-card";
+        a.href = lk.url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        const cat = document.createElement("span");
+        cat.className = "pill-tag";
+        cat.textContent = lk.category || "関連リンク";
+        const title = document.createElement("div");
+        title.className = "link-title";
+        title.textContent = (lk.title || lk.url) + " ↗";
+        const note = document.createElement("p");
+        note.className = "link-note";
+        note.textContent = lk.note || lk.url;
+        a.appendChild(cat);
+        a.appendChild(title);
+        a.appendChild(note);
+        linksPanel.appendChild(a);
+      });
+
+      const notesPanel = document.getElementById("notes-panel");
+      const nBox = document.createElement("div");
+      nBox.className = "note-box";
+      const nTitle = document.createElement("strong");
+      nTitle.textContent = "今日身につけたポイント";
+      const ul = document.createElement("ul");
+      (data.learned_notes.learned_points || []).forEach((pt) => {
+        const li = document.createElement("li");
+        li.textContent = pt;
+        ul.appendChild(li);
+      });
+      nBox.appendChild(nTitle);
+      nBox.appendChild(ul);
+      if (data.learned_notes.kodaira_discovery) {
+        const disc = document.createElement("div");
+        disc.style.marginTop = "0.35rem";
+        disc.textContent = "小平発見: " + data.learned_notes.kodaira_discovery;
+        nBox.appendChild(disc);
+      }
+      notesPanel.appendChild(nBox);
+
+      (data.references || []).forEach((ref) => {
+        const rBox = document.createElement("div");
+        rBox.className = "note-box";
+        const rTag = document.createElement("span");
+        rTag.className = "pill-tag";
+        rTag.textContent = ref.category || "メモ";
+        const rTitle = document.createElement("div");
+        rTitle.style.fontWeight = "700";
+        rTitle.textContent = ref.title || "";
+        const rDet = document.createElement("div");
+        rDet.style.fontSize = "0.8rem";
+        rDet.style.color = "var(--muted)";
+        rDet.textContent = ref.detail || "";
+        const rCon = document.createElement("div");
+        rCon.style.fontSize = "0.84rem";
+        rCon.style.fontWeight = "700";
+        rCon.style.marginTop = "0.2rem";
+        appendContactWithTelLinks(rCon, ref.contact || "");
+        rBox.appendChild(rTag);
+        rBox.appendChild(rTitle);
+        rBox.appendChild(rDet);
+        rBox.appendChild(rCon);
+        notesPanel.appendChild(rBox);
+      });
+
+      const recentPanel = document.getElementById("recent-panel");
+      (data.recent_episodes || []).forEach((ep) => {
+        const a = document.createElement("a");
+        a.className = "link-card";
+        a.href = ep.href;
+        const tag = document.createElement("span");
+        tag.className = "pill-tag";
+        tag.textContent = ep.date + "（" + ep.weekday_ja + "）";
+        const title = document.createElement("div");
+        title.className = "link-title";
+        title.textContent = ep.theme;
+        const note = document.createElement("p");
+        note.className = "link-note";
+        note.textContent = (ep.guest_name ? ("ゲスト: " + ep.guest_name) : "小春＆平蔵スペシャル") + (ep.has_audio ? " ／ 音声あり" : " ／ 台本公開");
+        a.appendChild(tag);
+        a.appendChild(title);
+        a.appendChild(note);
+        recentPanel.appendChild(a);
+      });
+
+      mobileTabButtons.forEach((tb) => {
+        tb.addEventListener("click", () => {
+          const tab = tb.dataset.tab || "script";
+          mainRoot.dataset.activeTab = tab;
+          mobileTabButtons.forEach((b) => b.classList.toggle("active", b === tb));
+        });
+      });
+
+      function applySpeed(rate) {
+        audio.playbackRate = rate;
+        btnSpeedCycle.textContent = rate + "x";
+        speedButtons.forEach((b) => {
+          b.classList.toggle("is-selected", parseFloat(b.dataset.rate || "1") === rate);
+        });
+      }
+
+      function updateSyncUI() {
+        const cur = audio.currentTime || 0;
+        const total = Number.isFinite(audio.duration) ? audio.duration : totalEst;
+        if (!isScrubbing) {
+          scrubber.max = String(total || totalEst);
+          scrubber.value = String(cur);
+        }
+        timeReadout.textContent = fmtTime(cur) + " / " + fmtTime(total);
+
+        let activeSeg = data.segments[0];
+        for (const seg of data.segments) {
+          if (cur >= seg.start_sec) activeSeg = seg;
+        }
+        if (activeSeg && activeSeg.id !== lastActiveSegId) {
+          if (lastActiveSegId && chapterButtons.has(lastActiveSegId)) {
+            chapterButtons.get(lastActiveSegId).classList.remove("active");
+          }
+          if (chapterButtons.has(activeSeg.id)) {
+            const chEl = chapterButtons.get(activeSeg.id);
+            chEl.classList.add("active");
+          }
+          nowChapter.textContent = activeSeg.title;
+          lastActiveSegId = activeSeg.id;
+        }
+
+        let activeLineIdx = -1;
+        for (let i = 0; i < flatLines.length; i++) {
+          const l = flatLines[i];
+          if (cur >= l.start_sec && cur <= l.end_sec + 0.35) {
+            activeLineIdx = i;
+            break;
+          }
+          if (cur >= l.start_sec) activeLineIdx = i;
+        }
+        if (activeLineIdx !== lastActiveLineIdx) {
+          if (lastActiveLineIdx >= 0 && flatLines[lastActiveLineIdx]) {
+            flatLines[lastActiveLineIdx].el.classList.remove("active");
+          }
+          if (activeLineIdx >= 0 && flatLines[activeLineIdx]) {
+            const activeEl = flatLines[activeLineIdx].el;
+            activeEl.classList.add("active");
+            if (autoScroll && !audio.paused && mainRoot.dataset.activeTab === "script") {
+              activeEl.scrollIntoView({ block: "center", behavior: "smooth" });
+            }
+          }
+          lastActiveLineIdx = activeLineIdx;
+        }
+      }
+
+      btnPlay.addEventListener("click", () => {
+        if (!data.has_audio) return;
+        if (audio.paused) audio.play().catch(() => {});
+        else audio.pause();
+      });
+      btnBack.addEventListener("click", () => {
+        if (!data.has_audio) return;
+        audio.currentTime = Math.max(0, audio.currentTime - 15);
+        updateSyncUI();
+      });
+      btnFwd.addEventListener("click", () => {
+        if (!data.has_audio) return;
+        const total = Number.isFinite(audio.duration) ? audio.duration : totalEst;
+        audio.currentTime = Math.min(total, audio.currentTime + 15);
+        updateSyncUI();
+      });
+      btnAutoScroll.addEventListener("click", () => {
+        autoScroll = !autoScroll;
+        btnAutoScroll.textContent = autoScroll ? "追従ON" : "追従OFF";
+        btnAutoScroll.classList.toggle("active-toggle", autoScroll);
+      });
+      speedButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const rate = parseFloat(btn.dataset.rate || "1");
+          const found = speedRates.indexOf(rate);
+          if (found >= 0) speedIdx = found;
+          applySpeed(rate);
+        });
+      });
+      btnSpeedCycle.addEventListener("click", () => {
+        speedIdx = (speedIdx + 1) % speedRates.length;
+        applySpeed(speedRates[speedIdx]);
+      });
+      scrubber.addEventListener("input", () => {
+        isScrubbing = true;
+        const total = Number.isFinite(audio.duration) ? audio.duration : totalEst;
+        timeReadout.textContent = fmtTime(Number(scrubber.value)) + " / " + fmtTime(total);
+      });
+      scrubber.addEventListener("change", () => {
+        audio.currentTime = Number(scrubber.value);
+        isScrubbing = false;
+        updateSyncUI();
+      });
+      audio.addEventListener("play", () => { btnPlay.textContent = "❚❚ 停止"; });
+      audio.addEventListener("pause", () => { btnPlay.textContent = "▶ 再生"; });
+      audio.addEventListener("ended", () => { btnPlay.textContent = "▶ 再生"; });
+      audio.addEventListener("timeupdate", updateSyncUI);
+      audio.addEventListener("loadedmetadata", updateSyncUI);
+    })();
+  </script>
+</body>
+</html>
