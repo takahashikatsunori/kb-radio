@@ -11,6 +11,7 @@ import json
 import math
 import os
 import re
+import shutil
 import subprocess
 import sys
 import threading
@@ -834,6 +835,7 @@ def build_episode(
         return None
 
     ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
+    pid = os.getpid()
     bgm_paths = ensure_bgm_assets(BGM_CACHE_DIR)
     bgm_buffers = {name: _read_wav_stereo(p) for name, p in bgm_paths.items()}
 
@@ -905,12 +907,8 @@ def build_episode(
                 total_requests += 1
                 if tts_engine == "gemini":
                     assert client_holder is not None
-                    print(
-                        f"  [{seg['id']}] block {blk_idx + 1}/{len(blocks)} (req #{total_requests})...",
-                        flush=True,
-                    )
-                    raw_wav = GEMINI_CACHE_DIR / f"_raw_{seg['id']}_{blk_idx}.wav"
-                    wav_44k = GEMINI_CACHE_DIR / f"_44k_{seg['id']}_{blk_idx}.wav"
+                    raw_wav = GEMINI_CACHE_DIR / f"_raw_{pid}_{seg['id']}_{blk_idx}.wav"
+                    wav_44k = GEMINI_CACHE_DIR / f"_44k_{pid}_{seg['id']}_{blk_idx}.wav"
                     _synthesize_block_gemini(
                         client_holder,
                         blk,
@@ -1034,20 +1032,24 @@ def build_episode(
         mixed = mixed * (0.95 / peak)
 
     DOCS_AUDIO_DIR.mkdir(parents=True, exist_ok=True)
-    temp_wav = DOCS_AUDIO_DIR / "_mix_temp.wav"
+    mix_work_dir = ROOT_DIR / ".cache" / "mix_tmp"
+    mix_work_dir.mkdir(parents=True, exist_ok=True)
     output_mp3 = DOCS_AUDIO_DIR / meta["output_filename"]
+    temp_wav = mix_work_dir / f"_{output_mp3.stem}_{pid}_mix.wav"
+    temp_mp3 = DOCS_AUDIO_DIR / f".{output_mp3.stem}_{pid}.tmp.mp3"
+    expected_sec = total_samples / SAMPLE_RATE
 
     print(f"Mastering MP3 ({bitrate} Stereo, -16 LUFS) -> {output_mp3}...")
     _write_wav_stereo(temp_wav, mixed)
     try:
-        subprocess.run(
+        ff_res = subprocess.run(
             [
                 ffmpeg_exe,
                 "-y",
                 "-i",
                 str(temp_wav),
                 "-af",
-                "highpass=f=70,loudnorm=I=-16:TP=-1.5:LRA=11",
+                "highpass=f=70,loudnorm=I=-16:TP=-1.5:LRA=11,aformat=sample_fmts=s16p",
                 "-c:a",
                 "libmp3lame",
                 "-b:a",
@@ -1066,16 +1068,24 @@ def build_episode(
                 f"date={meta['episode_date']}",
                 "-metadata",
                 "genre=Podcast",
-                str(output_mp3),
+                str(temp_mp3),
             ],
-            check=True,
             capture_output=True,
         )
+        if ff_res.returncode != 0:
+            err_tail = (ff_res.stderr or b"").decode("utf-8", errors="replace")[-2000:]
+            raise RuntimeError(f"FFmpeg mastering failed (rc={ff_res.returncode}):\n{err_tail}")
+        mp3_dur = _probe_mp3_duration(ffmpeg_exe, temp_mp3)
+        if mp3_dur is None or abs(mp3_dur - expected_sec) > 5.0:
+            raise RuntimeError(
+                f"Mastered MP3 duration mismatch: got {mp3_dur}s vs expected {expected_sec:.2f}s"
+            )
+        temp_mp3.replace(output_mp3)
     finally:
         temp_wav.unlink(missing_ok=True)
+        temp_mp3.unlink(missing_ok=True)
 
-    mp3_dur = _probe_mp3_duration(ffmpeg_exe, output_mp3)
-    total_sec = round(mp3_dur if mp3_dur is not None else total_samples / SAMPLE_RATE, 3)
+    total_sec = round(mp3_dur if mp3_dur is not None else expected_sec, 3)
 
     manifest = {
         "meta": {
