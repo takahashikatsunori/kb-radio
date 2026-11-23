@@ -24,7 +24,9 @@ from build_radio import (
     GEMINI_TTS_MODEL,
     _add_audio,
     _build_looped_bgm,
+    _close_gemini_client_quietly,
     _compute_ducking_envelope,
+    _create_gemini_tts_client,
     _probe_mp3_duration,
     _read_wav_stereo,
     _resample_and_normalize,
@@ -202,7 +204,7 @@ def build_cast_intros(
         if force or not (mp3_path.exists() and mp3_path.stat().st_size > 10_000):
             needs_synth.append(cid)
 
-    client: genai.Client | None = None
+    client_holder: dict[str, Any] | None = None
     bgm_buffers: dict[str, np.ndarray] = {}
     if needs_synth:
         api_key = os.environ.get("GEMINI_API_KEY", "").strip()
@@ -212,7 +214,10 @@ def build_cast_intros(
                 file=sys.stderr,
             )
             sys.exit(1)
-        client = genai.Client(api_key=api_key, http_options={"api_version": "v1beta"})
+        client_holder = {
+            "client": _create_gemini_tts_client(api_key),
+            "api_key": api_key,
+        }
         GEMINI_CACHE_DIR.mkdir(parents=True, exist_ok=True)
         bgm_paths = ensure_bgm_assets(BGM_CACHE_DIR)
         bgm_buffers = {name: _read_wav_stereo(p) for name, p in bgm_paths.items()}
@@ -220,44 +225,48 @@ def build_cast_intros(
     manifest_entries: list[dict[str, Any]] = []
     by_id: dict[str, dict[str, Any]] = {}
 
-    for e in entries:
-        cid = e["id"]
-        member = roster[cid]
-        mp3_path = INTROS_AUDIO_DIR / f"intro_{cid}.mp3"
-        mp3_rel = f"audio/intros/intro_{cid}.mp3"
+    try:
+        for e in entries:
+            cid = e["id"]
+            member = roster[cid]
+            mp3_path = INTROS_AUDIO_DIR / f"intro_{cid}.mp3"
+            mp3_rel = f"audio/intros/intro_{cid}.mp3"
 
-        if cid in needs_synth:
-            assert client is not None
-            print(f"Synthesizing {cid} ({member['name']} / voice={member['voice_name']})...")
-            dur_sec = _master_intro_mp3(
-                client=client,
-                ffmpeg_exe=ffmpeg_exe,
-                bgm_buffers=bgm_buffers,
-                entry=e,
-                member=member,
-                output_mp3=mp3_path,
-                bitrate=bitrate,
-            )
-            print(f"  -> {mp3_path} ({format_timestamp(dur_sec)} / {mp3_path.stat().st_size} bytes)")
-        elif mp3_path.exists() and mp3_path.stat().st_size > 10_000:
-            dur = _probe_mp3_duration(ffmpeg_exe, mp3_path)
-            dur_sec = round(dur if dur is not None else 0.0, 2)
-        else:
-            continue
+            if cid in needs_synth:
+                assert client_holder is not None
+                print(f"Synthesizing {cid} ({member['name']} / voice={member['voice_name']})...")
+                dur_sec = _master_intro_mp3(
+                    client=client_holder,
+                    ffmpeg_exe=ffmpeg_exe,
+                    bgm_buffers=bgm_buffers,
+                    entry=e,
+                    member=member,
+                    output_mp3=mp3_path,
+                    bitrate=bitrate,
+                )
+                print(f"  -> {mp3_path} ({format_timestamp(dur_sec)} / {mp3_path.stat().st_size} bytes)")
+            elif mp3_path.exists() and mp3_path.stat().st_size > 10_000:
+                dur = _probe_mp3_duration(ffmpeg_exe, mp3_path)
+                dur_sec = round(dur if dur is not None else 0.0, 2)
+            else:
+                continue
 
-        item = {
-            "id": cid,
-            "name": member["name"],
-            "voice_name": member["voice_name"],
-            "tts_model": GEMINI_TTS_MODEL,
-            "mp3_rel": mp3_rel,
-            "duration_sec": dur_sec,
-            "duration_formatted": format_timestamp(dur_sec),
-            "tagline": e["tagline"],
-            "text": e["text"],
-        }
-        manifest_entries.append(item)
-        by_id[cid] = item
+            item = {
+                "id": cid,
+                "name": member["name"],
+                "voice_name": member["voice_name"],
+                "tts_model": GEMINI_TTS_MODEL,
+                "mp3_rel": mp3_rel,
+                "duration_sec": dur_sec,
+                "duration_formatted": format_timestamp(dur_sec),
+                "tagline": e["tagline"],
+                "text": e["text"],
+            }
+            manifest_entries.append(item)
+            by_id[cid] = item
+    finally:
+        if client_holder is not None:
+            _close_gemini_client_quietly(client_holder.get("client"))
 
     manifest = {
         "generated_at": datetime.now(JST).isoformat(timespec="seconds"),

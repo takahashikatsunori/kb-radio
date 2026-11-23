@@ -1874,6 +1874,19 @@ def _render_cast_page(
         "hosts": hosts_out,
         "guests": guests_out,
     }
+    has_placeholder = any(
+        m["portrait"]["is_placeholder"] for m in hosts_out + guests_out
+    )
+    if has_placeholder:
+        cast_footnote = (
+            "※ 一部出演者の胸上イラストは制作準備中のため仮アイコンを表示しています（イラストが完成しだい順次切り替わります）。"
+            "自己紹介音声は Gemini 3.8 Flash TTS により各キャスター専用ボイスで収録しています。"
+        )
+    else:
+        cast_footnote = (
+            "※ 全出演者の胸上イラストは小平の朝スタジオをテーマに描き下ろしたオリジナルイメージです。"
+            "自己紹介音声は Gemini 3.8 Flash TTS により各キャスター専用ボイスで収録しています。"
+        )
     nav_html = _render_nav(
         "",
         "cast",
@@ -2158,7 +2171,7 @@ def _render_cast_page(
     </div>
 
     <div class="cast-footnote">
-      ※ 平蔵および曜日ゲスト7名の胸上イラストは制作準備中のため仮アイコンを表示しています（イラストが完成しだい順次切り替わります）。自己紹介音声は Gemini 3.8 Flash TTS により各キャスター専用ボイスで収録しています。
+      {html.escape(cast_footnote)}
     </div>
   </main>
 

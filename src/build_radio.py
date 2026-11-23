@@ -6,12 +6,14 @@ import argparse
 import asyncio
 import base64
 import hashlib
+import io
 import json
 import math
 import os
 import re
 import subprocess
 import sys
+import threading
 import time
 import wave
 from pathlib import Path
@@ -36,6 +38,8 @@ DOCS_AUDIO_DIR = ROOT_DIR / "docs" / "audio"
 GEMINI_TTS_MODEL = "gemini-3.8-flash-tts"
 MAX_BLOCK_TURNS = 4
 MAX_BLOCK_CHARS = 420
+GEMINI_TTS_TIMEOUT_SEC = 65
+GEMINI_TTS_HARD_WATCHDOG_SEC = 80
 
 
 def format_timestamp(seconds: float) -> str:
@@ -157,13 +161,281 @@ def _extract_wav_from_interaction(interaction: Any) -> bytes:
     raise RuntimeError("No audio payload found in Gemini Interactions response")
 
 
-def _synthesize_block_gemini(
+def _create_gemini_tts_client(
+    api_key: str,
+    timeout_sec: float = GEMINI_TTS_TIMEOUT_SEC,
+) -> genai.Client:
+    """Create a genai.Client with explicit socket timeouts and single-attempt SDK config."""
+    return genai.Client(
+        api_key=api_key,
+        http_options={
+            "api_version": "v1beta",
+            "timeout": int(timeout_sec * 1000),
+            "retry_options": {"attempts": 1},
+            "client_args": {"timeout": float(timeout_sec)},
+        },
+    )
+
+
+def _close_gemini_client_quietly(client: Any) -> None:
+    """Close underlying HTTP clients so hung or timed-out sockets are torn down."""
+    if client is None:
+        return
+    try:
+        inter = getattr(client, "interactions", None)
+        sdk_cfg = getattr(inter, "sdk_configuration", None) if inter is not None else None
+        sdk_http = getattr(sdk_cfg, "client", None) if sdk_cfg is not None else None
+        if sdk_http is not None and hasattr(sdk_http, "close"):
+            sdk_http.close()
+    except Exception:  # noqa: BLE001
+        pass
+    try:
+        if hasattr(client, "close"):
+            client.close()
+    except Exception:  # noqa: BLE001
+        pass
+
+
+def _concat_wav_bytes(wav_chunks: list[bytes], gap_sec: float = 0.18) -> bytes:
+    """Concatenate mono/stereo PCM WAV byte chunks cleanly with a brief pause between halves."""
+    if not wav_chunks:
+        raise ValueError("Cannot concatenate empty WAV chunk list")
+    if len(wav_chunks) == 1:
+        return wav_chunks[0]
+
+    params: tuple[int, int, int] | None = None
+    frames_out: list[bytes] = []
+    gap_frames = b""
+
+    for idx, chunk in enumerate(wav_chunks):
+        with wave.open(io.BytesIO(chunk), "rb") as wf:
+            cur_params = (wf.getnchannels(), wf.getsampwidth(), wf.getframerate())
+            pcm = wf.readframes(wf.getnframes())
+        if params is None:
+            params = cur_params
+            nch, sw, fr = params
+            gap_n = max(0, int(round(gap_sec * fr)))
+            gap_frames = b"\x00" * (gap_n * nch * sw)
+        elif cur_params != params:
+            raise ValueError(f"Mismatched WAV parameters across split chunks: {cur_params} != {params}")
+        if idx > 0 and gap_frames:
+            frames_out.append(gap_frames)
+        frames_out.append(pcm)
+
+    assert params is not None
+    out_buf = io.BytesIO()
+    with wave.open(out_buf, "wb") as out_wf:
+        out_wf.setnchannels(params[0])
+        out_wf.setsampwidth(params[1])
+        out_wf.setframerate(params[2])
+        out_wf.writeframes(b"".join(frames_out))
+    return out_buf.getvalue()
+
+
+def _is_interactions_schema_error(exc: Exception) -> bool:
+    """Return True only when interactions.create appears unsupported by endpoint/schema."""
+    if isinstance(exc, AttributeError):
+        return True
+    if isinstance(exc, TimeoutError):
+        return False
+    err_lower = str(exc).lower()
+    if any(
+        tok in err_lower
+        for tok in ("timeout", "timed out", "429", "resource_exhausted", "500", "502", "503", "504", "connection")
+    ):
+        return False
+    return ("404" in err_lower or "400" in err_lower) and any(
+        tok in err_lower
+        for tok in (
+            "not found",
+            "invalid argument",
+            "unknown field",
+            "unrecognized",
+            "invalid_request",
+            "speaker_voice_configs",
+        )
+    )
+
+
+def _is_non_retryable_tts_error(exc: Exception) -> bool:
+    """Return True when retrying or splitting the block cannot resolve the API error."""
+    err_lower = str(exc).lower()
+    if "requests per day" in err_lower or ("429" in err_lower and "per day" in err_lower) or (
+        "quota" in err_lower and "day" in err_lower
+    ):
+        return True
+    if any(tok in err_lower for tok in ("401", "403", "api key not valid", "permission_denied")):
+        return True
+    if "400" in err_lower and any(tok in err_lower for tok in ("invalid_request", "invalid_argument")):
+        return True
+    return False
+
+
+def _synthesize_via_generate_content(
     client: genai.Client,
+    block: list[dict[str, Any]],
+    unique_speakers: list[str],
+    voices_cfg: dict[str, Any],
+) -> bytes:
+    """Synthesize a 1-or-2-speaker block directly via client.models.generate_content."""
+    if len(unique_speakers) == 1:
+        sp = unique_speakers[0]
+        speech_cfg = types.SpeechConfig(
+            voice_config=types.VoiceConfig(
+                prebuilt_voice_config=types.PrebuiltVoiceConfig(
+                    voice_name=voices_cfg[sp]["gemini_voice"]
+                )
+            )
+        )
+    else:
+        speech_cfg = types.SpeechConfig(
+            multi_speaker_voice_config=types.MultiSpeakerVoiceConfig(
+                speaker_voice_configs=[
+                    types.SpeakerVoiceConfig(
+                        speaker=sp,
+                        voice_config=types.VoiceConfig(
+                            prebuilt_voice_config=types.PrebuiltVoiceConfig(
+                                voice_name=voices_cfg[sp]["gemini_voice"]
+                            )
+                        ),
+                    )
+                    for sp in unique_speakers
+                ]
+            )
+        )
+    parts_gc = [
+        {
+            "text": l.get("tts_text") or l["text"],
+            "speech_metadata": {
+                "speaker": l["speaker"],
+                "style": l.get("style") or voices_cfg[l["speaker"]].get("default_style", ""),
+            },
+        }
+        for l in block
+    ]
+    resp = client.models.generate_content(
+        model=GEMINI_TTS_MODEL,
+        contents=[{"role": "user", "parts": parts_gc}],
+        config=types.GenerateContentConfig(
+            response_modalities=["AUDIO"],
+            speech_config=speech_cfg,
+        ),
+    )
+    inline_data = resp.candidates[0].content.parts[0].inline_data.data
+    return _decode_audio_field_to_bytes(inline_data)
+
+
+def _call_gemini_tts_once(
+    api_key: str,
+    client_holder: dict[str, Any],
+    content_parts: list[dict[str, Any]],
+    speaker_configs: list[dict[str, Any]],
+    block: list[dict[str, Any]],
+    unique_speakers: list[str],
+    voices_cfg: dict[str, Any],
+    progress_label: str = "",
+    timeout_sec: float = GEMINI_TTS_TIMEOUT_SEC,
+    watchdog_sec: float = GEMINI_TTS_HARD_WATCHDOG_SEC,
+) -> bytes:
+    """Execute one Gemini TTS API call guarded by a daemon-thread hard wall-clock watchdog."""
+    client = client_holder.get("client")
+    if client is None:
+        if not api_key:
+            raise RuntimeError("Missing Gemini API key to initialize TTS client")
+        client = _create_gemini_tts_client(api_key, timeout_sec=timeout_sec)
+        client_holder["client"] = client
+
+    result: dict[str, Any] = {}
+
+    def _worker() -> None:
+        try:
+            if len(unique_speakers) == 1:
+                # interactions.create speech_config.speakers requires 2..10 speakers; use single-speaker generate_content directly
+                wav_bytes = _synthesize_via_generate_content(client, block, unique_speakers, voices_cfg)
+            else:
+                try:
+                    interaction = client.interactions.create(
+                        model=GEMINI_TTS_MODEL,
+                        input=[{"type": "user_input", "content": content_parts}],
+                        response_format={"type": "audio", "mime_type": "audio/wav"},
+                        generation_config={
+                            "speech_config": {"speakers": speaker_configs},
+                        },
+                        timeout=float(timeout_sec),
+                        automatic_continuation=False,
+                    )
+                    wav_bytes = _extract_wav_from_interaction(interaction)
+                except Exception as inter_exc:  # noqa: BLE001
+                    if not _is_interactions_schema_error(inter_exc):
+                        raise
+                    print(
+                        f"  [TTS {progress_label}] interactions.create schema/endpoint error "
+                        f"({type(inter_exc).__name__}: {inter_exc}); trying generate_content fallback...",
+                        flush=True,
+                    )
+                    wav_bytes = _synthesize_via_generate_content(client, block, unique_speakers, voices_cfg)
+
+            if len(wav_bytes) < 512:
+                raise RuntimeError("Gemini TTS returned empty audio payload")
+            result["wav_bytes"] = wav_bytes
+        except Exception as exc:  # noqa: BLE001
+            result["error"] = exc
+
+    t = threading.Thread(target=_worker, daemon=True)
+    t.start()
+    t.join(timeout=float(watchdog_sec))
+
+    if t.is_alive():
+        _close_gemini_client_quietly(client)
+        client_holder["client"] = None
+        raise TimeoutError(f"Gemini TTS hard watchdog exceeded ({watchdog_sec:.0f}s)")
+
+    if "error" in result:
+        _close_gemini_client_quietly(client)
+        client_holder["client"] = None
+        raise result["error"]
+
+    if "wav_bytes" not in result:
+        _close_gemini_client_quietly(client)
+        client_holder["client"] = None
+        raise RuntimeError("Gemini TTS worker finished without audio or error")
+
+    return result["wav_bytes"]
+
+
+def _resolve_client_holder(
+    client_or_holder: genai.Client | dict[str, Any],
+    api_key: str,
+) -> tuple[dict[str, Any], str]:
+    """Normalize client or holder dict into (holder_dict, resolved_api_key)."""
+    if isinstance(client_or_holder, dict):
+        holder = client_or_holder
+        resolved_key = api_key or str(holder.get("api_key") or "")
+        if not resolved_key:
+            c = holder.get("client")
+            resolved_key = str(getattr(getattr(c, "_api_client", None), "api_key", "") or "")
+        if not resolved_key:
+            resolved_key = os.environ.get("GEMINI_API_KEY", "").strip()
+        holder.setdefault("api_key", resolved_key)
+        return holder, resolved_key
+
+    resolved_key = api_key or str(getattr(getattr(client_or_holder, "_api_client", None), "api_key", "") or "")
+    if not resolved_key:
+        resolved_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    return {"client": client_or_holder, "api_key": resolved_key}, resolved_key
+
+
+def _synthesize_block_gemini(
+    client: genai.Client | dict[str, Any],
     block: list[dict[str, Any]],
     voices_cfg: dict[str, Any],
     raw_wav_path: Path,
+    progress_label: str = "",
+    api_key: str = "",
 ) -> None:
-    """Synthesize a 1-or-2-speaker dialogue block via Gemini 3.8 Flash TTS with caching."""
+    """Synthesize a 1-or-2-speaker dialogue block via Gemini 3.8 Flash TTS with caching and adaptive split."""
+    client_holder, resolved_key = _resolve_client_holder(client, api_key)
+
     unique_speakers: list[str] = []
     for line in block:
         if line["speaker"] not in unique_speakers:
@@ -188,6 +460,8 @@ def _synthesize_block_gemini(
     ).hexdigest()[:24]
     cached_wav = GEMINI_CACHE_DIR / f"{key}.wav"
     if cached_wav.exists() and cached_wav.stat().st_size > 1000:
+        if progress_label:
+            print(f"[TTS {progress_label}] cache hit ({cached_wav.name})", flush=True)
         raw_wav_path.write_bytes(cached_wav.read_bytes())
         return
 
@@ -215,80 +489,104 @@ def _synthesize_block_gemini(
         for sp in unique_speakers
     ]
 
-    last_err: Exception | None = None
-    for attempt in range(4):
-        try:
-            try:
-                interaction = client.interactions.create(
-                    model=GEMINI_TTS_MODEL,
-                    input=[{"type": "user_input", "content": content_parts}],
-                    response_format={"type": "audio", "mime_type": "audio/wav"},
-                    generation_config={
-                        "speech_config": {"speakers": speaker_configs},
-                    },
-                )
-                wav_bytes = _extract_wav_from_interaction(interaction)
-            except Exception as inter_exc:  # noqa: BLE001
-                err_str = str(inter_exc)
-                # Retry rate/transient errors directly; fall back to generate_content only on schema/endpoint mismatch
-                if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "503" in err_str:
-                    raise
-                if len(unique_speakers) == 1:
-                    sp = unique_speakers[0]
-                    speech_cfg = types.SpeechConfig(
-                        voice_config=types.VoiceConfig(
-                            prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                                voice_name=voices_cfg[sp]["gemini_voice"]
-                            )
-                        )
-                    )
-                else:
-                    speech_cfg = types.SpeechConfig(
-                        multi_speaker_voice_config=types.MultiSpeakerVoiceConfig(
-                            speaker_voice_configs=[
-                                types.SpeakerVoiceConfig(
-                                    speaker=sp,
-                                    voice_config=types.VoiceConfig(
-                                        prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                                            voice_name=voices_cfg[sp]["gemini_voice"]
-                                        )
-                                    ),
-                                )
-                                for sp in unique_speakers
-                            ]
-                        )
-                    )
-                parts_gc = [
-                    {
-                        "text": l.get("tts_text") or l["text"],
-                        "speech_metadata": {
-                            "speaker": l["speaker"],
-                            "style": l.get("style") or voices_cfg[l["speaker"]].get("default_style", ""),
-                        },
-                    }
-                    for l in block
-                ]
-                resp = client.models.generate_content(
-                    model=GEMINI_TTS_MODEL,
-                    contents=[{"role": "user", "parts": parts_gc}],
-                    config=types.GenerateContentConfig(
-                        response_modalities=["AUDIO"],
-                        speech_config=speech_cfg,
-                    ),
-                )
-                inline_data = resp.candidates[0].content.parts[0].inline_data.data
-                wav_bytes = _decode_audio_field_to_bytes(inline_data)
+    if progress_label:
+        print(
+            f"[TTS {progress_label}] synthesizing {len(block)} turns ({', '.join(unique_speakers)})...",
+            flush=True,
+        )
+    t0 = time.monotonic()
 
-            if len(wav_bytes) < 512:
-                raise RuntimeError("Gemini TTS returned empty audio payload")
+    max_attempts = 2 if len(block) > 1 else 4
+    last_err: Exception | None = None
+    for attempt in range(max_attempts):
+        try:
+            wav_bytes = _call_gemini_tts_once(
+                api_key=resolved_key,
+                client_holder=client_holder,
+                content_parts=content_parts,
+                speaker_configs=speaker_configs,
+                block=block,
+                unique_speakers=unique_speakers,
+                voices_cfg=voices_cfg,
+                progress_label=progress_label or key,
+            )
             tmp = cached_wav.with_suffix(".wav.tmp")
             tmp.write_bytes(wav_bytes)
             tmp.replace(cached_wav)
             raw_wav_path.write_bytes(wav_bytes)
+            if progress_label:
+                elapsed = time.monotonic() - t0
+                print(
+                    f"[TTS {progress_label}] done ({elapsed:.1f}s, {len(wav_bytes) / 1024:.0f} KB)",
+                    flush=True,
+                )
             return
         except Exception as exc:  # noqa: BLE001
             last_err = exc
-            time.sleep(2.0 * (2**attempt))
+            elapsed = time.monotonic() - t0
+            if _is_non_retryable_tts_error(exc):
+                print(
+                    f"  [TTS {progress_label or key} non-retryable error after {elapsed:.1f}s] "
+                    f"{type(exc).__name__}: {exc}",
+                    flush=True,
+                )
+                raise RuntimeError(f"Gemini TTS non-retryable error: {exc}") from exc
+            if attempt + 1 < max_attempts:
+                wait_sec = 3.0 if len(block) > 1 else 2.0 * (2**attempt)
+                print(
+                    f"  [TTS {progress_label or key} retry {attempt + 1}/{max_attempts} after {elapsed:.1f}s] "
+                    f"{type(exc).__name__}: {exc} (waiting {wait_sec:.0f}s)",
+                    flush=True,
+                )
+                time.sleep(wait_sec)
+            else:
+                print(
+                    f"  [TTS {progress_label or key} attempt {attempt + 1}/{max_attempts} failed after {elapsed:.1f}s] "
+                    f"{type(exc).__name__}: {exc}",
+                    flush=True,
+                )
+
+    if len(block) > 1:
+        mid = len(block) // 2
+        label_base = progress_label or key
+        print(
+            f"  [TTS {label_base}] splitting {len(block)}-turn block into {mid}+{len(block) - mid} turns after failure...",
+            flush=True,
+        )
+        part_a_path = raw_wav_path.with_name(f"{raw_wav_path.stem}_partA.wav")
+        part_b_path = raw_wav_path.with_name(f"{raw_wav_path.stem}_partB.wav")
+        try:
+            _synthesize_block_gemini(
+                client_holder,
+                block[:mid],
+                voices_cfg,
+                part_a_path,
+                progress_label=f"{progress_label}a" if progress_label else "",
+                api_key=resolved_key,
+            )
+            _synthesize_block_gemini(
+                client_holder,
+                block[mid:],
+                voices_cfg,
+                part_b_path,
+                progress_label=f"{progress_label}b" if progress_label else "",
+                api_key=resolved_key,
+            )
+            merged_wav = _concat_wav_bytes([part_a_path.read_bytes(), part_b_path.read_bytes()])
+            tmp = cached_wav.with_suffix(".wav.tmp")
+            tmp.write_bytes(merged_wav)
+            tmp.replace(cached_wav)
+            raw_wav_path.write_bytes(merged_wav)
+            if progress_label:
+                elapsed = time.monotonic() - t0
+                print(
+                    f"[TTS {progress_label}] split-merged done ({elapsed:.1f}s, {len(merged_wav) / 1024:.0f} KB)",
+                    flush=True,
+                )
+            return
+        finally:
+            part_a_path.unlink(missing_ok=True)
+            part_b_path.unlink(missing_ok=True)
 
     raise RuntimeError(f"Gemini TTS synthesis failed after retries: {last_err}")
 
@@ -558,131 +856,155 @@ def build_episode(
                 file=sys.stderr,
             )
             sys.exit(1)
-        client = genai.Client(api_key=api_key, http_options={"api_version": "v1beta"})
+        client_holder: dict[str, Any] | None = {
+            "client": _create_gemini_tts_client(api_key),
+            "api_key": api_key,
+        }
         GEMINI_CACHE_DIR.mkdir(parents=True, exist_ok=True)
     else:
-        client = None
+        api_key = ""
+        client_holder = None
         edge_map = asyncio.run(_synthesize_all_edge(episode))
 
-    for seg in episode["segments"]:
-        seg_start_smp = cursor_smp
-        intro_name = seg.get("intro_jingle")
+    total_blocks = sum(
+        len(_group_lines_into_blocks(seg["lines"])) if tts_engine == "gemini" else len(seg["lines"])
+        for seg in episode["segments"]
+    )
 
-        if intro_name and intro_name in bgm_buffers:
-            jingle = bgm_buffers[intro_name]
-            if intro_name == "opening_jingle":
-                lead_smp = int(5.0 * SAMPLE_RATE)
-                jingle_placements.append((cursor_smp, jingle, 0.72))
-                bgm_bed_start_smp = cursor_smp + int(7.2 * SAMPLE_RATE)
-                cursor_smp += lead_smp
-            elif intro_name == "guest_jingle":
-                cursor_smp += int(0.35 * SAMPLE_RATE)
-                jingle_placements.append((cursor_smp, jingle, 0.72))
-                bgm_bed_start_smp = cursor_smp + int(2.70 * SAMPLE_RATE)
-                cursor_smp += int(2.15 * SAMPLE_RATE)
+    try:
+        for seg in episode["segments"]:
+            seg_start_smp = cursor_smp
+            intro_name = seg.get("intro_jingle")
+
+            if intro_name and intro_name in bgm_buffers:
+                jingle = bgm_buffers[intro_name]
+                if intro_name == "opening_jingle":
+                    lead_smp = int(5.0 * SAMPLE_RATE)
+                    jingle_placements.append((cursor_smp, jingle, 0.72))
+                    bgm_bed_start_smp = cursor_smp + int(7.2 * SAMPLE_RATE)
+                    cursor_smp += lead_smp
+                elif intro_name == "guest_jingle":
+                    cursor_smp += int(0.35 * SAMPLE_RATE)
+                    jingle_placements.append((cursor_smp, jingle, 0.72))
+                    bgm_bed_start_smp = cursor_smp + int(2.70 * SAMPLE_RATE)
+                    cursor_smp += int(2.15 * SAMPLE_RATE)
+                else:
+                    cursor_smp += int(0.35 * SAMPLE_RATE)
+                    jingle_placements.append((cursor_smp, jingle, 0.68))
+                    bgm_bed_start_smp = cursor_smp + int(2.40 * SAMPLE_RATE)
+                    cursor_smp += int(1.85 * SAMPLE_RATE)
             else:
-                cursor_smp += int(0.35 * SAMPLE_RATE)
-                jingle_placements.append((cursor_smp, jingle, 0.68))
-                bgm_bed_start_smp = cursor_smp + int(2.40 * SAMPLE_RATE)
-                cursor_smp += int(1.85 * SAMPLE_RATE)
-        else:
-            bgm_bed_start_smp = cursor_smp
+                bgm_bed_start_smp = cursor_smp
 
-        seg_speech_start_smp = cursor_smp
-        seg_lines_manifest: list[dict[str, Any]] = []
-        blocks = _group_lines_into_blocks(seg["lines"]) if tts_engine == "gemini" else [[l] for l in seg["lines"]]
-        line_idx_in_seg = 0
+            seg_speech_start_smp = cursor_smp
+            seg_lines_manifest: list[dict[str, Any]] = []
+            blocks = _group_lines_into_blocks(seg["lines"]) if tts_engine == "gemini" else [[l] for l in seg["lines"]]
+            line_idx_in_seg = 0
 
-        for blk_idx, blk in enumerate(blocks):
-            total_requests += 1
-            if tts_engine == "gemini":
-                assert client is not None
-                raw_wav = GEMINI_CACHE_DIR / f"_raw_{seg['id']}_{blk_idx}.wav"
-                wav_44k = GEMINI_CACHE_DIR / f"_44k_{seg['id']}_{blk_idx}.wav"
-                _synthesize_block_gemini(client, blk, voices, raw_wav)
-                mono = _resample_and_normalize(ffmpeg_exe, raw_wav, wav_44k)
-                raw_wav.unlink(missing_ok=True)
-                wav_44k.unlink(missing_ok=True)
-                blk_speakers = {l["speaker"] for l in blk}
-                pan = float(voices[next(iter(blk_speakers))].get("pan", 0.0)) if len(blk_speakers) == 1 else 0.0
-                time.sleep(0.25)
-            else:
-                l0 = blk[0]
-                v_cfg = voices[l0["speaker"]]
-                clean_spoken = _strip_tags(l0.get("tts_text") or l0["text"])
-                voice = v_cfg.get("edge_voice") or v_cfg.get("voice") or "ja-JP-NanamiNeural"
-                rate = v_cfg.get("edge_rate") or v_cfg.get("rate") or "+2%"
-                pitch = v_cfg.get("edge_pitch") or v_cfg.get("pitch") or "+0Hz"
-                key = hashlib.sha256(f"{voice}|{rate}|{pitch}|{clean_spoken}".encode("utf-8")).hexdigest()[:24]
-                mp3_path = edge_map[key]
-                wav_44k = EDGE_CACHE_DIR / f"{key}.wav"
-                mono = _resample_and_normalize(ffmpeg_exe, mp3_path, wav_44k)
-                pan = float(v_cfg.get("pan", 0.0))
+            for blk_idx, blk in enumerate(blocks):
+                total_requests += 1
+                if tts_engine == "gemini":
+                    assert client_holder is not None
+                    print(
+                        f"  [{seg['id']}] block {blk_idx + 1}/{len(blocks)} (req #{total_requests})...",
+                        flush=True,
+                    )
+                    raw_wav = GEMINI_CACHE_DIR / f"_raw_{seg['id']}_{blk_idx}.wav"
+                    wav_44k = GEMINI_CACHE_DIR / f"_44k_{seg['id']}_{blk_idx}.wav"
+                    _synthesize_block_gemini(
+                        client_holder,
+                        blk,
+                        voices,
+                        raw_wav,
+                        progress_label=f"{total_requests}/{total_blocks} {seg['id']}#{blk_idx + 1}",
+                        api_key=api_key,
+                    )
+                    mono = _resample_and_normalize(ffmpeg_exe, raw_wav, wav_44k)
+                    raw_wav.unlink(missing_ok=True)
+                    wav_44k.unlink(missing_ok=True)
+                    blk_speakers = {l["speaker"] for l in blk}
+                    pan = float(voices[next(iter(blk_speakers))].get("pan", 0.0)) if len(blk_speakers) == 1 else 0.0
+                    time.sleep(0.25)
+                else:
+                    l0 = blk[0]
+                    v_cfg = voices[l0["speaker"]]
+                    clean_spoken = _strip_tags(l0.get("tts_text") or l0["text"])
+                    voice = v_cfg.get("edge_voice") or v_cfg.get("voice") or "ja-JP-NanamiNeural"
+                    rate = v_cfg.get("edge_rate") or v_cfg.get("rate") or "+2%"
+                    pitch = v_cfg.get("edge_pitch") or v_cfg.get("pitch") or "+0Hz"
+                    key = hashlib.sha256(f"{voice}|{rate}|{pitch}|{clean_spoken}".encode("utf-8")).hexdigest()[:24]
+                    mp3_path = edge_map[key]
+                    wav_44k = EDGE_CACHE_DIR / f"{key}.wav"
+                    mono = _resample_and_normalize(ffmpeg_exe, mp3_path, wav_44k)
+                    pan = float(v_cfg.get("pan", 0.0))
 
-            stereo = _pan_mono(mono, pan)
-            blk_start_smp = cursor_smp
-            blk_end_smp = cursor_smp + stereo.shape[0]
-            speech_placements.append((blk_start_smp, stereo))
-            speech_intervals.append((blk_start_smp, blk_end_smp))
+                stereo = _pan_mono(mono, pan)
+                blk_start_smp = cursor_smp
+                blk_end_smp = cursor_smp + stereo.shape[0]
+                speech_placements.append((blk_start_smp, stereo))
+                speech_intervals.append((blk_start_smp, blk_end_smp))
 
-            pause_after = float(blk[-1].get("pause_after", 0.34))
-            cursor_smp = blk_end_smp + int(pause_after * SAMPLE_RATE)
+                pause_after = float(blk[-1].get("pause_after", 0.34))
+                cursor_smp = blk_end_smp + int(pause_after * SAMPLE_RATE)
 
-            # Distribute per-line timestamps proportionally inside multi-turn blocks
-            blk_dur_sec = (blk_end_smp - blk_start_smp) / SAMPLE_RATE
-            blk_start_sec = blk_start_smp / SAMPLE_RATE
-            weights = [max(4, len(l["text"])) for l in blk]
-            total_w = sum(weights)
-            t_cur = blk_start_sec
-            for l_i, line in enumerate(blk):
-                part_dur = blk_dur_sec * (weights[l_i] / total_w)
-                l_start = round(t_cur, 3)
-                l_end = round(t_cur + part_dur, 3)
-                t_cur += part_dur
-                seg_lines_manifest.append(
-                    {
-                        "index": line_idx_in_seg,
-                        "global_index": global_idx,
-                        "speaker": line["speaker"],
-                        "speaker_name": voices[line["speaker"]]["name"],
-                        "text": line["text"],
-                        "start_sec": l_start,
-                        "end_sec": l_end,
-                        "duration_sec": round(l_end - l_start, 3),
-                    }
-                )
-                line_idx_in_seg += 1
-                global_idx += 1
+                # Distribute per-line timestamps proportionally inside multi-turn blocks
+                blk_dur_sec = (blk_end_smp - blk_start_smp) / SAMPLE_RATE
+                blk_start_sec = blk_start_smp / SAMPLE_RATE
+                weights = [max(4, len(l["text"])) for l in blk]
+                total_w = sum(weights)
+                t_cur = blk_start_sec
+                for l_i, line in enumerate(blk):
+                    part_dur = blk_dur_sec * (weights[l_i] / total_w)
+                    l_start = round(t_cur, 3)
+                    l_end = round(t_cur + part_dur, 3)
+                    t_cur += part_dur
+                    seg_lines_manifest.append(
+                        {
+                            "index": line_idx_in_seg,
+                            "global_index": global_idx,
+                            "speaker": line["speaker"],
+                            "speaker_name": voices[line["speaker"]]["name"],
+                            "text": line["text"],
+                            "start_sec": l_start,
+                            "end_sec": l_end,
+                            "duration_sec": round(l_end - l_start, 3),
+                        }
+                    )
+                    line_idx_in_seg += 1
+                    global_idx += 1
 
-        seg_speech_end_smp = cursor_smp
-        bgm_name = seg.get("bgm")
-        if bgm_name and bgm_name in bgm_buffers:
-            bed_end_smp = seg_speech_end_smp + int(0.8 * SAMPLE_RATE)
-            if seg.get("outro_jingle"):
-                bed_end_smp = max(bgm_bed_start_smp, seg_speech_end_smp - int(1.5 * SAMPLE_RATE))
-            bgm_placements.append((bgm_bed_start_smp, bed_end_smp, bgm_name))
+            seg_speech_end_smp = cursor_smp
+            bgm_name = seg.get("bgm")
+            if bgm_name and bgm_name in bgm_buffers:
+                bed_end_smp = seg_speech_end_smp + int(0.8 * SAMPLE_RATE)
+                if seg.get("outro_jingle"):
+                    bed_end_smp = max(bgm_bed_start_smp, seg_speech_end_smp - int(1.5 * SAMPLE_RATE))
+                bgm_placements.append((bgm_bed_start_smp, bed_end_smp, bgm_name))
 
-        outro_name = seg.get("outro_jingle")
-        if outro_name and outro_name in bgm_buffers:
-            outro = bgm_buffers[outro_name]
-            outro_start_smp = max(0, seg_speech_end_smp - int(3.2 * SAMPLE_RATE))
-            jingle_placements.append((outro_start_smp, outro, 0.72))
-            cursor_smp = max(cursor_smp, outro_start_smp + outro.shape[0] + int(0.4 * SAMPLE_RATE))
+            outro_name = seg.get("outro_jingle")
+            if outro_name and outro_name in bgm_buffers:
+                outro = bgm_buffers[outro_name]
+                outro_start_smp = max(0, seg_speech_end_smp - int(3.2 * SAMPLE_RATE))
+                jingle_placements.append((outro_start_smp, outro, 0.72))
+                cursor_smp = max(cursor_smp, outro_start_smp + outro.shape[0] + int(0.4 * SAMPLE_RATE))
 
-        timeline_segments.append(
-            {
-                "id": seg["id"],
-                "title": seg["title"],
-                "bgm": bgm_name,
-                "intro_jingle": intro_name,
-                "outro_jingle": outro_name,
-                "start_sec": round(seg_start_smp / SAMPLE_RATE, 3),
-                "speech_start_sec": round(seg_speech_start_smp / SAMPLE_RATE, 3),
-                "end_sec": round(cursor_smp / SAMPLE_RATE, 3),
-                "duration_sec": round((cursor_smp - seg_start_smp) / SAMPLE_RATE, 3),
-                "lines": seg_lines_manifest,
-            }
-        )
+            timeline_segments.append(
+                {
+                    "id": seg["id"],
+                    "title": seg["title"],
+                    "bgm": bgm_name,
+                    "intro_jingle": intro_name,
+                    "outro_jingle": outro_name,
+                    "start_sec": round(seg_start_smp / SAMPLE_RATE, 3),
+                    "speech_start_sec": round(seg_speech_start_smp / SAMPLE_RATE, 3),
+                    "end_sec": round(cursor_smp / SAMPLE_RATE, 3),
+                    "duration_sec": round((cursor_smp - seg_start_smp) / SAMPLE_RATE, 3),
+                    "lines": seg_lines_manifest,
+                }
+            )
+    finally:
+        if client_holder is not None:
+            _close_gemini_client_quietly(client_holder.get("client"))
 
     total_samples = cursor_smp + int(0.5 * SAMPLE_RATE)
     print(f"Mixing {global_idx} lines ({total_requests} TTS chunks) over {total_samples / SAMPLE_RATE:.2f}s...")
