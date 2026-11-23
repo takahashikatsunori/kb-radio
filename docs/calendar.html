@@ -179,21 +179,26 @@ header {
   background: #fcfcfa;
   border-bottom: 1px solid var(--border);
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: baseline;
+  gap: 0.3rem 0.6rem;
 }
 .section-head h2 {
   margin: 0;
   font-size: 0.96rem;
   color: var(--forest-dark);
+  flex: 1 1 180px;
   min-width: 0;
   overflow-wrap: anywhere;
 }
 .hint {
   font-size: 0.76rem;
   color: var(--muted);
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 /* Slim sticky player */
@@ -326,6 +331,15 @@ button.active-toggle {
   list-style: none;
   cursor: pointer;
   user-select: none;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+.chapter-summary h2 {
+  flex: 1 1 auto;
+}
+.chapter-summary .hint {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 .chapter-summary::-webkit-details-marker {
   display: none;

@@ -193,6 +193,39 @@ TECH_CSS = """
   font-size: 0.9rem;
   color: var(--forest-dark);
 }
+.tech-chapter, .tech-body, .tech-body > *, .tech-mini-card, .beginner-box, .tech-spec-box, .diagram-figure, .code-sample, .tech-table-wrap {
+  min-width: 0;
+  max-width: 100%;
+}
+.tech-body code, .tech-table code {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  background: #f1f5f9;
+  padding: 0.08rem 0.3rem;
+  border-radius: 4px;
+  font-size: 0.84em;
+}
+.tech-chapter .section-head .hint {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.72rem;
+  background: #eef2f6;
+  color: #475569;
+  padding: 0.14rem 0.5rem;
+  border-radius: 6px;
+}
+.diagram-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.diagram-swipe-hint {
+  display: none;
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: center;
+  margin-bottom: 0.35rem;
+}
 .tech-player-wrap {
   border-top: 4px solid #0891b2;
 }
@@ -207,6 +240,23 @@ TECH_CSS = """
   }
   .tech-transcript-wrap {
     max-height: 58vh;
+  }
+}
+@media (max-width: 640px) {
+  .tech-chapter .section-head, .tech-player-wrap > .section-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.28rem;
+  }
+  .tech-chapter .section-head h2, .tech-player-wrap > .section-head h2 {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+  .diagram-swipe-hint {
+    display: block;
+  }
+  .diagram-scroll svg {
+    min-width: 620px;
   }
 }
 """
@@ -656,7 +706,7 @@ $TECH_CSS
         <div class="chapter-list" id="tech-chapter-list"></div>
       </details>
 
-      <details open>
+      <details class="chapter-details" id="tech-transcript-details" open>
         <summary class="section-head chapter-summary">
           <h2>同期対談台本（セリフをタップで音声ジャンプ）</h2>
           <span class="hint">開閉</span>
@@ -680,7 +730,10 @@ $TECH_CSS
           オーケストラにバイオリン・トランペット・打楽器それぞれの名手がいて、指揮者がタイミングを合わせて1つの交響曲を作るように、「調べるのが得意なAI」「おしゃべり台本を書くのが得意なAI」「ミスをチェックするAI」「声を出して演技するAI」「計算して音楽を鳴らすプログラム」を組み合わせることで、1人（1つのAI）では絶対に届かない正確さと温かさを実現する仕組みです。
         </div>
         <figure class="diagram-figure">
-          $SVG_DIAGRAM_1
+          <div class="diagram-swipe-hint">↔ 図解は左右にスワイプして拡大・確認できます</div>
+          <div class="diagram-scroll">
+            $SVG_DIAGRAM_1
+          </div>
           <figcaption class="diagram-caption">図解①：毎朝5:17の起動から7:00のWeb配信までを自動連携させる全体パイプライン</figcaption>
         </figure>
       </div>
@@ -719,7 +772,10 @@ $TECH_CSS
           </div>
         </div>
         <figure class="diagram-figure">
-          $SVG_DIAGRAM_2
+          <div class="diagram-swipe-hint">↔ 図解は左右にスワイプして拡大・確認できます</div>
+          <div class="diagram-scroll">
+            $SVG_DIAGRAM_2
+          </div>
           <figcaption class="diagram-caption">図解②：ライブAPI・祝日判定・事前編成カレンダー・長期記憶が台本生成の前に合流する構造</figcaption>
         </figure>
       </div>
@@ -740,7 +796,10 @@ $TECH_CSS
           大規模言語モデル（LLM）は学習時の記憶をもとに自然な文章を紡ぐのが得意ですが、最新の地域イベント日程などを記憶だけで書くと、昨年の日付と混ぜてしまう<strong>ハルシネーション（もっともらしい誤情報）</strong>が起きることがあります。そこで本番組では、まず <strong>Google検索グラウンディング（検索結果に根拠を置く仕組み）</strong> で今年の一次情報を調べ（Phase A）、執筆後に別の校閲AIがもう一度Google検索で裏取りをする（Phase C）二重の安全網を敷いています。
         </div>
         <figure class="diagram-figure">
-          $SVG_DIAGRAM_3
+          <div class="diagram-swipe-hint">↔ 図解は左右にスワイプして拡大・確認できます</div>
+          <div class="diagram-scroll">
+            $SVG_DIAGRAM_3
+          </div>
           <figcaption class="diagram-caption">図解③：調査（Hydrogen）→ 執筆（Neon）→ 自動校閲（Hydrogen）の3フェーズ制作リレー</figcaption>
         </figure>
 
@@ -778,7 +837,10 @@ $TECH_CSS
           はい！インターネット上の音楽素材をダウンロードするのではなく、<code>src/bgm_synth.py</code> の中で<strong>NumPy（ナムパイ）という数値計算ライブラリを使い、高校数学で習うサイン波（sin）を何重にも足し合わせて楽器の音色をゼロから合成</strong>しています。ローズ風の温かなエレキピアノも、朝のチャイムも、小鳥のようなベル音も、すべてプログラムが毎回44,100Hzの音の波として計算し、自然な残響（マルチタップ・リバーブ）をかけて生み出しています。
         </div>
         <figure class="diagram-figure">
-          $SVG_DIAGRAM_4
+          <div class="diagram-swipe-hint">↔ 図解は左右にスワイプして拡大・確認できます</div>
+          <div class="diagram-scroll">
+            $SVG_DIAGRAM_4
+          </div>
           <figcaption class="diagram-caption">図解④：TTS音声・数式BGM・ジングルを0.16秒先読みダッキングで合成し、-16 LUFSへ仕上げる音響回路</figcaption>
         </figure>
 
@@ -827,7 +889,10 @@ $TECH_CSS
           通常のブラウザはセキュリティ保護（CORS制限）のため、ネットサーバーを通さずにPC上のHTMLファイルをダブルクリック（<code>file://</code>）すると外部のJSONファイルを読み込めません。そこで本サイトは、台本やタイムライン・カレンダー情報をすべてHTMLページの中の <code>&lt;script type="application/json"&gt;</code> タグへ直接埋め込んでいます。これにより、GitHub Pagesでの公開はもちろん、<strong>オフラインのWindowsパソコンで直接開いても100%同じように同期再生・検索ができます。</strong>
         </div>
         <figure class="diagram-figure">
-          $SVG_DIAGRAM_5
+          <div class="diagram-swipe-hint">↔ 図解は左右にスワイプして拡大・確認できます</div>
+          <div class="diagram-scroll">
+            $SVG_DIAGRAM_5
+          </div>
           <figcaption class="diagram-caption">図解⑤：build_site.py によるHTML生成と、ブラウザ内 audio.timeupdate による双方向シンク</figcaption>
         </figure>
       </div>
@@ -848,7 +913,10 @@ $TECH_CSS
           GitHub Actionsの無料枠の定期実行（<code>cron</code>）は、世界の多くの人が使う時間帯だと数十分〜数時間ほど実行キューで待たされることがあります。実際に11月23日朝は、従来の <code>06:35 JST</code> 設定がキュー混雑で7時までに発火しない事象が確認されました。そこで同日、① <strong>朝05:17 JST（約1時間40分の余裕）</strong> と <strong>朝06:13 JST（予備キャッチアップ）</strong> のオフピーク2段構えへ変更し、② <strong>すでに当日のJSONとMP3が存在すればスキップする「冪等（何度走っても壊れない）チェック」</strong>を組み込みました。さらに日曜の編集長AIも <strong>日曜昼12:17 JST</strong> に前倒ししてカレンダーページまで即更新します。
         </div>
         <figure class="diagram-figure">
-          $SVG_DIAGRAM_6
+          <div class="diagram-swipe-hint">↔ 図解は左右にスワイプして拡大・確認できます</div>
+          <div class="diagram-scroll">
+            $SVG_DIAGRAM_6
+          </div>
           <figcaption class="diagram-caption">図解⑥：日曜12:17の編集長AI編成と、毎朝05:17／06:13の二重バックアップ自動運転タイムライン</figcaption>
         </figure>
         <div class="tech-spec-box">
