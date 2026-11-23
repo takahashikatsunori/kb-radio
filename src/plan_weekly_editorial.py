@@ -31,8 +31,19 @@ from schedule_calendar import resolve_day_plan
 EDITORIAL_PLAN_PATH = DATA_DIR / "editorial_plan.json"
 
 
-def _default_next_monday(now_jst: datetime) -> date:
-    """Return upcoming Monday in JST (Sunday -> tomorrow Monday)."""
+def _default_next_monday(
+    now_jst: datetime,
+    existing_plan: dict[str, Any] | None = None,
+) -> date:
+    """Return upcoming Monday in JST; if early Monday (<06:00 JST) & today is missing, target today."""
+    if now_jst.weekday() == 0 and now_jst.hour < 6:
+        existing_dates = {
+            str(g.get("date"))
+            for g in ((existing_plan or {}).get("daily_guides") or [])
+            if isinstance(g, dict) and g.get("date")
+        }
+        if now_jst.date().isoformat() not in existing_dates:
+            return now_jst.date()
     days_ahead = 7 - now_jst.weekday()
     return (now_jst + timedelta(days=days_ahead)).date()
 
@@ -43,15 +54,23 @@ def _build_week_skeleton(
     themes: dict[str, Any],
     special_days: dict[str, Any],
     topic_history_entries: list[dict[str, Any]],
+    program_schedule: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
-    """Build day-by-day calendar, special-day lockouts, and 90-day expert dedup data."""
+    """Build day-by-day calendar, special-day lockouts, pre-planned expert schedule, and 90-day dedup data."""
     rows: list[dict[str, Any]] = []
     for offset in range(num_days):
         d_str = (start_dt + timedelta(days=offset)).isoformat()
-        plan = resolve_day_plan(d_str, themes, special_days, editorial_plan=None)
+        plan = resolve_day_plan(
+            d_str,
+            themes,
+            special_days,
+            editorial_plan=None,
+            program_schedule=program_schedule,
+        )
         dedup = build_dedup_context(d_str, plan, topic_history_entries)
         guest = plan["day_cfg"]["guest"]
         sp = plan.get("scheduled_special")
+        ps = plan.get("program_schedule") or {}
         rows.append(
             {
                 "date": d_str,
@@ -67,6 +86,11 @@ def _build_week_skeleton(
                 "existing_special_desc": (
                     f"{sp['title']}（{sp['phase_label']}）" if sp else None
                 ),
+                "preplanned_expert_topics": ps.get("expert_topics") or [],
+                "preplanned_expert_note": ps.get("expert_note") or "",
+                "preplanned_kodaira_hint": ps.get("kodaira_hint") or "",
+                "special_request": ps.get("special_request") or "",
+                "schedule_locked": bool(ps.get("locked")),
                 "expert_covered_90d": dedup["expert_covered_keywords"],
                 "expert_fresh_candidates": dedup["fresh_keywords"][:5],
             }
@@ -151,10 +175,11 @@ def build_editorial_plan_prompt(
 
 ## 5. 編集長としての編成ルール（重要）
 1. **週間テーマ軸 (`weekly_arc`)**: 今週1週間を通じたワクワクする番組の縦糸・特集コンセプトを1つ設定してください。
-2. **7日間の地理・ジャンルの多様性**:
+2. **7日間の地理・ジャンルの多様性 ＆ 事前編成カレンダー (`program_schedule`) の尊重**:
    - 月〜日で同じ駅・施設ばかりに偏らないよう、`focus_area`（小川／花小金井／一橋学園／鷹の台／小平駅南・北口／津田・野火止／鈴木・大沼など）を毎日変えてください。
-   - `kodaira_angle` にはリスナーが小平をもっと好きになる具体的なまち・暮らしの切り口（直近履歴と非重複）を記載してください。
-   - `expert_angle` には各日の `expert_fresh_candidates` を活用し、過去90日と被らない深掘り切り口を指定してください。
+   - `kodaira_angle` にはリスナーが小平をもっと好きになる具体的なまち・暮らしの切り口（直近履歴と非重複）を記載してください。`preplanned_kodaira_hint` がある日は方向性の参考にしてください。
+   - **`preplanned_expert_topics` が指定されている日は、必ずそのテーマを `expert_angle` の主軸として採用してください**（空欄の日のみ `expert_fresh_candidates` を活用）。
+   - **`schedule_locked: true` または `special_request` がある日は、そのリクエスト内容を最優先で `kodaira_angle` や `expert_angle`（必要に応じて `editorial_special`）に忠実に反映し、勝手に別テーマへ変更しないでください**。
 3. **編集長ワクワク特集コーナー (`editorial_special`)**:
    - `has_existing_special` が `false` の日の中から、**週に1〜2日だけ** ワクワクする特別特集（+2〜3分拡大コーナー）を企画してください（その他の日は必ず `null`）。
    - 単なる災害恐怖ではなく、「小平のまち歩き・季節の楽しみ・地域文化」と「暮らしの安心・防災」が楽しくつながる企画にしてください。
@@ -243,9 +268,13 @@ def _normalize_editorial_plan(
                 "expert_angle": str(
                     rg.get("expert_angle")
                     or (
-                        f"未解説キーワード（{', '.join(row['expert_fresh_candidates'][:2])}）を小平向けに解説"
-                        if row["expert_fresh_candidates"]
-                        else f"{row['theme_name']}の実践知識"
+                        f"{row['guest_name']}さんとともに事前編成テーマ（{'／'.join(row['preplanned_expert_topics'])}）を小平向けに解説。{row['preplanned_expert_note']}".strip()
+                        if row.get("preplanned_expert_topics")
+                        else (
+                            f"未解説キーワード（{', '.join(row['expert_fresh_candidates'][:2])}）を小平向けに解説"
+                            if row["expert_fresh_candidates"]
+                            else f"{row['theme_name']}の実践知識"
+                        )
                     )
                 ).strip(),
                 "editorial_special": cleaned_sp,
@@ -276,9 +305,81 @@ def _normalize_editorial_plan(
     }
 
 
+def merge_editorial_plans(
+    existing_plan: dict[str, Any] | None,
+    new_week_plan: dict[str, Any],
+    now_jst: datetime,
+) -> dict[str, Any]:
+    """Merge a newly planned week into existing multi-week editorial_plan.json without clobbering active/other weeks."""
+    cutoff_str = (now_jst.date() - timedelta(days=60)).isoformat()
+    today_str = now_jst.date().isoformat()
+
+    guides_by_date: dict[str, dict[str, Any]] = {}
+    weeks_by_start: dict[str, dict[str, Any]] = {}
+
+    if existing_plan:
+        for g in existing_plan.get("daily_guides") or []:
+            if isinstance(g, dict) and g.get("date") and str(g["date"]) >= cutoff_str:
+                guides_by_date[str(g["date"])] = g
+
+        existing_weeks = existing_plan.get("weeks") or []
+        if not existing_weeks and existing_plan.get("week_start") and existing_plan.get("weekly_arc"):
+            existing_weeks = [
+                {
+                    "week_start": existing_plan["week_start"],
+                    "week_end": existing_plan.get("week_end", existing_plan["week_start"]),
+                    "generated_at": existing_plan.get("generated_at", ""),
+                    "weekly_arc": existing_plan["weekly_arc"],
+                    "upcoming_ideas": existing_plan.get("upcoming_ideas", []),
+                }
+            ]
+        for wk in existing_weeks:
+            ws = str(wk.get("week_start") or "")
+            we = str(wk.get("week_end") or ws)
+            if ws and we >= cutoff_str:
+                weeks_by_start[ws] = wk
+
+    for g in new_week_plan.get("daily_guides") or []:
+        if isinstance(g, dict) and g.get("date"):
+            guides_by_date[str(g["date"])] = g
+
+    new_ws = new_week_plan["week_start"]
+    weeks_by_start[new_ws] = {
+        "week_start": new_ws,
+        "week_end": new_week_plan["week_end"],
+        "generated_at": new_week_plan["generated_at"],
+        "weekly_arc": new_week_plan["weekly_arc"],
+        "upcoming_ideas": new_week_plan.get("upcoming_ideas", []),
+    }
+
+    sorted_guides = [guides_by_date[d] for d in sorted(guides_by_date)]
+    sorted_weeks = [weeks_by_start[ws] for ws in sorted(weeks_by_start)]
+
+    active_arc = new_week_plan["weekly_arc"]
+    for wk in sorted_weeks:
+        if wk["week_start"] <= today_str <= wk["week_end"]:
+            active_arc = wk["weekly_arc"]
+            break
+
+    return {
+        "generated_at": new_week_plan["generated_at"],
+        "week_start": sorted_guides[0]["date"] if sorted_guides else new_ws,
+        "week_end": sorted_guides[-1]["date"] if sorted_guides else new_week_plan["week_end"],
+        "models": new_week_plan["models"],
+        "weekly_arc": active_arc,
+        "weeks": sorted_weeks,
+        "daily_guides": sorted_guides,
+        "upcoming_ideas": new_week_plan.get("upcoming_ideas", []),
+    }
+
+
 def main() -> None:
+    load_dotenv(CONFIG_DIR.parent / ".env")
     now_jst = datetime.now(JST)
-    default_start = _default_next_monday(now_jst).isoformat()
+    existing_plan = (
+        _load_json(EDITORIAL_PLAN_PATH) if EDITORIAL_PLAN_PATH.exists() else None
+    )
+    default_start = _default_next_monday(now_jst, existing_plan=existing_plan).isoformat()
 
     parser = argparse.ArgumentParser(description="Generate weekly Kodaira radio editorial plan")
     parser.add_argument(
@@ -314,12 +415,16 @@ def main() -> None:
     start_dt = datetime.strptime(args.start_date, "%Y-%m-%d").date()
     end_dt = start_dt + timedelta(days=args.days - 1)
 
-    load_dotenv(CONFIG_DIR.parent / ".env")
     themes = _load_json(CONFIG_DIR / "weekly_themes.json")
     special_days = (
         _load_json(CONFIG_DIR / "special_days.json")
         if (CONFIG_DIR / "special_days.json").exists()
         else {"recurring": [], "dated_events": []}
+    )
+    program_schedule = (
+        _load_json(CONFIG_DIR / "program_schedule.json")
+        if (CONFIG_DIR / "program_schedule.json").exists()
+        else None
     )
     topic_history_data = (
         _load_json(DATA_DIR / "topic_history.json")
@@ -328,7 +433,14 @@ def main() -> None:
     )
     topic_entries = topic_history_data.get("entries", [])
 
-    skeleton = _build_week_skeleton(start_dt, args.days, themes, special_days, topic_entries)
+    skeleton = _build_week_skeleton(
+        start_dt,
+        args.days,
+        themes,
+        special_days,
+        topic_entries,
+        program_schedule=program_schedule,
+    )
     recent_text = _format_recent_history(start_dt, topic_entries)
     research_prompt = build_editorial_research_prompt(start_dt, end_dt, recent_text)
 
@@ -336,10 +448,12 @@ def main() -> None:
         print(f"=== DRY RUN WEEKLY EDITORIAL PLAN ({start_dt} ~ {end_dt}) ===")
         print(f"Models: research={research_model} | planner={planner_model}")
         for r in skeleton:
+            sched_str = " / ".join(r["preplanned_expert_topics"]) or "Auto"
+            lock_str = " [LOCKED]" if r["schedule_locked"] else ""
             print(
                 f"  {r['date']} ({r['weekday_ja']}) | {r['edition_label']} | "
                 f"ExistingSpecial={r['existing_special_desc'] or 'None'} | "
-                f"90dCovered={len(r['expert_covered_90d'])}"
+                f"Preplanned=[{sched_str}]{lock_str} | 90dCovered={len(r['expert_covered_90d'])}"
             )
         return
 
@@ -379,13 +493,17 @@ def main() -> None:
     )
     print(f"Phase 2 usage   : {_format_usage(p_resp)}")
     raw_plan = _parse_json_response(getattr(p_resp, "text", "") or "")
-    final_plan = _normalize_editorial_plan(raw_plan, skeleton, research_model, planner_model)
+    new_week_plan = _normalize_editorial_plan(raw_plan, skeleton, research_model, planner_model)
+    merged_plan = merge_editorial_plans(existing_plan, new_week_plan, now_jst)
 
     EDITORIAL_PLAN_PATH.parent.mkdir(parents=True, exist_ok=True)
     EDITORIAL_PLAN_PATH.write_text(
-        json.dumps(final_plan, ensure_ascii=False, indent=2), encoding="utf-8"
+        json.dumps(merged_plan, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    print(f"Saved weekly editorial plan: {EDITORIAL_PLAN_PATH}")
+    print(
+        f"Saved weekly editorial plan: {EDITORIAL_PLAN_PATH} "
+        f"(total {len(merged_plan['daily_guides'])} days across {len(merged_plan['weeks'])} week(s))"
+    )
 
 
 if __name__ == "__main__":

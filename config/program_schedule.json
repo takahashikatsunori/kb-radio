@@ -1,0 +1,627 @@
+{
+  "version": 1,
+  "updated_at": "2026-11-23T07:32:00+09:00",
+  "horizon_end": "2026-12-31",
+  "note": "専門家解説テーマの事前編成予定表（SSOT）。status は 'proposed'（提案中）または 'confirmed'（確定）。locked=true または special_request を記入すると、毎日の生成・日曜の編集長AIが最優先で反映し上書きしません。",
+  "entries": [
+    {
+      "date": "2026-11-23",
+      "weekday_ja": "月曜日",
+      "guest_id": "guest_iwaki",
+      "guest_name": "岩城 剛",
+      "theme_name": "地震・建築・地盤",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "武蔵野台地・関東ローム層の揺れ特性",
+        "耐震・制震・免震の違い"
+      ],
+      "expert_note": "祝日の玉川上水散策にあわせ、小平が載る武蔵野台地の地盤の特徴と、建物の耐震・制震・免震の基本の違いをわかりやすく整理します。",
+      "kodaira_hint": "玉川上水紅葉ウォーキング（小川水衛所跡）＆平櫛田中彫刻美術館「書の世界」最終日（一橋学園・玉川上水沿い）",
+      "special_request": ""
+    },
+    {
+      "date": "2026-11-24",
+      "weekday_ja": "火曜日",
+      "guest_id": "guest_amamiya",
+      "guest_name": "雨宮 栞",
+      "theme_name": "気象・水害・都市河川",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "内水氾濫と外水氾濫の違い",
+        "XRAIN（XバンドMPレーダ雨量観測）"
+      ],
+      "expert_note": "地下25mの本物の下水道管を見学できる小平市ふれあい下水道館の特集と連動し、都市部で注意したい内水氾濫の仕組みと高精度雨量レーダXRAINの見方を学びます。",
+      "kodaira_hint": "小平市ふれあい下水道館（地下25m体験）＆鷹の台駅周辺の地元パン屋さんぽ",
+      "special_request": ""
+    },
+    {
+      "date": "2026-11-25",
+      "weekday_ja": "水曜日",
+      "guest_id": "guest_hinohara",
+      "guest_name": "火ノ原 鉄平",
+      "theme_name": "火災・電気・特殊消防機材",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "通電火災と感震ブレーカー（分電盤型・簡易型）",
+        "住宅用火災警報器（煙式・熱式と10年交換目安）"
+      ],
+      "expert_note": "冬本番前の暖房シーズンに、地震後の停電復旧時に起きる「通電火災」と小平市の感震ブレーカー補助制度、さらに設置から10年が交換目安となる住宅用火災警報器の点検法を解説します。",
+      "kodaira_hint": "小平駅南口・美園町〜市役所（都市計画道路パネル展示先取り・延焼遮断帯）",
+      "special_request": ""
+    },
+    {
+      "date": "2026-11-26",
+      "weekday_ja": "木曜日",
+      "guest_id": "guest_shirakawa",
+      "guest_name": "白川 優子",
+      "theme_name": "災害医療・応急手当・こころのケア",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "エコノミークラス症候群（深部静脈血栓症）と水分・ふくらはぎ運動",
+        "AEDと胸骨圧迫（1分間100〜120回）"
+      ],
+      "expert_note": "一橋学園・健康センターの応急診療所トピックとあわせ、冬の水分不足や避難時に注意したいエコノミークラス症候群の予防体操と、もしもの時のAED・胸骨圧迫リズムを学びます。",
+      "kodaira_hint": "一橋学園駅・あかしあ通り＆健康センター（小平市医師会応急診療所の直接来所案内）",
+      "special_request": ""
+    },
+    {
+      "date": "2026-11-27",
+      "weekday_ja": "金曜日",
+      "guest_id": "guest_izumo",
+      "guest_name": "出雲 健太",
+      "theme_name": "食・備蓄・ライフライン",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "ローリングストックとフェーズフリー",
+        "カセットコンロとボンベの適正備蓄本数・使用期限"
+      ],
+      "expert_note": "大沼町のガスミュージアムと旬キウイ「東京ゴールド」の話題から、普段食べて補充するローリングストックの基本と、冬の停電で頼りになるカセットボンベの使用期限（約7年）を学びます。",
+      "kodaira_hint": "大沼町・鈴木町（ガスミュージアム紅葉＆ファームショップ中村園「東京ゴールド」）",
+      "special_request": ""
+    },
+    {
+      "date": "2026-11-28",
+      "weekday_ja": "土曜日",
+      "guest_id": "guest_yuki",
+      "guest_name": "結城 美咲",
+      "theme_name": "地域コミュニティ・避難所運営・ペット・福祉防災",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "ペット同行避難と同伴避難の違い・しつけ・ワクチン証明",
+        "自主防災組織とご近所の共助"
+      ],
+      "expert_note": "子どもキャンプ場ペット防災相談会・締切関連にあわせ、ペットと一緒に避難所へ行く「同行避難」と室内で過ごす「同伴避難」の違い、ワクチン証明の準備や地域の共助づくりを語り合います。",
+      "kodaira_hint": "花小金井（たけのこ公園キッチンカー）〜萩山公園ライトアップ開幕＆ペット防災相談会当日",
+      "special_request": ""
+    },
+    {
+      "date": "2026-11-29",
+      "weekday_ja": "日曜日",
+      "guest_id": "guest_hoshino",
+      "guest_name": "星野 創",
+      "theme_name": "防災テック・ハザードマップ・衛星・最新情報",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "災害時ドローンマッピングとオルソ画像生成",
+        "スマホバッテリー節電術（省電力モード・ダークモード・機内モード切替）"
+      ],
+      "expert_note": "市民向けドローン講座の話題を入口に、真上から歪みのない被害地図を作るドローンのオルソ画像技術と、冬の夜外出や停電時にもすぐ効くスマホ節電設定を星野さんと確認します。",
+      "kodaira_hint": "小川東町・上水南町など12月先取り情報＆小平市の市民講座・施設トピック",
+      "special_request": ""
+    },
+    {
+      "date": "2026-11-30",
+      "weekday_ja": "月曜日",
+      "guest_id": "guest_iwaki",
+      "guest_name": "岩城 剛",
+      "theme_name": "地震・建築・地盤",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "耐震等級1・2・3",
+        "木造住宅の耐震診断とリフォーム時耐震強化"
+      ],
+      "expert_note": "第2回で触れた建築基準の知識を一歩深め、住宅性能表示制度の「耐震等級1・2・3（消防署や警察署クラスの強さ）」の違いと、今住んでいる家の耐震診断の受け方を解説します。",
+      "kodaira_hint": "萩山公園紅葉ライトアップ2026（萩山駅南口・小川東町周辺）",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-01",
+      "weekday_ja": "火曜日",
+      "guest_id": "guest_amamiya",
+      "guest_name": "雨宮 栞",
+      "theme_name": "気象・水害・都市河川",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "湿度・実効湿度と乾燥注意報",
+        "気象庁キキクル（危険度分布）"
+      ],
+      "expert_note": "12月に入り空気が乾く季節。木材の乾き具合を表す「実効湿度」と乾燥注意報の仕組み、あわせて大雨時にスマホでサッと危険度を確認できる気象庁キキクルの色分けを確認します。",
+      "kodaira_hint": "玉川上水紅葉ウォーキング＆鷹の台〜上水本町エリアの冬の乾燥・火災予防意識づくり",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-02",
+      "weekday_ja": "水曜日",
+      "guest_id": "guest_hinohara",
+      "guest_name": "火ノ原 鉄平",
+      "theme_name": "火災・電気・特殊消防機材",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "トラッキング現象（コンセントのホコリ火災）",
+        "冬の暖房器具（電気ストーブ・こたつ）安全ルール"
+      ],
+      "expert_note": "12月大掃除特集と連動！テレビ裏や冷蔵庫裏のプラグにたまるホコリと湿気が発火するトラッキング現象と、電気ストーブの「離す・消す・干さない」の鉄則を熱く伝えます。",
+      "kodaira_hint": "花小金井駅・小平駅周辺の西武新宿線沿線（都市計画道路パネル展示・避難路）",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-03",
+      "weekday_ja": "木曜日",
+      "guest_id": "guest_shirakawa",
+      "guest_name": "白川 優子",
+      "theme_name": "災害医療・応急手当・こころのケア",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "低体温症予防（アルミブランケット・新聞紙活用）",
+        "冬の急病相談窓口（#7119・#8000）とヒートショック予防"
+      ],
+      "expert_note": "冬本番に向けた健康守り特集。停電で暖房が止まったときの新聞紙・アルミブランケット活用術、脱衣所と浴室の温度差で起きるヒートショック予防、#7119・#8000の使い方を整理します。",
+      "kodaira_hint": "平櫛田中彫刻美術館「福来る」展〜玉川上水小川水衛所跡さんぽ＆応急診療所確認",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-04",
+      "weekday_ja": "金曜日",
+      "guest_id": "guest_izumo",
+      "guest_name": "出雲 健太",
+      "theme_name": "食・備蓄・ライフライン",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "携帯トイレ・凝固剤（1人1日5〜7回×7日分）",
+        "下水道の被害と災害時トイレNG行動"
+      ],
+      "expert_note": "JAムーちゃん広場のマンホールトイレ設置から、家庭の携帯トイレ備蓄目安（1人1日5〜7回×1週間分＝約35〜50回分）と、地震直後に排水管を確認せず水を流してはいけない理由を解説します。",
+      "kodaira_hint": "青梅街道駅周辺（JA東京むさしムーちゃん広場の冬野菜・防災設備）〜天神町",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-05",
+      "weekday_ja": "土曜日",
+      "guest_id": "guest_yuki",
+      "guest_name": "結城 美咲",
+      "theme_name": "地域コミュニティ・避難所運営・ペット・福祉防災",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "多文化共生・やさしい日本語による災害情報",
+        "個別避難計画（要配慮者支援）"
+      ],
+      "expert_note": "小平中央公園の「ウクライナのクリスマス2026」特集と連動し、日本語が母語でない方にも伝わる「やさしい日本語」と、高齢者・障がいのある方のための個別避難計画の大切さを深掘りします。",
+      "kodaira_hint": "津田町・小平市立中央公園（「ウクライナのクリスマス2026」開催当日スペシャル）",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-06",
+      "weekday_ja": "日曜日",
+      "guest_id": "guest_hoshino",
+      "guest_name": "星野 創",
+      "theme_name": "防災テック・ハザードマップ・衛星・最新情報",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "可搬型低軌道衛星通信（Starlink等）と移動基地局車",
+        "みちびき（準天頂衛星システム）の災害・危機管理通報サービス"
+      ],
+      "expert_note": "ガスミュージアムの通信・技術史展にあわせ、地上の基地局が停電しても空からインターネットをつなぐ低軌道衛星通信や移動基地局車、日本の上空を見守る衛星「みちびき」の災害通報を解説します。",
+      "kodaira_hint": "大沼町・GAS MUSEUM がす資料館企画展＆小平ふるさと村の武蔵野うどん文化",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-07",
+      "weekday_ja": "月曜日",
+      "guest_id": "guest_iwaki",
+      "guest_name": "岩城 剛",
+      "theme_name": "地震・建築・地盤",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "筋交いとホールダウン金物",
+        "ピロティ構造と直下率"
+      ],
+      "expert_note": "木造住宅の柱と基礎をつなぐホールダウン金物・斜め材（筋交い）の役割と、1階が駐車場になっているピロティ構造や上下階の壁の揃い方（直下率）のチェックポイントを解説します。",
+      "kodaira_hint": "小平駅北口・仲町周辺と中央公民館・図書館エリアの冬さんぽ＆大掃除準備",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-08",
+      "weekday_ja": "火曜日",
+      "guest_id": "guest_amamiya",
+      "guest_name": "雨宮 栞",
+      "theme_name": "気象・水害・都市河川",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "マイ・タイムライン（自分の避難行動計画）",
+        "5段階の警戒レベル（レベル3・4・5）"
+      ],
+      "expert_note": "冬の穏やかな時期にこそ作っておきたい自分専用の避難行動計画「マイ・タイムライン」の考え方と、レベル3（高齢者等避難）・レベル4（避難指示）の意味を整理します。",
+      "kodaira_hint": "野火止用水・栄町エリア散策とハザードマップを使った家族のマイ・タイムライン作り",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-09",
+      "weekday_ja": "水曜日",
+      "guest_id": "guest_hinohara",
+      "guest_name": "火ノ原 鉄平",
+      "theme_name": "火災・電気・特殊消防機材",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "リチウムイオン電池の熱暴走と絶縁処分"
+      ],
+      "expert_note": "年末の片付けで出がちなモバイルバッテリー・充電式家電の廃棄事故を防ぐため、リチウムイオン電池が衝撃や劣化で発火する仕組みと小平市の安全な出し方（端子絶縁）を解説します。",
+      "kodaira_hint": "小平市リサイクルセンター・資源循環と年末の不用品整理・安全な電池処分ルール",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-10",
+      "weekday_ja": "木曜日",
+      "guest_id": "guest_shirakawa",
+      "guest_name": "白川 優子",
+      "theme_name": "災害医療・応急手当・こころのケア",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "お薬手帳・処方薬（最低1週間分）とマイナ保険証・お薬情報"
+      ],
+      "expert_note": "年末のかかりつけ医・薬局が休診に入る前のタイミングで、常備薬・処方薬の1週間分確保と、お薬手帳（紙・アプリ）やマイナ保険証で服薬歴をすぐ伝えられる備えを解説します。",
+      "kodaira_hint": "小平市内のかかりつけ薬局・医療機関の年末年始休診チェックと健康管理メモ",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-11",
+      "weekday_ja": "金曜日",
+      "guest_id": "guest_izumo",
+      "guest_name": "出雲 健太",
+      "theme_name": "食・備蓄・ライフライン",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "ポリ袋調理（パッククッキング／高密度ポリエチレン袋）",
+        "防災庁の備蓄推奨と東京備蓄ナビ"
+      ],
+      "expert_note": "少ない水とカセットコンロ1つで温かいご飯やおかずが作れる「高密度ポリエチレン袋のパッククッキング」の注意点（耐熱温度・鍋底にお皿）と、東京備蓄ナビでの必要量計算を紹介します。",
+      "kodaira_hint": "小平の地元冬野菜や乾麺うどんを使った簡単・あったかパッククッキング体験",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-12",
+      "weekday_ja": "土曜日",
+      "guest_id": "guest_yuki",
+      "guest_name": "結城 美咲",
+      "theme_name": "地域コミュニティ・避難所運営・ペット・福祉防災",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "在宅避難・分散避難・福祉避難所",
+        "TKB（トイレ・キッチン・ベッド／段ボールベッドとパーティション）"
+      ],
+      "expert_note": "自宅が無事なら住み慣れた家で過ごす「在宅避難」や親戚宅などへの「分散避難」、福祉避難所の役割と、避難所の生活の質（健康）を守る国際基準「TKB」の取り組みを学びます。",
+      "kodaira_hint": "小平市内の小中学校避難所・地域の公民館や体育館の役割を週末にチェック",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-13",
+      "weekday_ja": "日曜日",
+      "guest_id": "guest_hoshino",
+      "guest_name": "星野 創",
+      "theme_name": "防災テック・ハザードマップ・衛星・最新情報",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "緊急速報メール（エリアメール）とスマホ緊急通知設定",
+        "災害時の偽情報・インフォデミック対策（一次情報確認）"
+      ],
+      "expert_note": "冬の強風や地震時に大切な緊急速報メール（マナーモードでも鳴る設定確認）と、SNSでのデマ・AI生成の偽画像に惑わされない「一次情報の見分け方」を学びます。",
+      "kodaira_hint": "小平市情報通信研究機構（NICT）周辺の通信豆知識と市防災行政無線テレホンサービス確認",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-14",
+      "weekday_ja": "月曜日",
+      "guest_id": "guest_iwaki",
+      "guest_name": "岩城 剛",
+      "theme_name": "地震・建築・地盤",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "微動探査装置（常時微動計）",
+        "窓ガラス飛散防止フィルムと安全空間（寝室の死角ゼロ化）"
+      ],
+      "expert_note": "年末大掃除のタイミングに、人間の体に感じない微小な地面の揺れから家と地盤の固有周期を測る「微動探査装置」と、割れ窓から足を守る飛散防止フィルム・寝室の安全空間づくりを学びます。",
+      "kodaira_hint": "津田町・学園東町周辺の住宅街ウォーキングと大掃除ついでの安全部屋づくり",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-15",
+      "weekday_ja": "火曜日",
+      "guest_id": "guest_amamiya",
+      "guest_name": "雨宮 栞",
+      "theme_name": "気象・水害・都市河川",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "水平避難と垂直避難の判断基準",
+        "気象防災アドバイザー制度"
+      ],
+      "expert_note": "浸水リスクが高いときに避難所へ逃げる「水平避難」と自宅上階で身を守る「垂直避難」の判断軸、また自治体を支える気象庁の気象防災アドバイザー制度について学びます。",
+      "kodaira_hint": "石神井川源流・小金井公園北側（花小金井南町・鈴木町）の地形と水はけ・避難ルート確認",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-16",
+      "weekday_ja": "水曜日",
+      "guest_id": "guest_hinohara",
+      "guest_name": "火ノ原 鉄平",
+      "theme_name": "火災・電気・特殊消防機材",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "ABC粉末消火器と強化液消火器・使用期限",
+        "初期消火の限界（天井に火が回る前まで）"
+      ],
+      "expert_note": "自宅やマンション廊下にある消火器の種類（ABC粉末と強化液の違い）、10年程度の使用期限とサビ点検、そして「炎が天井に達したらすぐ避難」という初期消火の限界を見極めます。",
+      "kodaira_hint": "小平消防署・花小金井・小川出張所エリアの暮らしと街角の防災設備チェック",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-17",
+      "weekday_ja": "木曜日",
+      "guest_id": "guest_shirakawa",
+      "guest_name": "白川 優子",
+      "theme_name": "災害医療・応急手当・こころのケア",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "災害時の口腔ケア（誤嚥性肺炎予防・少量の水での歯磨き）",
+        "冬の感染症対策と避難時の衛生管理"
+      ],
+      "expert_note": "断水時にお口を清潔に保つことが高齢者などの誤嚥性肺炎を防ぐ大切な命綱になること、ティッシュやウェットシートも使った少量の水での歯磨きワザと冬の感染症予防を伝えます。",
+      "kodaira_hint": "学園西町・小平市中央公園エリアの冬散策と家族でそろえる衛生・口腔ケアポーチ",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-18",
+      "weekday_ja": "金曜日",
+      "guest_id": "guest_izumo",
+      "guest_name": "出雲 健太",
+      "theme_name": "食・備蓄・ライフライン",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "飲料水1人1日3リットルと生活用水の確保",
+        "応急給水拠点と加圧式給水車・ウォーターバッグ"
+      ],
+      "expert_note": "飲料水「1人1日3リットル」の考え方と、小平市内の給水拠点（小川浄水所・上水南浄水所・津田二号水源など）、さらにリュック型や台車で運ぶウォーターバッグの現実的な運び方を学びます。",
+      "kodaira_hint": "小川浄水所・上水南浄水所など小平市内の応急給水拠点と近所の給水ルート散歩",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-19",
+      "weekday_ja": "土曜日",
+      "guest_id": "guest_yuki",
+      "guest_name": "結城 美咲",
+      "theme_name": "地域コミュニティ・避難所運営・ペット・福祉防災",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "帰宅困難者対策（むやみに移動を開始しない原則）",
+        "安否確認手段（災害用伝言ダイヤル171・Web171）"
+      ],
+      "expert_note": "年末の忘年会や都心へのお買い物が増える土曜日に、大地震で電車が止まったときの「むやみに移動を開始しない原則」や小平駅・小川駅周辺の受け入れ施設、毎月1日・15日体験できる171伝言ダイヤルを復習します。",
+      "kodaira_hint": "小川パレット5階・市役所・駅周辺の帰宅困難者対策と都心からの徒歩ルート感覚",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-20",
+      "weekday_ja": "日曜日",
+      "guest_id": "guest_hoshino",
+      "guest_name": "星野 創",
+      "theme_name": "防災テック・ハザードマップ・衛星・最新情報",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "防災DXと個人情報保護・不審メール警戒",
+        "家族のデジタル安否連絡メモ＆クラウド防災バックアップ"
+      ],
+      "expert_note": "年末のスマホ整理にあわせて確認したい、防災関連を装ったフィッシングメールへの警戒・セキュリティ意識と、身分証や保険証の控え・家族連絡先をオフライン＆クラウドに安全に整理しておくコツを伝えます。",
+      "kodaira_hint": "小平市内のフリーWi-Fi・公共施設での安全利用と年末のスマホデジタル防災整理",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-21",
+      "weekday_ja": "月曜日",
+      "guest_id": "guest_iwaki",
+      "guest_name": "岩城 剛",
+      "theme_name": "地震・建築・地盤",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "長周期地震動と高層住宅の揺れ",
+        "盛り土・切り土の宅地地盤チェック"
+      ],
+      "expert_note": "小川駅西口など駅周辺の中高層マンションでも知っておきたい「ゆっくり大きく揺れ続ける長周期地震動」と、古くからの地形（切り土・盛り土）を地図から読み解くポイントを解説します。",
+      "kodaira_hint": "小川駅西口・花小金井駅北口の中高層マンション周辺と駅前の安心チェック",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-22",
+      "weekday_ja": "火曜日",
+      "guest_id": "guest_amamiya",
+      "guest_name": "雨宮 栞",
+      "theme_name": "気象・水害・都市河川",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "冬型の気圧配置・放射冷却と路面・水道管凍結の気象サイン"
+      ],
+      "expert_note": "冬至の朝にぴったりな冬の天気図の読み方。よく晴れた風のない朝に冷え込む「放射冷却」の仕組みと、路面凍結・屋外水道管の凍結に警戒すべき気温目安を解説します。",
+      "kodaira_hint": "冬至の小平グリーンロード朝散歩＆冷え込みに備えるゆず湯・屋外水栓の冬支度",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-23",
+      "weekday_ja": "水曜日",
+      "guest_id": "guest_hinohara",
+      "guest_name": "火ノ原 鉄平",
+      "theme_name": "火災・電気・特殊消防機材",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "防炎品（カーテン・寝具）の効果",
+        "火災の煙と一酸化炭素の危険性（低い姿勢での避難）"
+      ],
+      "expert_note": "ろうそくやイルミネーション・暖房が増えるクリスマスイブ前日。火が燃え広がりにくい防炎マークのカーテンや寝具の効果と、煙の一酸化炭素を避けて低い姿勢で逃げる理由を学びます。",
+      "kodaira_hint": "ルネこだいら・小平駅周辺の冬イルミネーションと家庭の防炎アイテム見直し",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-24",
+      "weekday_ja": "木曜日",
+      "guest_id": "guest_shirakawa",
+      "guest_name": "白川 優子",
+      "theme_name": "災害医療・応急手当・こころのケア",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "PFA（サイコロジカル・ファーストエイド／心理的応急処置）",
+        "家族で話し合うこころの安心づくり"
+      ],
+      "expert_note": "クリスマスイブに届けたい「こころのケア」。専門資格がなくても誰でもできる声かけと寄り添いの国際基準「PFA（見る・聴く・つなぐ）」の考え方をやさしく紹介します。",
+      "kodaira_hint": "小平のクリスマス＆年末の家族団らんで共有したい安心の合い言葉",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-25",
+      "weekday_ja": "金曜日",
+      "guest_id": "guest_izumo",
+      "guest_name": "出雲 健太",
+      "theme_name": "食・備蓄・ライフライン",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "ポータブル電源（リン酸鉄リチウムイオン）と折りたたみソーラーパネル",
+        "停電時の冷蔵庫保冷術と冬のあったか備蓄"
+      ],
+      "expert_note": "クリスマス・年末企画として、長寿命で安全性の高いリン酸鉄リチウムイオン型ポータブル電源の選び方と冬の日差しでの充電、停電時に冷蔵庫の中身を守る保冷術・おせち材料の保存ワザを紹介します。",
+      "kodaira_hint": "年末の買い出し・ふるさと村周辺＆停電しても温かい冬休みを過ごすライフライン備蓄",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-26",
+      "weekday_ja": "土曜日",
+      "guest_id": "guest_yuki",
+      "guest_name": "結城 美咲",
+      "theme_name": "地域コミュニティ・避難所運営・ペット・福祉防災",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "避難所運営ゲーム（HUG）の考え方",
+        "災害ボランティアセンター（社協との連携）"
+      ],
+      "expert_note": "年の瀬の助け合い企画として、避難所運営をカードで模擬体験する「HUG」の発想（プライバシー・ペット・体調配慮）と、小平市社会福祉協議会などと連携する災害ボランティアセンターの仕組みを解説します。",
+      "kodaira_hint": "小平市福祉会館・社会福祉協議会周辺のボランティア文化と年末年始のご近所あいさつ",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-27",
+      "weekday_ja": "日曜日",
+      "guest_id": "guest_hoshino",
+      "guest_name": "星野 創",
+      "theme_name": "防災テック・ハザードマップ・衛星・最新情報",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "帰省・旅行先で使う汎用オフライン地図保存＆全国重ねるハザードマップ点検"
+      ],
+      "expert_note": "年越し帰省・初詣旅行の直前スペシャル！小平を離れて実家や旅先に滞在するときでも、国土地理院「重ねるハザードマップ」で現地の地形リスクを調べ、標準地図アプリにオフライン地図を事前保存しておくデジタル旅支度を解説します。",
+      "kodaira_hint": "小平から帰省・旅行へ行く人も、小平へ帰省客を迎える人も使える広域マップ活用術",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-28",
+      "weekday_ja": "月曜日",
+      "guest_id": "guest_iwaki",
+      "guest_name": "岩城 剛",
+      "theme_name": "地震・建築・地盤",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "応急危険度判定士",
+        "年末大掃除＆帰省先でできる住まいの耐震チェック総まとめ"
+      ],
+      "expert_note": "御用納め・帰省シーズンにあわせ、被災後に建物の安全を判定する応急危険度判定士（赤・黄・緑のステッカー）の役割と、実家や自宅の年末耐震総点検ポイントをまとめます。",
+      "kodaira_hint": "新小平駅・小平ふるさと村周辺＆年末年始に家族で話し合う住まいの安全点検",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-29",
+      "weekday_ja": "火曜日",
+      "guest_id": "guest_amamiya",
+      "guest_name": "雨宮 栞",
+      "theme_name": "気象・水害・都市河川",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "年末年始の寒波・大雪情報の見方と帰省・お出かけ気象チェック"
+      ],
+      "expert_note": "年末年始の帰省や初詣・お出かけ前に確認したい気象庁の早期天候情報・大雪注意報の見方と、東京（多摩エリア）で数センチの雪でも転倒や交通障害に備えるコツを紹介します。",
+      "kodaira_hint": "小平市内各駅の年末年始移動チェック＆防寒・滑りにくい靴での初詣お出かけ準備",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-30",
+      "weekday_ja": "水曜日",
+      "guest_id": "guest_hinohara",
+      "guest_name": "火ノ原 鉄平",
+      "theme_name": "火災・電気・特殊消防機材",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "サーモグラフィカメラ（熱画像直視装置）",
+        "可搬消防ポンプと街角の消火栓・防火水槽"
+      ],
+      "expert_note": "年末の特別消防点検として、壁の奥の火種や煙の中で人命を見つけるサーモグラフィカメラや、地域の消防団も使う可搬ポンプ・消火栓・防火水槽の役割を現場エピソード交え解説します。",
+      "kodaira_hint": "小平市内各地の消防団・消火栓・防火水槽の豆知識と年末年始の火の用心",
+      "special_request": ""
+    },
+    {
+      "date": "2026-12-31",
+      "weekday_ja": "木曜日",
+      "guest_id": "guest_shirakawa",
+      "guest_name": "白川 優子",
+      "theme_name": "災害医療・応急手当・こころのケア",
+      "status": "proposed",
+      "locked": false,
+      "expert_topics": [
+        "三角巾・ラップ・清潔なタオルを使った止血と固定",
+        "DMAT（災害派遣医療チーム）とトリアージの基礎知識"
+      ],
+      "expert_note": "大晦日の救急安心知識として、おうちのキッチンラップや清潔なタオルでできる応急止血・けがの保護方法と、大災害時にかけつけるDMATや4色トリアージタッグの正しい意味を学びます。",
+      "kodaira_hint": "年越し・初詣シーズンのケガや急病への応急知識と#7119・応急診療所メモ",
+      "special_request": ""
+    }
+  ]
+}

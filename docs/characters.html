@@ -79,7 +79,7 @@ header {
 }
 .nav-links {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 0.32rem;
 }
 .nav-links a {
@@ -592,7 +592,7 @@ footer {
 @media (max-width: 640px) {
   .header-inner { padding: 0.55rem 0.7rem 0.62rem; }
   .brand-bar { margin-bottom: 0.45rem; }
-  .nav-links { gap: 0.25rem; }
+  .nav-links { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.25rem; }
   .nav-links a { font-size: 0.72rem; padding: 0.34rem 0.14rem; }
   .ep-hero { padding: 0.62rem 0.75rem; margin-bottom: 0.6rem; }
   .controls { gap: 0.25rem; }
@@ -647,7 +647,7 @@ footer {
 <body>
   <header>
     <div class="header-inner">
-      <div class="brand-bar"><a class="brand" href="index.html">こだいら防災＆まちラジオ</a><span class="time-pill">毎朝7時</span></div><nav class="nav-links" aria-label="メインメニュー"><a href="index.html">最新回</a><a href="archive.html">過去回</a><a href="cast.html">出演者</a><a href="characters.html" class="active">防災ノート</a></nav><h1 class="page-h1">防災ノート</h1><p class="page-subhead">小春と平蔵が毎朝まとめる累積・防災＆こだいら発見ノート</p>
+      <div class="brand-bar"><a class="brand" href="index.html">こだいら防災＆まちラジオ</a><span class="time-pill">毎朝7時</span></div><nav class="nav-links" aria-label="メインメニュー"><a href="index.html">最新回</a><a href="calendar.html">カレンダー</a><a href="archive.html">過去回</a><a href="cast.html">出演者</a><a href="characters.html" class="active">防災ノート</a><a href="tech.html">番組のしくみ</a></nav><h1 class="page-h1">防災ノート</h1><p class="page-subhead">小春と平蔵が毎朝まとめる累積・防災＆こだいら発見ノート</p>
     </div>
   </header>
 
@@ -674,7 +674,7 @@ footer {
 
   <footer>毎朝7時！こだいら防災＆まちラジオ（東京都小平市）</footer>
 
-  <script type="application/json" id="char-data">{"entries": [{"date": "2026-11-22", "weekday": "日曜日", "theme": "防災テック・ハザードマップ・衛星・最新情報", "guest_name": "星野 創", "learned_points": ["GIS（地理情報システム）とカラーユニバーサルデザインでハザードマップや小平市防災マップアプリの仕組みがぐっと見やすくなっていること", "Jアラートは衛星と地上回線の二重ルートで届き、窓を閉めて聞き逃しても小平市防災行政無線テレホンサービス（042-341-0793）で確認できること", "防災アプリやDXは便利な一方、問合せ情報漏えいのようなセキュリティ事例も踏まえて公式の一次情報を落ち着いて確認することが大切なこと"], "kodaira_discovery": "小川駅西口の「小川パレット」と「アトラスタワー小平小川」が11月に本格始動し、図書館や出張所だけでなく5階共用空間での帰宅困難者受け入れや防災センターなど、暮らしと防災が一体化していること。"}]}</script>
+  <script type="application/json" id="char-data">{"entries": [{"date": "2026-11-23", "weekday": "月曜日", "theme": "地震・建築・地盤", "guest_name": "岩城 剛", "learned_points": ["小平市の大部分が載る武蔵野台地・関東ローム層は軟弱な沖積層に比べて揺れが増幅しにくく液状化リスクも低いが、谷底低地や埋没谷では1〜2Hzのキラーパルスが増幅されることもあり過信せずハザードマップや地盤確認が大切であること", "建物の地震対策は「耐震＝強さで耐える」「制震＝ダンパーで揺れを吸収する」「免震＝地面と切り離して揺れを伝えない」の3つに違いがあり、1981年以前（旧耐震）・新耐震・木造の2000年基準など自宅の築年数確認が第一歩になること", "耐震構造でも室内の家具転倒を防ぐため、重い物を下に置く重心配置と、壁の下地へのL字金具固定や突っ張り棒・耐震マットの併用を休日に点検しておくと安心なこと"], "kodaira_discovery": "玉川上水沿いの小川水衛所跡で江戸の水番人の歴史を感じつつ、今年4月に耐震補強を終えて旧宅公開を再開した平櫛田中彫刻美術館を巡ることで、小平の文化と暮らしを守る耐震の知恵を楽しく体感できること。"}, {"date": "2026-11-22", "weekday": "日曜日", "theme": "防災テック・ハザードマップ・衛星・最新情報", "guest_name": "星野 創", "learned_points": ["GIS（地理情報システム）とカラーユニバーサルデザインでハザードマップや小平市防災マップアプリの仕組みがぐっと見やすくなっていること", "Jアラートは衛星と地上回線の二重ルートで届き、窓を閉めて聞き逃しても小平市防災行政無線テレホンサービス（042-341-0793）で確認できること", "防災アプリやDXは便利な一方、問合せ情報漏えいのようなセキュリティ事例も踏まえて公式の一次情報を落ち着いて確認することが大切なこと"], "kodaira_discovery": "小川駅西口の「小川パレット」と「アトラスタワー小平小川」が11月に本格始動し、図書館や出張所だけでなく5階共用空間での帰宅困難者受け入れや防災センターなど、暮らしと防災が一体化していること。"}]}</script>
   <script>
     (function () {
       const data = JSON.parse(document.getElementById("char-data").textContent);

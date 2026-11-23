@@ -23,11 +23,11 @@
 - **ハイブリッドAI制作パイプライン ＆ 週1回編集長AI**
   - Phase A 調査（**`gemini-4-hydrogen` + Google検索**）→ Phase B 台本執筆（**`gemini-4-neon`**）→ Phase C ファクトチェック＆自動校閲（**`gemini-4-hydrogen` + Google検索**）→ 音声合成（**`gemini-3.8-flash-tts`**）が連携し、正確性と自然な掛け合いを両立しています。
   - [data/topic_history.json](data/topic_history.json) により直近28日間の小平トピック重複と各専門家ゲスト過去3か月（90日）の専門用語重複を自動防止します。
-  - 毎週日曜21時（JST）に編集長AI（[weekly-editorial.yml](.github/workflows/weekly-editorial.yml)）が向こう2週間の小平イベント・季節感を調べ、翌週分のワクワク特集・週間編成（[data/editorial_plan.json](data/editorial_plan.json)）を企画します。
+  - [config/program_schedule.json](config/program_schedule.json) で先々の専門家解説テーマやリクエストを事前管理でき、毎週日曜12:17（JST）の編集長AI（[weekly-editorial.yml](.github/workflows/weekly-editorial.yml)）が向こう2週間の小平イベントを調べて週間編成（[data/editorial_plan.json](data/editorial_plan.json)）とカレンダーを更新します。
 - **Gemini 3.8 Flash TTS による豊かな感情表現**
   - `<laugh>`・`<chuckle>`・`<giggle>`・`<short pause>` 等のインラインタグと `speech_metadata.style` 演技指示、2話者マルチスピーカー合成により、笑い・うなずき・自然な間合いを再現します。
 - **ローカルPC ＆ GitHub Pages 両対応ポータル（`docs/`）**
-  - 最新回プレーヤー（同期台本・チャプター・関連リンク・防災ノート）、[バックナンバー一覧](docs/archive.html)、[出演者＆累積防災ノート](docs/characters.html) を生成します。
+  - 最新回プレーヤー（同期台本・チャプター・関連リンク・防災ノート）、[放送内容カレンダー](docs/calendar.html)、[バックナンバー一覧](docs/archive.html)、[出演者紹介](docs/cast.html)、[累積防災ノート](docs/characters.html)、[番組のしくみ・技術解説＆15分対談](docs/tech.html) を生成します。
 
 ---
 
@@ -72,4 +72,4 @@
 3. **GitHub Pages を GitHub Actions モードに設定**  
    **Settings → Pages → Build and deployment → Source** で **`GitHub Actions`** を選択します。
 4. **動作確認（手動トリガー）**  
-   **Actions → Daily Kodaira Bousai Radio (07:00 JST) → Run workflow** を開いて、`date` に `2026-11-22`（または空欄で当日）を指定して実行すると、MP3合成・サイト更新・GitHub Pages公開が走り、以降は毎日 **日本時間 朝6:35起動 → 7:00前公開** で自動更新されます。
+   **Actions → Daily Kodaira Bousai Radio (07:00 JST) → Run workflow** を開いて、`date` に `2026-11-23`（または空欄で当日）を指定して実行すると、MP3合成・サイト更新・GitHub Pages公開が走り、以降は毎日 **日本時間 朝05:17（メイン）／ 06:13（冪等バックアップ）** で7時前に自動公開されます。

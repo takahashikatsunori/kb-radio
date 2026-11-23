@@ -80,7 +80,7 @@ header {
 }
 .nav-links {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 0.32rem;
 }
 .nav-links a {
@@ -593,7 +593,7 @@ footer {
 @media (max-width: 640px) {
   .header-inner { padding: 0.55rem 0.7rem 0.62rem; }
   .brand-bar { margin-bottom: 0.45rem; }
-  .nav-links { gap: 0.25rem; }
+  .nav-links { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.25rem; }
   .nav-links a { font-size: 0.72rem; padding: 0.34rem 0.14rem; }
   .ep-hero { padding: 0.62rem 0.75rem; margin-bottom: 0.6rem; }
   .controls { gap: 0.25rem; }
@@ -679,11 +679,24 @@ footer {
 <body>
   <header>
     <div class="header-inner">
-      <div class="brand-bar"><a class="brand" href="index.html">こだいら防災＆まちラジオ</a><span class="time-pill">毎朝7時</span></div><nav class="nav-links" aria-label="メインメニュー"><a href="index.html">最新回</a><a href="archive.html" class="active">過去回</a><a href="cast.html">出演者</a><a href="characters.html">防災ノート</a></nav><h1 class="page-h1">バックナンバー</h1><p class="page-subhead">これまでの放送をいつでも聴く・読むことができます</p>
+      <div class="brand-bar"><a class="brand" href="index.html">こだいら防災＆まちラジオ</a><span class="time-pill">毎朝7時</span></div><nav class="nav-links" aria-label="メインメニュー"><a href="index.html">最新回</a><a href="calendar.html">カレンダー</a><a href="archive.html" class="active">過去回</a><a href="cast.html">出演者</a><a href="characters.html">防災ノート</a><a href="tech.html">番組のしくみ</a></nav><h1 class="page-h1">バックナンバー</h1><p class="page-subhead">これまでの放送をいつでも聴く・読むことができます</p>
     </div>
   </header>
 
   <main class="container single">
+    <div class="card">
+      <div class="panel-body" style="display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.65rem;">
+        <div style="font-size:0.85rem; min-width:220px; flex:1 1 260px;">
+          <strong>📅 今後の放送予定や番組の仕組みもチェック！</strong>
+          <div style="color:var(--muted); font-size:0.8rem;">専門家解説テーマの事前カレンダーや、約15分の制作裏話対談も公開中です。</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:0.45rem;">
+          <a class="btn-link" href="calendar.html">放送内容カレンダー →</a>
+          <a class="btn-link" style="background:#0891b2;" href="tech.html#audio-talk">技術解説・15分対談 →</a>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="filter-bar">
         <input type="search" id="search-input" class="search-input" placeholder="キーワード検索（例：GIS、小川パレット、星野…）" />
@@ -704,7 +717,7 @@ footer {
 
   <footer>毎朝7時！こだいら防災＆まちラジオ（東京都小平市）</footer>
 
-  <script type="application/json" id="archive-data">[{"date": "2026-11-22", "episode_number": 0, "episode_label": "スピンオフ特別編", "is_spinoff": true, "weekday": "sunday", "weekday_ja": "日曜日", "theme_name": "スピンオフ特集：小川パレット徹底ガイド", "edition_label": "スピンオフ特別企画（約10分）", "is_holiday": false, "special_title": "", "subtitle": "スピンオフ特別企画 ― 行ってみたくなる！「小川パレット」まるわかりガイド", "guest_name": "", "guest_title": "", "duration": "10:09", "has_audio": true, "href": "episodes/2026-11-22-spinoff-ogawa-palette/index.html", "learned_points": ["市民投票（1,187票中527票）で選ばれた「小川パレット」は、絵の具のパレットのように多様な人が集う小川駅西口徒歩1分の複合拠点", "4階はカフェ・児童書・防音スタジオ・西部出張所など賑わいフロア、5階は一般書架・1時間100円の個人スペース・和室や調理室など学びのフロア（4階から西武線が見えるスポットも！）", "4階マガジンカフェ「BLUE & BERRY」は蓋つきドリンクで本や雑誌が読め、ムサビ生コラボ珈琲や地元グルメも楽しめる（金〜日は夜21時まで）", "駐輪場は最初の1時間無料・駐車場はパレット利用割引なし／有料スペース予約は他施設と別に小川パレットでの新規登録が必要"], "keywords": ["小川パレット（4F・5F）", "BLUE & BERRY カフェ", "1時間100円 個人スペース", "鏡張り防音スタジオ", "トレインビュー＆駐輪1時間無料"]}, {"date": "2026-11-22", "episode_number": 1, "episode_label": "第1回", "is_spinoff": false, "weekday": "sunday", "weekday_ja": "日曜日", "theme_name": "防災テック・ハザードマップ・衛星・最新情報", "edition_label": "", "is_holiday": false, "special_title": "", "subtitle": "第1回・2026年11月22日（日曜日）朝7時号 ― 日曜15分特集：防災テックとGISで歩く小平のまち", "guest_name": "星野 創", "guest_title": "防災テック＆GISエンジニア（地理情報・衛星通信・架空ゲスト）", "duration": "14:37", "has_audio": true, "href": "episodes/2026-11-22/index.html", "learned_points": ["GIS（地理情報システム）とカラーユニバーサルデザインでハザードマップや小平市防災マップアプリの仕組みがぐっと見やすくなっていること", "Jアラートは衛星と地上回線の二重ルートで届き、窓を閉めて聞き逃しても小平市防災行政無線テレホンサービス（042-341-0793）で確認できること", "防災アプリやDXは便利な一方、問合せ情報漏えいのようなセキュリティ事例も踏まえて公式の一次情報を落ち着いて確認することが大切なこと"], "keywords": ["GIS（地理情報システム）", "オフラインGPS地図キャッシュ", "Jアラート衛星＆地上二重ルート", "災害時ドローンマッピング＆低軌道衛星通信"]}]</script>
+  <script type="application/json" id="archive-data">[{"date": "2026-11-23", "episode_number": 2, "episode_label": "第2回", "is_spinoff": false, "weekday": "monday", "weekday_ja": "月曜日", "theme_name": "地震・建築・地盤", "edition_label": "祝日15分拡大版（勤労感謝の日）", "is_holiday": true, "special_title": "", "subtitle": "第2回・2026-11-23（月・祝）朝7時号 ― 勤労感謝の日15分拡大版！玉川上水の紅葉散歩と武蔵野台地の地盤＆耐震・制震・免震のヒミツ", "guest_name": "岩城 剛", "guest_title": "耐震構造・地盤工学研究家（工学博士・架空ゲスト）", "duration": "18:39", "has_audio": false, "href": "episodes/2026-11-23/index.html", "learned_points": ["小平市の大部分が載る武蔵野台地・関東ローム層は軟弱な沖積層に比べて揺れが増幅しにくく液状化リスクも低いが、谷底低地や埋没谷では1〜2Hzのキラーパルスが増幅されることもあり過信せずハザードマップや地盤確認が大切であること", "建物の地震対策は「耐震＝強さで耐える」「制震＝ダンパーで揺れを吸収する」「免震＝地面と切り離して揺れを伝えない」の3つに違いがあり、1981年以前（旧耐震）・新耐震・木造の2000年基準など自宅の築年数確認が第一歩になること", "耐震構造でも室内の家具転倒を防ぐため、重い物を下に置く重心配置と、壁の下地へのL字金具固定や突っ張り棒・耐震マットの併用を休日に点検しておくと安心なこと"], "keywords": ["武蔵野台地・関東ローム層の揺れ特性", "耐震・制震・免震の違い", "旧耐震基準（1981年以前）と2000年基準", "家具のL字金具・突っ張り棒・耐震マットと重心配置"]}, {"date": "2026-11-22", "episode_number": 0, "episode_label": "スピンオフ特別編", "is_spinoff": true, "weekday": "sunday", "weekday_ja": "日曜日", "theme_name": "スピンオフ特集：小川パレット徹底ガイド", "edition_label": "スピンオフ特別企画（約10分）", "is_holiday": false, "special_title": "", "subtitle": "スピンオフ特別企画 ― 行ってみたくなる！「小川パレット」まるわかりガイド", "guest_name": "", "guest_title": "", "duration": "10:09", "has_audio": true, "href": "episodes/2026-11-22-spinoff-ogawa-palette/index.html", "learned_points": ["市民投票（1,187票中527票）で選ばれた「小川パレット」は、絵の具のパレットのように多様な人が集う小川駅西口徒歩1分の複合拠点", "4階はカフェ・児童書・防音スタジオ・西部出張所など賑わいフロア、5階は一般書架・1時間100円の個人スペース・和室や調理室など学びのフロア（4階から西武線が見えるスポットも！）", "4階マガジンカフェ「BLUE & BERRY」は蓋つきドリンクで本や雑誌が読め、ムサビ生コラボ珈琲や地元グルメも楽しめる（金〜日は夜21時まで）", "駐輪場は最初の1時間無料・駐車場はパレット利用割引なし／有料スペース予約は他施設と別に小川パレットでの新規登録が必要"], "keywords": ["小川パレット（4F・5F）", "BLUE & BERRY カフェ", "1時間100円 個人スペース", "鏡張り防音スタジオ", "トレインビュー＆駐輪1時間無料"]}, {"date": "2026-11-22", "episode_number": 1, "episode_label": "第1回", "is_spinoff": false, "weekday": "sunday", "weekday_ja": "日曜日", "theme_name": "防災テック・ハザードマップ・衛星・最新情報", "edition_label": "", "is_holiday": false, "special_title": "", "subtitle": "第1回・2026年11月22日（日曜日）朝7時号 ― 日曜15分特集：防災テックとGISで歩く小平のまち", "guest_name": "星野 創", "guest_title": "防災テック＆GISエンジニア（地理情報・衛星通信・架空ゲスト）", "duration": "14:37", "has_audio": true, "href": "episodes/2026-11-22/index.html", "learned_points": ["GIS（地理情報システム）とカラーユニバーサルデザインでハザードマップや小平市防災マップアプリの仕組みがぐっと見やすくなっていること", "Jアラートは衛星と地上回線の二重ルートで届き、窓を閉めて聞き逃しても小平市防災行政無線テレホンサービス（042-341-0793）で確認できること", "防災アプリやDXは便利な一方、問合せ情報漏えいのようなセキュリティ事例も踏まえて公式の一次情報を落ち着いて確認することが大切なこと"], "keywords": ["GIS（地理情報システム）", "オフラインGPS地図キャッシュ", "Jアラート衛星＆地上二重ルート", "災害時ドローンマッピング＆低軌道衛星通信"]}]</script>
   <script>
     (function () {
       const items = JSON.parse(document.getElementById("archive-data").textContent);

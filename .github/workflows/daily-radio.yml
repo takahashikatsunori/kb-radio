@@ -2,8 +2,10 @@ name: Daily Kodaira Bousai Radio (07:00 JST)
 
 on:
   schedule:
-    # 21:35 UTC = 06:35 JST every morning (completes before 07:00 JST)
-    - cron: '35 21 * * *'
+    # 20:17 UTC = 05:17 JST (primary: ~1h40m buffer against GitHub Actions cron queue lag)
+    - cron: '17 20 * * *'
+    # 21:13 UTC = 06:13 JST (backup: automatic catch-up if primary cron is dropped; no-op if already built)
+    - cron: '13 21 * * *'
   workflow_dispatch:
     inputs:
       date:
@@ -40,6 +42,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      already_built: ${{ steps.meta.outputs.already_built }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -55,7 +59,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Resolve JST broadcast date
+      - name: Resolve JST broadcast date & idempotency check
         id: meta
         run: |
           INPUT_DATE="${{ inputs.date }}"
@@ -64,10 +68,22 @@ jobs:
           else
             TARGET_DATE="$(TZ='Asia/Tokyo' date +%Y-%m-%d)"
           fi
+          TARGET_DATE_COMPACT="${TARGET_DATE//-/}"
           echo "target_date=$TARGET_DATE" >> "$GITHUB_OUTPUT"
+          echo "target_date_compact=$TARGET_DATE_COMPACT" >> "$GITHUB_OUTPUT"
           echo "Broadcast target date (JST): $TARGET_DATE"
 
+          EP_JSON="episodes/${TARGET_DATE}/episode.json"
+          EP_MP3="docs/audio/kodaira_radio_${TARGET_DATE_COMPACT}.mp3"
+          if [ "${{ inputs.force_script }}" != "true" ] && [ -f "$EP_JSON" ] && [ -f "$EP_MP3" ]; then
+            echo "already_built=true" >> "$GITHUB_OUTPUT"
+            echo "Episode $TARGET_DATE already exists with audio; skipping rebuild."
+          else
+            echo "already_built=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Generate & fact-check daily script (Hydrogen research + Neon script + Hydrogen fact-check)
+        if: steps.meta.outputs.already_built != 'true'
         env:
           PYTHONUTF8: '1'
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -90,6 +106,7 @@ jobs:
             $FORCE_FLAG
 
       - name: Synthesize audio & master MP3 (Gemini 3.8 Flash TTS)
+        if: steps.meta.outputs.already_built != 'true'
         env:
           PYTHONUTF8: '1'
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -98,12 +115,14 @@ jobs:
           python src/build_radio.py "$EP_PATH" --tts-engine gemini --bitrate 112k
 
       - name: Build GitHub Pages portal & script.md
+        if: steps.meta.outputs.already_built != 'true'
         env:
           PYTHONUTF8: '1'
         run: |
           python src/build_site.py
 
       - name: Commit & push new episode and site assets
+        if: steps.meta.outputs.already_built != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -117,15 +136,18 @@ jobs:
           fi
 
       - name: Configure GitHub Pages
+        if: steps.meta.outputs.already_built != 'true'
         uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
+        if: steps.meta.outputs.already_built != 'true'
         uses: actions/upload-pages-artifact@v4
         with:
           path: docs
 
   deploy:
     needs: build
+    if: needs.build.outputs.already_built != 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

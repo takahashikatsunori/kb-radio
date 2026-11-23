@@ -324,6 +324,35 @@ def _format_editorial_guide_block(day_plan: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def _format_program_schedule_block(day_plan: dict[str, Any]) -> str:
+    """Format pre-planned expert topic schedule & user requests from config/program_schedule.json."""
+    sched = day_plan.get("program_schedule")
+    if not sched:
+        return ""
+    topics = [str(t).strip() for t in (sched.get("expert_topics") or []) if str(t).strip()]
+    note = str(sched.get("expert_note") or "").strip()
+    kodaira_hint = str(sched.get("kodaira_hint") or "").strip()
+    req = str(sched.get("special_request") or "").strip()
+    status = str(sched.get("status") or "proposed").strip()
+    locked = bool(sched.get("locked"))
+
+    lines = ["【事前編成カレンダー指定テーマ（放送内容カレンダー連動・優先遵守）】"]
+    status_label = "確定" if status == "confirmed" else "提案確定"
+    if locked:
+        status_label += "・リクエスト固定"
+    lines.append(f"- 編成ステータス: {status_label}")
+    if topics:
+        lines.append(f"- 本日の指定専門家解説テーマ（主軸として必ず採用）: {' ／ '.join(topics)}")
+    if note:
+        lines.append(f"- テーマ解説の狙い: {note}")
+    if kodaira_hint:
+        lines.append(f"- 小平ローカル連携ヒント: {kodaira_hint}")
+    if req:
+        lines.append(f"- ★ リスナー/プロデューサー特別リクエスト（必ず盛り込むこと）: {req}")
+    lines.append("※ 当日の重大地震・気象警報等の緊急安全情報がある場合を除き、上記カレンダー指定テーマを主軸に番組を構成してください。")
+    return "\n".join(lines)
+
+
 def build_research_prompt(
     target_date: str,
     day_plan: dict[str, Any],
@@ -349,6 +378,7 @@ def build_research_prompt(
         else ""
     )
     editorial_block = _format_editorial_guide_block(day_plan)
+    schedule_block = _format_program_schedule_block(day_plan)
     fresh_kws_str = ", ".join(dedup["fresh_keywords"][:6])
     covered_kws_str = ", ".join(dedup["expert_covered_keywords"]) or "なし"
     fresh_note = (
@@ -365,6 +395,8 @@ def build_research_prompt(
 今回優先すべき未解説キーワード候補: {fresh_kws_str} {fresh_note}
 {holiday_note}
 {special_note}
+
+{schedule_block}
 
 {editorial_block}
 
@@ -421,6 +453,7 @@ def build_script_prompt(
     links_json = json.dumps(grounded_links, ensure_ascii=False, indent=2)
     dedup = dedup_ctx or build_dedup_context(target_date, day_plan, [])
     editorial_block = _format_editorial_guide_block(day_plan)
+    schedule_block = _format_program_schedule_block(day_plan)
     fresh_kws_str = ", ".join(dedup["fresh_keywords"])
     covered_kws_str = ", ".join(dedup["expert_covered_keywords"]) or "なし"
 
@@ -457,6 +490,8 @@ def build_script_prompt(
 {holiday_instruction}
 - **明日の予告（ending セグメントで必ず触れること）**:
   {tomorrow_preview['preview_hint']}
+
+{schedule_block}
 
 {editorial_block}
 
@@ -1260,10 +1295,25 @@ def main() -> None:
         if (DATA_DIR / "editorial_plan.json").exists()
         else None
     )
+    program_schedule = (
+        _load_json(CONFIG_DIR / "program_schedule.json")
+        if (CONFIG_DIR / "program_schedule.json").exists()
+        else None
+    )
 
-    day_plan = resolve_day_plan(target_date, themes, special_days, editorial_plan=editorial_plan)
+    day_plan = resolve_day_plan(
+        target_date,
+        themes,
+        special_days,
+        editorial_plan=editorial_plan,
+        program_schedule=program_schedule,
+    )
     tomorrow_preview = resolve_tomorrow_preview(
-        target_date, themes, special_days, editorial_plan=editorial_plan
+        target_date,
+        themes,
+        special_days,
+        editorial_plan=editorial_plan,
+        program_schedule=program_schedule,
     )
     ep_num = _next_episode_number(target_date)
     dedup_ctx = build_dedup_context(
@@ -1302,6 +1352,14 @@ def main() -> None:
             if eg
             else "None"
         )
+        ps = plan_preview.get("program_schedule") or {}
+        ps_topics = ", ".join(ps.get("expert_topics") or [])
+        ps_desc = (
+            f"[{ps.get('status', 'proposed')}{'/LOCKED' if ps.get('locked') else ''}] {ps_topics}"
+            + (f" (Req: {ps.get('special_request')})" if ps.get("special_request") else "")
+            if ps
+            else "None"
+        )
         print("\n=== DRY RUN CONFIG SUMMARY ===")
         print(f"Date            : {target_date} ({plan_preview['weekday_ja']}) | Episode #{ep_num}")
         fc_label = "SKIPPED" if args.skip_factcheck else factcheck_model
@@ -1311,6 +1369,7 @@ def main() -> None:
         print(f"Target          : {plan_preview['target_duration_sec']}s / ~{plan_preview['target_chars']} chars ({plan_preview['min_chars']}~{plan_preview['max_chars']})")
         print(f"Theme / Guest   : {plan_preview['day_cfg']['theme_name']} / {plan_preview['day_cfg']['guest']['name']} ({plan_preview['day_cfg']['guest']['voice_name']})")
         print(f"Special Feature : {special_meta['title'] + ' [' + special_meta['phase_label'] + ']' if special_meta else 'None'}")
+        print(f"Program Sched   : {ps_desc}")
         print(f"Editorial Guide : {eg_desc}")
         print(f"Dedup {RECENT_LOCAL_DEDUP_DAYS}d Local : {dedup_ctx['recent_local_count']} recent topic(s)")
         print(f"Dedup 90d Expert: {len(dedup_ctx['expert_covered_keywords'])} covered keyword(s) | Fresh candidates: {len(dedup_ctx['fresh_keywords'])}")

@@ -1,9 +1,9 @@
-name: Weekly Chief Editor Plan (Sun 21:00 JST)
+name: Weekly Chief Editor Plan (Sun 12:17 JST)
 
 on:
   schedule:
-    # 12:00 UTC Sunday = 21:00 JST Sunday
-    - cron: '0 12 * * 0'
+    # 03:17 UTC Sunday = 12:17 JST Sunday (12h buffer before Monday; off-peak minute avoids cron congestion)
+    - cron: '17 3 * * 0'
   workflow_dispatch:
     inputs:
       start_date:
@@ -21,9 +21,11 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
-  group: 'weekly-editorial-plan'
+  group: 'daily-radio-pages'
   cancel-in-progress: false
 
 jobs:
@@ -62,15 +64,40 @@ jobs:
             --planner-model "$PLANNER_MODEL" \
             $START_FLAG
 
-      - name: Commit & push updated editorial_plan.json
+      - name: Rebuild GitHub Pages portal with updated Calendar
+        env:
+          PYTHONUTF8: '1'
+        run: |
+          python src/build_site.py
+
+      - name: Commit & push updated editorial_plan.json and docs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/editorial_plan.json
+          git add data/editorial_plan.json docs/
           if [ -n "$(git status --porcelain)" ]; then
             git commit -m "editorial: update weekly program plan"
             git pull --rebase
             git push
           else
-            echo "No editorial_plan.json changes to commit."
+            echo "No editorial_plan.json or docs changes to commit."
           fi
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: docs
+
+  deploy:
+    needs: plan
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

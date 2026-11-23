@@ -2,15 +2,21 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
 import html
 import json
 import re
 from pathlib import Path
 from typing import Any
 
+from site_calendar_page import render_calendar_page
+from site_tech_page import render_tech_page
+
+JST = timezone(timedelta(hours=9))
 ROOT_DIR = Path(__file__).resolve().parent.parent
 CONFIG_DIR = ROOT_DIR / "config"
 DATA_DIR = ROOT_DIR / "data"
+TECH_TALK_DIR = DATA_DIR / "tech_talk"
 EPISODES_DIR = ROOT_DIR / "episodes"
 DOCS_DIR = ROOT_DIR / "docs"
 DOCS_AUDIO_DIR = DOCS_DIR / "audio"
@@ -371,7 +377,7 @@ header {
 }
 .nav-links {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 0.32rem;
 }
 .nav-links a {
@@ -884,7 +890,7 @@ footer {
 @media (max-width: 640px) {
   .header-inner { padding: 0.55rem 0.7rem 0.62rem; }
   .brand-bar { margin-bottom: 0.45rem; }
-  .nav-links { gap: 0.25rem; }
+  .nav-links { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.25rem; }
   .nav-links a { font-size: 0.72rem; padding: 0.34rem 0.14rem; }
   .ep-hero { padding: 0.62rem 0.75rem; margin-bottom: 0.6rem; }
   .controls { gap: 0.25rem; }
@@ -954,9 +960,11 @@ def _render_nav(root_prefix: str, active: str, subhead: str = "", page_h1: str =
         f'</div>'
         f'<nav class="nav-links" aria-label="メインメニュー">'
         f'<a href="{root_prefix}index.html"{cls("latest")}>最新回</a>'
+        f'<a href="{root_prefix}calendar.html"{cls("calendar")}>カレンダー</a>'
         f'<a href="{root_prefix}archive.html"{cls("archive")}>過去回</a>'
         f'<a href="{root_prefix}cast.html"{cls("cast")}>出演者</a>'
         f'<a href="{root_prefix}characters.html"{cls("characters")}>防災ノート</a>'
+        f'<a href="{root_prefix}tech.html"{cls("tech")}>番組のしくみ</a>'
         f'</nav>'
         f'{extra}'
     )
@@ -1640,6 +1648,19 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
   </header>
 
   <main class="container single">
+    <div class="card">
+      <div class="panel-body" style="display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.65rem;">
+        <div style="font-size:0.85rem; min-width:220px; flex:1 1 260px;">
+          <strong>📅 今後の放送予定や番組の仕組みもチェック！</strong>
+          <div style="color:var(--muted); font-size:0.8rem;">専門家解説テーマの事前カレンダーや、約15分の制作裏話対談も公開中です。</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:0.45rem;">
+          <a class="btn-link" href="calendar.html">放送内容カレンダー →</a>
+          <a class="btn-link" style="background:#0891b2;" href="tech.html#audio-talk">技術解説・15分対談 →</a>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="filter-bar">
         <input type="search" id="search-input" class="search-input" placeholder="キーワード検索（例：GIS、小川パレット、星野…）" />
@@ -2555,6 +2576,31 @@ def build_site() -> None:
         if (DATA_DIR / "knowledge_log.json").exists()
         else {"entries": []}
     )
+    special_days = (
+        _load_json(CONFIG_DIR / "special_days.json")
+        if (CONFIG_DIR / "special_days.json").exists()
+        else {"recurring": [], "dated_events": []}
+    )
+    editorial_plan = (
+        _load_json(DATA_DIR / "editorial_plan.json")
+        if (DATA_DIR / "editorial_plan.json").exists()
+        else None
+    )
+    program_schedule = (
+        _load_json(CONFIG_DIR / "program_schedule.json")
+        if (CONFIG_DIR / "program_schedule.json").exists()
+        else None
+    )
+    topic_history = (
+        _load_json(DATA_DIR / "topic_history.json")
+        if (DATA_DIR / "topic_history.json").exists()
+        else {"entries": []}
+    )
+    tech_bundle = (
+        _load_episode_bundle(TECH_TALK_DIR)
+        if (TECH_TALK_DIR / "episode.json").exists()
+        else None
+    )
 
     bundles = [_load_episode_bundle(p) for p in ep_dirs]
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
@@ -2569,9 +2615,42 @@ def build_site() -> None:
         ep_html = _render_episode_page(bundle, bundles, root_prefix="../../", is_home=False)
         (ep_out_dir / "index.html").write_text(ep_html, encoding="utf-8")
 
-    latest = bundles[-1]
+    if tech_bundle:
+        generate_script_md(tech_bundle)
+
+    sorted_for_latest = sorted(
+        bundles,
+        key=lambda b: (
+            b["episode"]["meta"]["episode_date"],
+            0 if b["episode"]["meta"].get("is_spinoff") else 1,
+            b["slug"],
+        ),
+    )
+    latest = sorted_for_latest[-1]
+    today_jst_str = datetime.now(JST).date().isoformat()
+
     (DOCS_DIR / "index.html").write_text(
         _render_episode_page(latest, bundles, root_prefix="", is_home=True),
+        encoding="utf-8",
+    )
+    (DOCS_DIR / "calendar.html").write_text(
+        render_calendar_page(
+            bundles=bundles,
+            themes=themes,
+            special_days=special_days,
+            editorial_plan=editorial_plan,
+            program_schedule=program_schedule,
+            topic_history=topic_history,
+            today_jst_str=today_jst_str,
+            common_css=COMMON_CSS,
+            nav_html=_render_nav(
+                "",
+                "calendar",
+                page_h1="放送内容カレンダー",
+                subhead="過去の放送実績と今後の専門家解説テーマ予定（リクエスト随時受付）",
+            ),
+            safe_json_fn=_safe_json_for_html,
+        ),
         encoding="utf-8",
     )
     (DOCS_DIR / "archive.html").write_text(_render_archive_page(bundles), encoding="utf-8")
@@ -2581,6 +2660,22 @@ def build_site() -> None:
     )
     (DOCS_DIR / "characters.html").write_text(
         _render_characters_page(knowledge_log),
+        encoding="utf-8",
+    )
+    (DOCS_DIR / "tech.html").write_text(
+        render_tech_page(
+            tech_bundle=tech_bundle,
+            characters=characters,
+            themes=themes,
+            common_css=COMMON_CSS,
+            nav_html=_render_nav(
+                "",
+                "tech",
+                page_h1="番組のしくみ・技術解説",
+                subhead="小春・平蔵・AIオーケストレーター ネオンさんが徹底解説（約15分対談＋図解）",
+            ),
+            safe_json_fn=_safe_json_for_html,
+        ),
         encoding="utf-8",
     )
 

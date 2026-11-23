@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>番組のしくみ・技術解説 | 毎朝7時！こだいら防災＆まちラジオ</title>
+  <style>
+
+:root {
+  --forest: #1b5e3c;
+  --forest-dark: #124028;
+  --forest-soft: #e7f4ec;
+  --paper: #f8f7f3;
+  --card: #ffffff;
+  --ink: #1f2937;
+  --muted: #5b6472;
+  --border: #dfe4de;
+  --amber: #d97706;
+  --amber-soft: #fef3c7;
+  --koharu: #e11d48;
+  --koharu-soft: #fff1f2;
+  --heizo: #2563eb;
+  --heizo-soft: #eff6ff;
+  --guest: var(--guest-color, #4338ca);
+  --guest-soft: var(--guest-bg, #eef2ff);
+  --shadow: 0 6px 20px rgba(18, 64, 40, 0.08);
+}
+* { box-sizing: border-box; }
+html, body {
+  overflow-x: clip;
+  max-width: 100%;
+}
+body {
+  margin: 0;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", system-ui, -apple-system, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.65;
+  -webkit-tap-highlight-color: transparent;
+}
+a { color: var(--forest); }
+
+/* Compact app-style header */
+header {
+  background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest) 65%, #2b7a50 100%);
+  color: #ffffff;
+  border-bottom: 3px solid var(--amber);
+}
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.65rem 1rem 0.75rem;
+}
+.brand-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+.brand {
+  font-weight: 800;
+  font-size: clamp(0.98rem, 4vw, 1.22rem);
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.01em;
+}
+.time-pill {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.16rem 0.55rem;
+  border-radius: 999px;
+  background: var(--amber);
+  color: #fff;
+}
+.nav-links {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.32rem;
+}
+.nav-links a {
+  color: rgba(255, 255, 255, 0.94);
+  text-decoration: none;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.34rem 0.2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.15s;
+}
+.nav-links a:hover, .nav-links a.active {
+  background: #ffffff;
+  color: var(--forest-dark);
+  border-color: #ffffff;
+}
+.page-subhead {
+  margin: 0.55rem 0 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+.page-h1 {
+  margin: 0.45rem 0 0;
+  font-size: clamp(1.08rem, 4vw, 1.45rem);
+  line-height: 1.3;
+}
+
+/* Main layout */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(310px, 0.95fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+.container.single {
+  grid-template-columns: minmax(0, 1fr);
+}
+.col-main, .col-side, .card, .now-playing, .section-head, .seg-divider, .mobile-tabs {
+  min-width: 0;
+  max-width: 100%;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.ep-hero {
+  padding: 0.78rem 1rem;
+  border-left: 4px solid var(--amber);
+}
+.ep-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.theme-pill {
+  display: inline-block;
+  padding: 0.14rem 0.55rem;
+  border-radius: 999px;
+  background: var(--guest-soft);
+  color: var(--guest);
+  font-weight: 700;
+}
+.edition-pill {
+  display: inline-block;
+  padding: 0.14rem 0.55rem;
+  border-radius: 999px;
+  background: var(--amber-soft);
+  color: #92400e;
+  font-weight: 700;
+}
+.ep-title {
+  margin: 0.35rem 0 0;
+  font-size: clamp(0.98rem, 3.6vw, 1.22rem);
+  line-height: 1.38;
+  color: var(--forest-dark);
+  overflow-wrap: anywhere;
+}
+.section-head {
+  padding: 0.75rem 1rem;
+  background: #fcfcfa;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+.section-head h2 {
+  margin: 0;
+  font-size: 0.96rem;
+  color: var(--forest-dark);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.hint {
+  font-size: 0.76rem;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+/* Slim sticky player */
+.player-card {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding: 0.72rem 1rem;
+  border-top: 3px solid var(--forest);
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(8px);
+}
+.audio-pending-banner {
+  background: var(--amber-soft);
+  border: 1px solid #f59e0b;
+  color: #92400e;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.55rem;
+}
+.now-playing {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+.now-chapter {
+  flex: 1 1 auto;
+  font-size: 0.88rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.time-readout {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--heizo);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.scrubber {
+  width: 100%;
+  accent-color: var(--forest);
+  cursor: pointer;
+  height: 22px;
+  margin: 0.2rem 0 0.35rem;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--ink);
+  padding: 0.4rem 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  min-height: 36px;
+  white-space: nowrap;
+}
+button:hover:not(:disabled) {
+  background: var(--forest-soft);
+  border-color: var(--forest);
+}
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+button.primary {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #fff;
+  padding: 0.42rem 0.95rem;
+}
+button.primary:hover:not(:disabled) { background: var(--forest-dark); }
+button.active-toggle {
+  background: var(--heizo-soft);
+  border-color: var(--heizo);
+  color: var(--heizo);
+}
+.speed-group button.is-selected {
+  background: var(--forest);
+  color: #fff;
+  border-color: var(--forest);
+}
+.speed-cycle-btn {
+  display: none;
+}
+
+/* Mobile 3-tab bar */
+.mobile-tabs {
+  display: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+  background: #ecefe9;
+  padding: 0.3rem;
+  border-radius: 12px;
+}
+.mobile-tabs button {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.8rem;
+  min-height: 36px;
+  padding: 0.35rem 0.25rem;
+  border-radius: 9px;
+}
+.mobile-tabs button.active {
+  background: #ffffff;
+  color: var(--forest-dark);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Chapters accordion */
+.chapter-summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+.chapter-summary::-webkit-details-marker {
+  display: none;
+}
+.chapter-summary .hint::after {
+  content: " ▼";
+  font-size: 0.7rem;
+}
+.chapter-details[open] .chapter-summary .hint::after {
+  content: " ▲";
+}
+.chapter-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.45rem;
+  padding: 0.75rem 0.95rem;
+}
+.chapter-btn {
+  text-align: left;
+  padding: 0.5rem 0.65rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.14rem;
+  white-space: normal;
+  min-height: auto;
+}
+.chapter-btn.active {
+  background: var(--forest-soft);
+  border-color: var(--forest);
+  box-shadow: inset 3px 0 0 var(--forest);
+}
+.chapter-tc {
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--heizo);
+  font-weight: 700;
+  flex: 0 0 auto;
+}
+.chapter-title {
+  font-size: 0.82rem;
+  line-height: 1.35;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Transcript */
+.transcript-body {
+  padding: 0.8rem 0.95rem 1.25rem;
+  max-height: 68vh;
+  overflow-y: auto;
+}
+.seg-divider {
+  margin: 1rem 0 0.55rem;
+  padding: 0.42rem 0.7rem;
+  background: var(--forest-soft);
+  border-left: 4px solid var(--forest);
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--forest-dark);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+  scroll-margin-top: 150px;
+}
+.seg-divider > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.seg-divider:first-child { margin-top: 0; }
+.line-item {
+  display: grid;
+  grid-template-columns: 48px 86px minmax(0, 1fr);
+  grid-template-areas: "tc speaker text";
+  gap: 0.5rem;
+  padding: 0.52rem 0.6rem;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  align-items: baseline;
+  scroll-margin-top: 150px;
+}
+.line-item:hover { background: #f3f5f2; }
+.line-item.active {
+  background: var(--amber-soft);
+  border-color: #f59e0b;
+}
+.line-tc {
+  grid-area: tc;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.76rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.speaker-pill {
+  grid-area: speaker;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.14rem 0.48rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.speaker-koharu { background: var(--koharu-soft); color: var(--koharu); }
+.speaker-heizo { background: var(--heizo-soft); color: var(--heizo); }
+.speaker-guest { background: var(--guest-soft); color: var(--guest); }
+.line-text {
+  grid-area: text;
+  font-size: 0.94rem;
+  overflow-wrap: anywhere;
+}
+
+/* Right panels & cards */
+.panel-body {
+  padding: 0.8rem 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.link-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 0.72rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fcfcfa;
+  transition: border-color 0.15s, background 0.15s;
+}
+.link-card:hover {
+  border-color: var(--forest);
+  background: var(--forest-soft);
+}
+.pill-tag {
+  display: inline-block;
+  font-size: 0.71rem;
+  font-weight: 700;
+  padding: 0.1rem 0.48rem;
+  border-radius: 999px;
+  background: var(--forest-soft);
+  color: var(--forest-dark);
+  margin-bottom: 0.22rem;
+}
+.link-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--forest-dark);
+  margin: 0 0 0.18rem;
+  overflow-wrap: anywhere;
+}
+.link-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.note-box {
+  padding: 0.72rem 0.85rem;
+  border-radius: 10px;
+  background: #fcfcfa;
+  border: 1px solid var(--border);
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+.note-box ul {
+  margin: 0.35rem 0 0.45rem;
+  padding-left: 1.15rem;
+}
+.tel-link {
+  color: var(--heizo);
+  font-weight: 700;
+  text-decoration: underline;
+}
+.guest-card {
+  padding: 0.8rem 0.95rem;
+  border-left: 4px solid var(--guest);
+  background: var(--guest-soft);
+  border-radius: 10px;
+}
+.kw-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+.kw-chip {
+  font-size: 0.74rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.archive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: 0.85rem;
+  padding: 0.9rem;
+}
+.archive-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.9rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  overflow-wrap: anywhere;
+}
+.btn-link {
+  display: inline-block;
+  text-decoration: none;
+  background: var(--forest);
+  color: #fff;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 0.48rem 0.85rem;
+  border-radius: 8px;
+  text-align: center;
+}
+.btn-link:hover { background: var(--forest-dark); }
+footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.9rem 1rem 2rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Mobile breakpoint (<= 920px): single column + tab switching */
+@media (max-width: 920px) {
+  .container {
+    display: block;
+    width: 100%;
+    padding: 0.65rem 0.7rem;
+  }
+  .mobile-tabs {
+    display: grid;
+  }
+  .player-card {
+    margin: 0 0 0.65rem;
+    border-radius: 12px;
+    padding: 0.6rem 0.78rem;
+  }
+  main[data-active-tab="script"] #tab-panel-script { display: block; }
+  main[data-active-tab="script"] .col-side { display: none; }
+
+  main[data-active-tab="links"] #tab-panel-script { display: none; }
+  main[data-active-tab="links"] .col-side { display: block; }
+  main[data-active-tab="links"] #tab-panel-links { display: block; }
+  main[data-active-tab="links"] #tab-panel-notes { display: none; }
+
+  main[data-active-tab="notes"] #tab-panel-script { display: none; }
+  main[data-active-tab="notes"] .col-side { display: block; }
+  main[data-active-tab="notes"] #tab-panel-links { display: none; }
+  main[data-active-tab="notes"] #tab-panel-notes { display: block; }
+}
+
+/* Narrow phone breakpoint (<= 640px): vertical-only controls, accordion chapters, 2-row transcript */
+@media (max-width: 640px) {
+  .header-inner { padding: 0.55rem 0.7rem 0.62rem; }
+  .brand-bar { margin-bottom: 0.45rem; }
+  .nav-links { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.25rem; }
+  .nav-links a { font-size: 0.72rem; padding: 0.34rem 0.14rem; }
+  .ep-hero { padding: 0.62rem 0.75rem; margin-bottom: 0.6rem; }
+  .controls { gap: 0.25rem; }
+  .btn-group { gap: 0.25rem; }
+  .speed-group { display: none; }
+  .speed-cycle-btn { display: inline-flex; align-items: center; }
+  button { padding: 0.34rem 0.48rem; font-size: 0.76rem; min-height: 36px; }
+  button.primary { padding: 0.34rem 0.68rem; }
+
+  .chapter-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0.6rem 0.75rem;
+    gap: 0.38rem;
+  }
+  .chapter-btn {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.45rem;
+    width: 100%;
+    padding: 0.48rem 0.62rem;
+  }
+  .chapter-tc {
+    flex: 0 0 auto;
+  }
+
+  .transcript-body {
+    max-height: none;
+    overflow-y: visible;
+    padding: 0.65rem 0.75rem 1.2rem;
+  }
+  .line-item {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "speaker tc"
+      "text text";
+    gap: 0.28rem 0.55rem;
+    padding: 0.55rem 0.55rem;
+    border-bottom: 1px solid #f0f2ee;
+  }
+  .line-tc {
+    justify-self: end;
+    font-size: 0.74rem;
+  }
+  .line-text {
+    font-size: 0.95rem;
+    line-height: 1.72;
+  }
+}
+
+
+.tech-hero {
+  padding: 0.95rem 1.05rem;
+  border-left: 4px solid #0891b2;
+  background: linear-gradient(135deg, #ecfeff 0%, #ffffff 65%);
+}
+.tech-hero-badge {
+  display: inline-block;
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 0.16rem 0.62rem;
+  border-radius: 999px;
+  background: #0891b2;
+  color: #ffffff;
+  margin-bottom: 0.35rem;
+}
+.tech-hero h2 {
+  margin: 0.1rem 0 0.35rem;
+  font-size: clamp(1.06rem, 4vw, 1.38rem);
+  color: #164e63;
+  line-height: 1.35;
+}
+.tech-hero p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--ink);
+  line-height: 1.65;
+}
+.toc-card {
+  padding: 0.78rem 0.95rem;
+}
+.toc-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 0 0 0.45rem;
+}
+.toc-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.36rem;
+}
+.toc-pill {
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--forest-dark);
+}
+.toc-pill:hover {
+  background: var(--forest-soft);
+  border-color: var(--forest);
+}
+.speaker-neon {
+  background: #ecfeff;
+  color: #0e7490;
+}
+.tech-chapter {
+  scroll-margin-top: 1rem;
+}
+.tech-body {
+  padding: 0.95rem 1.05rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  font-size: 0.92rem;
+  line-height: 1.75;
+}
+.tech-body h3 {
+  margin: 0.25rem 0 0.1rem;
+  font-size: 1rem;
+  color: var(--forest-dark);
+  border-bottom: 2px solid var(--forest-soft);
+  padding-bottom: 0.2rem;
+}
+.tech-body p {
+  margin: 0;
+}
+.tech-body ul {
+  margin: 0.1rem 0;
+  padding-left: 1.25rem;
+}
+.tech-body li {
+  margin-bottom: 0.3rem;
+}
+.beginner-box {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-left: 4px solid var(--amber);
+  border-radius: 10px;
+  padding: 0.72rem 0.9rem;
+  font-size: 0.86rem;
+  line-height: 1.68;
+}
+.beginner-box strong {
+  color: #92400e;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+.tech-spec-box {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #0891b2;
+  border-radius: 10px;
+  padding: 0.72rem 0.9rem;
+  font-size: 0.85rem;
+  line-height: 1.65;
+}
+.tech-spec-box strong {
+  color: #0e7490;
+}
+.diagram-figure {
+  margin: 0.2rem 0;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.65rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+.diagram-figure svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.diagram-caption {
+  margin-top: 0.45rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+  font-weight: 600;
+}
+.code-sample {
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: 10px;
+  padding: 0.8rem 0.95rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre;
+}
+.code-comment { color: #7dd3fc; }
+.tech-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.tech-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  min-width: 540px;
+}
+.tech-table th, .tech-table td {
+  padding: 0.55rem 0.72rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+.tech-table th {
+  background: #f3f5f2;
+  color: var(--forest-dark);
+  font-weight: 800;
+}
+.tech-table tr:last-child td { border-bottom: none; }
+.tech-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+.tech-mini-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.72rem 0.85rem;
+  background: #fcfcfa;
+  font-size: 0.84rem;
+}
+.tech-mini-card h4 {
+  margin: 0 0 0.25rem;
+  font-size: 0.9rem;
+  color: var(--forest-dark);
+}
+.tech-player-wrap {
+  border-top: 4px solid #0891b2;
+}
+.tech-transcript-wrap {
+  max-height: 52vh;
+  overflow-y: auto;
+  padding: 0.8rem 0.95rem 1.2rem;
+}
+@media (max-width: 720px) {
+  .tech-grid-2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tech-transcript-wrap {
+    max-height: 58vh;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="brand-bar"><a class="brand" href="index.html">こだいら防災＆まちラジオ</a><span class="time-pill">毎朝7時</span></div><nav class="nav-links" aria-label="メインメニュー"><a href="index.html">最新回</a><a href="calendar.html">カレンダー</a><a href="archive.html">過去回</a><a href="cast.html">出演者</a><a href="characters.html">防災ノート</a><a href="tech.html" class="active">番組のしくみ</a></nav><h1 class="page-h1">番組のしくみ・技術解説</h1><p class="page-subhead">小春・平蔵・AIオーケストレーター ネオンさんが徹底解説（約15分対談＋図解）</p>
+    </div>
+  </header>
+
+  <main class="container single">
+    <div class="card tech-hero">
+      <span class="tech-hero-badge">SPECIAL TECHNICAL GUIDE ＋ 15分解説対談</span>
+      <h2>小春・平蔵・AIオーケストレーター ネオンさんが語る「こだいら防災＆まちラジオ」ができるまで</h2>
+      <p>
+        「毎朝7時に、小平の最新ニュースや天気・地震・専門家の防災解説がラジオ音声と同期サイトになって届く」――この番組が裏側でどんな技術と工夫を組み合わせて作られているのかを、<strong>特別対談音声（約15分）</strong>と<strong>図解付きの技術解説</strong>で、初めての方にもわかりやすく、技術的にも正確・具体的にご紹介します。
+      </p>
+    </div>
+
+    <div class="card toc-card">
+      <div class="toc-title">ページ内クイックジャンプ</div>
+      <div class="toc-row">
+        <a class="toc-pill" href="#audio-talk">🎧 約15分 解説対談音声</a>
+        <a class="toc-pill" href="#sec-1">1. 全体像</a>
+        <a class="toc-pill" href="#sec-2">2. 情報収集・記憶</a>
+        <a class="toc-pill" href="#sec-3">3. 3段階AI・校閲</a>
+        <a class="toc-pill" href="#sec-4">4. 音声TTS・数式BGM</a>
+        <a class="toc-pill" href="#sec-5">5. 静的サイト・同期</a>
+        <a class="toc-pill" href="#sec-6">6. GitHub自動化</a>
+        <a class="toc-pill" href="#sec-7">7. ファイル構成表</a>
+      </div>
+    </div>
+
+    <!-- Embedded ~15-min Roundtable Player -->
+    <div class="card tech-player-wrap" id="audio-talk">
+      <div class="section-head">
+        <h2>🎧 特別対談音声：小春 × 平蔵 × AIオーケストレーター ネオンさん</h2>
+        <span class="hint" id="tech-dur-hint">収録時間 14:48（予定）</span>
+      </div>
+      <div style="padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); background:#f8fafc;">
+        <div id="tech-audio-pending" class="audio-pending-banner" style="display:none;">
+          この特別対談音声MP3はまだ生成されていません。<code>python src/generate_tech_talk.py</code> および <code>build_radio.py</code> を実行すると音声再生ができます。下の全編台本はそのままお読みいただけます。
+        </div>
+        <audio id="tech-audio" preload="metadata"></audio>
+        <div class="now-playing">
+          <div class="now-chapter" id="tech-now-chapter">再生ボタンを押して特別対談をお聴きください</div>
+          <div class="time-readout" id="tech-time-readout">00:00 / 14:48</div>
+        </div>
+        <input type="range" class="scrubber" id="tech-scrubber" min="0" max="900" step="0.1" value="0" aria-label="技術解説対談 シークバー" />
+        <div class="controls">
+          <div class="btn-group">
+            <button type="button" class="primary" id="tech-btn-play">▶ 対談を再生</button>
+            <button type="button" id="tech-btn-back">-15s</button>
+            <button type="button" id="tech-btn-fwd">+15s</button>
+          </div>
+          <div class="btn-group speed-group" id="tech-speed-group">
+            <button type="button" data-rate="0.9">0.9x</button>
+            <button type="button" data-rate="1" class="is-selected">1.0x</button>
+            <button type="button" data-rate="1.15">1.15x</button>
+            <button type="button" data-rate="1.25">1.25x</button>
+          </div>
+          <div class="btn-group">
+            <button type="button" id="tech-btn-speed-cycle" class="speed-cycle-btn">1.0x</button>
+            <button type="button" id="tech-btn-autoscroll" class="active-toggle">追従ON</button>
+          </div>
+        </div>
+      </div>
+
+      <details class="chapter-details" id="tech-chapter-details" open>
+        <summary class="section-head chapter-summary">
+          <h2>対談チャプター目次（タップで再生ジャンプ）</h2>
+          <span class="hint">開閉</span>
+        </summary>
+        <div class="chapter-list" id="tech-chapter-list"></div>
+      </details>
+
+      <details open>
+        <summary class="section-head chapter-summary">
+          <h2>同期対談台本（セリフをタップで音声ジャンプ）</h2>
+          <span class="hint">開閉</span>
+        </summary>
+        <div class="tech-transcript-wrap" id="tech-transcript-body"></div>
+      </details>
+    </div>
+
+    <!-- Chapter 1 -->
+    <section class="card tech-chapter" id="sec-1">
+      <div class="section-head">
+        <h2>1. 全体像 ― AIオーケストレーションで毎朝届くラジオ番組</h2>
+        <span class="hint">システム全体の設計思想</span>
+      </div>
+      <div class="tech-body">
+        <p>
+          このラジオ番組は、人間のスタジオ収録ではなく、<strong>Python（パイソン）</strong>で組まれた制作システムが毎朝自動で作っています。ただし、「1つのAIに『今日小平市のラジオ台本を書いて』と丸投げする」のではありません。役割ごとに得意なツールやAIモデルを指揮者のように連携させる<strong>「AIオーケストレーション」</strong>という考え方で作られています。
+        </p>
+        <div class="beginner-box">
+          <strong>🔰 かみ砕きメモ：「AIオーケストレーション」ってなに？</strong>
+          オーケストラにバイオリン・トランペット・打楽器それぞれの名手がいて、指揮者がタイミングを合わせて1つの交響曲を作るように、「調べるのが得意なAI」「おしゃべり台本を書くのが得意なAI」「ミスをチェックするAI」「声を出して演技するAI」「計算して音楽を鳴らすプログラム」を組み合わせることで、1人（1つのAI）では絶対に届かない正確さと温かさを実現する仕組みです。
+        </div>
+        <figure class="diagram-figure">
+          
+<svg viewBox="0 0 860 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="全自動ラジオ制作パイプライン全体図">
+  <defs>
+    <marker id="arr1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569"/>
+    </marker>
+    <linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#ecfeff"/>
+    </linearGradient>
+  </defs>
+  <rect width="860" height="300" rx="14" fill="url(#bg1)"/>
+  <text x="430" y="28" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="800" fill="#0f172a">毎朝7時までに自動で番組が届く 5ステップ・パイプライン全体図</text>
+
+  <!-- Step 0: Cron -->
+  <rect x="20" y="54" width="128" height="175" rx="10" fill="#ffffff" stroke="#64748b" stroke-width="2"/>
+  <rect x="20" y="54" width="128" height="30" rx="10" fill="#334155"/>
+  <text x="84" y="74" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#ffffff">自動起動 (CI)</text>
+  <text x="84" y="108" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#0f172a">GitHub Actions</text>
+  <text x="84" y="128" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#475569">05:17 JST メイン</text>
+  <text x="84" y="145" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#475569">06:13 JST 予備</text>
+  <rect x="30" y="162" width="108" height="52" rx="6" fill="#f1f5f9"/>
+  <text x="84" y="180" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="700" fill="#334155">GitHub Secrets</text>
+  <text x="84" y="196" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">APIキーを安全注入</text>
+
+  <line x1="148" y1="140" x2="174" y2="140" stroke="#475569" stroke-width="2" marker-end="url(#arr1)"/>
+
+  <!-- Step 1: Collect -->
+  <rect x="178" y="54" width="144" height="175" rx="10" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+  <rect x="178" y="54" width="144" height="30" rx="10" fill="#0284c7"/>
+  <text x="250" y="74" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#ffffff">1. 材料集め</text>
+  <text x="250" y="106" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#0369a1">Open-Meteo (気象)</text>
+  <text x="250" y="124" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#0369a1">P2PQuake v2 (地震)</text>
+  <text x="250" y="142" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#334155">jpholiday (祝日15分)</text>
+  <rect x="188" y="156" width="124" height="60" rx="6" fill="#f0f9ff"/>
+  <text x="250" y="174" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="700" fill="#0369a1">設定＆記憶データ</text>
+  <text x="250" y="190" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">28日/90日重複防止</text>
+  <text x="250" y="205" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">事前編成カレンダー</text>
+
+  <line x1="322" y1="140" x2="348" y2="140" stroke="#475569" stroke-width="2" marker-end="url(#arr1)"/>
+
+  <!-- Step 2: 3-Phase AI -->
+  <rect x="352" y="54" width="160" height="175" rx="10" fill="#ffffff" stroke="#7c3aed" stroke-width="2"/>
+  <rect x="352" y="54" width="160" height="30" rx="10" fill="#7c3aed"/>
+  <text x="432" y="74" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#ffffff">2. AI制作＆校閲</text>
+  <rect x="362" y="93" width="140" height="36" rx="6" fill="#f5f3ff"/>
+  <text x="432" y="109" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="700" fill="#5b21b6">Phase A: Hydrogen + 検索</text>
+  <text x="432" y="123" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">最新小平＆防災ニュース調査</text>
+  <rect x="362" y="135" width="140" height="36" rx="6" fill="#ecfeff"/>
+  <text x="432" y="151" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="700" fill="#0e7490">Phase B: Gemini 4 Neon</text>
+  <text x="432" y="165" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">掛け合いJSON台本を執筆</text>
+  <rect x="362" y="177" width="140" height="42" rx="6" fill="#fef3c7"/>
+  <text x="432" y="193" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="700" fill="#92400e">Phase C: Hydrogen 校閲</text>
+  <text x="432" y="208" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#78350f">年号・数値の裏取り修正</text>
+
+  <line x1="512" y1="140" x2="538" y2="140" stroke="#475569" stroke-width="2" marker-end="url(#arr1)"/>
+
+  <!-- Step 3: Audio DSP -->
+  <rect x="542" y="54" width="146" height="175" rx="10" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+  <rect x="542" y="54" width="146" height="30" rx="10" fill="#d97706"/>
+  <text x="615" y="74" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#ffffff">3. 音声＆音響DSP</text>
+  <text x="615" y="106" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#92400e">Gemini 3.8 Flash TTS</text>
+  <text x="615" y="122" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">感情タグ・マルチ話者合成</text>
+  <text x="615" y="146" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#92400e">NumPy 数式BGM</text>
+  <text x="615" y="162" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">サイン波・リバーブ自前生成</text>
+  <rect x="552" y="174" width="126" height="44" rx="6" fill="#fffbeb"/>
+  <text x="615" y="191" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="700" fill="#b45309">先読みダッキング＆FFmpeg</text>
+  <text x="615" y="206" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">-16 LUFS MP3 + タイムライン</text>
+
+  <line x1="688" y1="140" x2="714" y2="140" stroke="#475569" stroke-width="2" marker-end="url(#arr1)"/>
+
+  <!-- Step 4: Static Portal -->
+  <rect x="718" y="54" width="124" height="175" rx="10" fill="#ffffff" stroke="#1b5e3c" stroke-width="2"/>
+  <rect x="718" y="54" width="124" height="30" rx="10" fill="#1b5e3c"/>
+  <text x="780" y="74" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#ffffff">4. 公開ポータル</text>
+  <text x="780" y="106" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#124028">build_site.py</text>
+  <text x="780" y="124" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">docs/ 静的HTML生成</text>
+  <text x="780" y="146" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#124028">GitHub Pages</text>
+  <text x="780" y="164" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">毎朝07:00前に公開</text>
+  <rect x="728" y="176" width="104" height="42" rx="6" fill="#e7f4ec"/>
+  <text x="780" y="194" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="700" fill="#1b5e3c">スマホ＆PC再生</text>
+  <text x="780" y="209" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#124028">同期字幕・シーク対応</text>
+
+  <!-- Feedback Loop Bottom -->
+  <path d="M 780 232 L 780 264 L 250 264 L 250 234" fill="none" stroke="#0891b2" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#arr1)"/>
+  <rect x="338" y="248" width="356" height="28" rx="14" fill="#ecfeff" stroke="#0891b2" stroke-width="1.5"/>
+  <text x="516" y="266" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#0e7490">翌日の放送へ記憶を蓄積（knowledge_log.json / topic_history.json）</text>
+</svg>
+
+          <figcaption class="diagram-caption">図解①：毎朝5:17の起動から7:00のWeb配信までを自動連携させる全体パイプライン</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Chapter 2 -->
+    <section class="card tech-chapter" id="sec-2">
+      <div class="section-head">
+        <h2>2. ステップ1 ― 今朝の天気・地震・カレンダー・長期記憶を集める</h2>
+        <span class="hint">src/live_feeds.py ・ src/schedule_calendar.py</span>
+      </div>
+      <div class="tech-body">
+        <p>
+          ラジオらしさの命は「まさに今朝の天気」と「昨日の話題と被らない連続性」です。台本を書き始める前に、プログラムは外部の公的・オープンAPIとリポジトリ内の記憶データを一気に集めます。
+        </p>
+        <div class="beginner-box">
+          <strong>🔰 かみ砕きメモ：「API（エーピーアイ）」ってなに？</strong>
+          プログラム同士がデータを受け渡しするための「レストランの注文窓口」です。私たちがWebブラウザで天気サイトを目で見て確認する代わりに、Pythonプログラムが <code>https://api.open-meteo.com/...</code> という窓口に注文票を送ると、小平市の気温・湿度・降水確率が整理されたデータ（JSON形式）で1秒以内に返ってきます。
+        </div>
+        <div class="tech-grid-2">
+          <div class="tech-mini-card">
+            <h4>☁ Open-Meteo API（小平市のピンポイント天気）</h4>
+            <code>src/live_feeds.py</code> が小平市中心の緯度・経度（<strong>35.7285, 139.4775</strong>）を指定して、今朝の気温・湿度・風速・3日間予報を取得。前後の気温差が9℃以上なら「寒暖差注意」、湿度45%以下なら「乾燥・火の元注意」といった番組用アドバイスも自動生成します。
+          </div>
+          <div class="tech-mini-card">
+            <h4>🌋 P2PQuake API v2（緊急地震トリガー）</h4>
+            直近48時間の地震履歴（<code>codes=551</code>）を取得。もし<strong>関東・東京で震度4以上</strong>、<strong>全国で震度5弱以上</strong>、または津波警報・注意報を検知した場合は、通常構成に<strong>+4分の緊急防災コーナー（special_feature）</strong>を自動追加して放送尺を拡張します。
+          </div>
+          <div class="tech-mini-card">
+            <h4>📅 jpholiday ＆ 特別日・事前編成カレンダー</h4>
+            日本の祝日判定ライブラリ <code>jpholiday</code> により、土日だけでなく祝日（例：11/23 勤労感謝の日）も<strong>平日10分（約3,200字）から15分拡大版（約4,800字）</strong>へ自動切替。さらに <code>config/special_days.json</code> で記念日カウントダウン、<code>config/program_schedule.json</code> で先々の専門家テーマや変更リクエストを管理し、<code>resolve_tomorrow_preview()</code> が明日の予告まで自動計算します。
+          </div>
+          <div class="tech-mini-card">
+            <h4>🧠 28日＆90日の重複防止メモリ</h4>
+            <code>data/topic_history.json</code> と <code>data/knowledge_log.json</code> により、<strong>小平の街ネタは直近28日間</strong>、<strong>7人の専門家の解説キーワードは過去90日間（約3か月）</strong>同じテーマを繰り返さないよう <code>build_dedup_context()</code> が自動ガード。小春たちの「前に学んだあれですね！」という成長描写にも活用されます。
+          </div>
+        </div>
+        <figure class="diagram-figure">
+          
+<svg viewBox="0 0 860 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="設定ファイル・ライブAPI・重複防止メモリ連携図">
+  <defs>
+    <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#1b5e3c"/>
+    </marker>
+  </defs>
+  <rect width="860" height="320" rx="14" fill="#f8fafc"/>
+  <text x="430" y="28" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="800" fill="#0f172a">図解②：台本を作る前に集める「リアルタイム情報・カレンダー・長期記憶」</text>
+
+  <!-- Left: Live APIs & jpholiday -->
+  <rect x="24" y="48" width="248" height="248" rx="12" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+  <rect x="24" y="48" width="248" height="30" rx="12" fill="#0284c7"/>
+  <text x="148" y="68" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#ffffff">外部ライブデータ ＆ 祝日判定</text>
+  <rect x="36" y="88" width="224" height="58" rx="8" fill="#f0f9ff" stroke="#bae6fd"/>
+  <text x="46" y="106" font-family="sans-serif" font-size="11" font-weight="700" fill="#0369a1">Open-Meteo API（天気）</text>
+  <text x="46" y="122" font-family="sans-serif" font-size="10" fill="#334155">小平市座標 (35.7285, 139.4775)</text>
+  <text x="46" y="136" font-family="sans-serif" font-size="10" fill="#334155">気温・湿度・乾燥/寒暖差注意を算出</text>
+
+  <rect x="36" y="156" width="224" height="64" rx="8" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="46" y="174" font-family="sans-serif" font-size="11" font-weight="700" fill="#b91c1c">P2PQuake API v2（地震）</text>
+  <text x="46" y="190" font-family="sans-serif" font-size="10" fill="#334155">48時間以内の地震履歴 (codes=551)</text>
+  <text x="46" y="204" font-family="sans-serif" font-size="10" fill="#991b1b">関東震度4+/全国5弱+ → 緊急特集(+4分)</text>
+
+  <rect x="36" y="230" width="224" height="54" rx="8" fill="#fffbeb" stroke="#fde68a"/>
+  <text x="46" y="248" font-family="sans-serif" font-size="11" font-weight="700" fill="#b45309">jpholiday ＆ special_days.json</text>
+  <text x="46" y="264" font-family="sans-serif" font-size="10" fill="#334155">土日祝を自動判定し15分拡大版へ切替</text>
+  <text x="46" y="278" font-family="sans-serif" font-size="10" fill="#334155">防災記念日カウントダウン・前日予告生成</text>
+
+  <!-- Center: Resolver Engine -->
+  <rect x="318" y="96" width="224" height="156" rx="14" fill="#ffffff" stroke="#1b5e3c" stroke-width="2.5"/>
+  <rect x="318" y="96" width="224" height="32" rx="14" fill="#1b5e3c"/>
+  <text x="430" y="117" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#ffffff">番組編成・重複ガード司令塔</text>
+  <text x="430" y="148" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#124028">schedule_calendar.py</text>
+  <text x="430" y="165" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">resolve_day_plan() で放送尺・文字数決定</text>
+  <line x1="336" y1="178" x2="524" y2="178" stroke="#e2e8f0" stroke-width="1.5"/>
+  <text x="430" y="198" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#124028">build_dedup_context()</text>
+  <text x="430" y="215" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">小平ネタ: 28日間重複禁止</text>
+  <text x="430" y="231" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">専門家用語: 90日間重複禁止</text>
+
+  <line x1="272" y1="172" x2="314" y2="172" stroke="#1b5e3c" stroke-width="2" marker-end="url(#arr2)"/>
+
+  <!-- Right: Config & Memory JSONs -->
+  <rect x="588" y="48" width="248" height="248" rx="12" fill="#ffffff" stroke="#7c3aed" stroke-width="2"/>
+  <rect x="588" y="48" width="248" height="30" rx="12" fill="#7c3aed"/>
+  <text x="712" y="68" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#ffffff">番組設定・カレンダー・長期記憶 JSON</text>
+
+  <rect x="600" y="88" width="224" height="58" rx="8" fill="#f5f3ff" stroke="#ddd6fe"/>
+  <text x="610" y="106" font-family="sans-serif" font-size="11" font-weight="700" fill="#5b21b6">program_schedule.json (事前予定)</text>
+  <text x="610" y="122" font-family="sans-serif" font-size="10" fill="#334155">1か月超先の専門家テーマ＆リクエスト</text>
+  <text x="610" y="136" font-family="sans-serif" font-size="10" fill="#334155">locked=true なら編集長AIも上書きしない</text>
+
+  <rect x="600" y="156" width="224" height="58" rx="8" fill="#ecfeff" stroke="#a5f3fc"/>
+  <text x="610" y="174" font-family="sans-serif" font-size="11" font-weight="700" fill="#0e7490">editorial_plan.json (編集長AI)</text>
+  <text x="610" y="190" font-family="sans-serif" font-size="10" fill="#334155">毎週日曜に2週間先のリサーチ結果から</text>
+  <text x="610" y="204" font-family="sans-serif" font-size="10" fill="#334155">週間テーマ軸＆ワクワク特集を策定</text>
+
+  <rect x="600" y="224" width="224" height="60" rx="8" fill="#f0fdf4" stroke="#bbf7d0"/>
+  <text x="610" y="242" font-family="sans-serif" font-size="11" font-weight="700" fill="#166534">topic_history / knowledge_log</text>
+  <text x="610" y="258" font-family="sans-serif" font-size="10" fill="#334155">放送済みネタの90日履歴と小春の成長記録</text>
+  <text x="610" y="272" font-family="sans-serif" font-size="10" fill="#334155">「前回学んだあの言葉！」の自然な振返り</text>
+
+  <line x1="588" y1="172" x2="546" y2="172" stroke="#1b5e3c" stroke-width="2" marker-end="url(#arr2)"/>
+</svg>
+
+          <figcaption class="diagram-caption">図解②：ライブAPI・祝日判定・事前編成カレンダー・長期記憶が台本生成の前に合流する構造</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Chapter 3 -->
+    <section class="card tech-chapter" id="sec-3">
+      <div class="section-head">
+        <h2>3. ステップ2 ― 3段階ハイブリッドAI制作 ＆ 自動ファクトチェック</h2>
+        <span class="hint">src/generate_episode.py ・ src/plan_weekly_editorial.py</span>
+      </div>
+      <div class="tech-body">
+        <p>
+          台本づくりは<strong>「Phase A：調査」「Phase B：台本執筆」「Phase C：ファクトチェック＆自動校閲」</strong>の3段階パイプラインで構成されています。それぞれ得意分野の異なるモデル <code>gemini-4-hydrogen</code> と <code>gemini-4-neon</code> をリレーさせています。
+        </p>
+        <div class="beginner-box">
+          <strong>🔰 かみ砕きメモ：なぜAIが嘘をつくことがあるの？どう防いでるの？</strong>
+          大規模言語モデル（LLM）は学習時の記憶をもとに自然な文章を紡ぐのが得意ですが、最新の地域イベント日程などを記憶だけで書くと、昨年の日付と混ぜてしまう<strong>ハルシネーション（もっともらしい誤情報）</strong>が起きることがあります。そこで本番組では、まず <strong>Google検索グラウンディング（検索結果に根拠を置く仕組み）</strong> で今年の一次情報を調べ（Phase A）、執筆後に別の校閲AIがもう一度Google検索で裏取りをする（Phase C）二重の安全網を敷いています。
+        </div>
+        <figure class="diagram-figure">
+          
+<svg viewBox="0 0 860 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="3フェーズハイブリッドAI制作＆自動校閲フロー">
+  <defs>
+    <marker id="arr3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <rect width="860" height="280" rx="14" fill="#f8fafc"/>
+  <text x="430" y="28" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="800" fill="#0f172a">図解③：役割分担で精度と面白さを両立する「3段階ハイブリッドAI制作」</text>
+
+  <!-- Phase A -->
+  <rect x="24" y="48" width="250" height="208" rx="12" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+  <rect x="24" y="48" width="250" height="32" rx="12" fill="#0284c7"/>
+  <text x="149" y="69" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#ffffff">Phase A：最新調査（リサーチャー）</text>
+  <text x="149" y="102" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="800" fill="#0369a1">gemini-4-hydrogen</text>
+  <text x="149" y="120" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#334155">+ Google Search Grounding</text>
+  <rect x="38" y="134" width="222" height="106" rx="8" fill="#f0f9ff"/>
+  <text x="48" y="154" font-family="sans-serif" font-size="10" fill="#1e293b">• 小平市公式・地域の季節話題を検索</text>
+  <text x="48" y="172" font-family="sans-serif" font-size="10" fill="#1e293b">• 開催年（今年の日程か）を厳密確認</text>
+  <text x="48" y="190" font-family="sans-serif" font-size="10" fill="#1e293b">• 参照した実在URLをリンク候補に抽出</text>
+  <text x="48" y="208" font-family="sans-serif" font-size="10" font-weight="700" fill="#b45309">• 重大災害時は BREAKING_SPECIAL</text>
+  <text x="58" y="224" font-family="sans-serif" font-size="10" font-weight="700" fill="#b45309">JSON で拡大特集を自動発動</text>
+
+  <line x1="274" y1="150" x2="300" y2="150" stroke="#475569" stroke-width="2" marker-end="url(#arr3)"/>
+
+  <!-- Phase B -->
+  <rect x="304" y="48" width="252" height="208" rx="12" fill="#ffffff" stroke="#0891b2" stroke-width="2"/>
+  <rect x="304" y="48" width="252" height="32" rx="12" fill="#0891b2"/>
+  <text x="430" y="69" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#ffffff">Phase B：構成・執筆（構成作家）</text>
+  <text x="430" y="102" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="800" fill="#0e7490">gemini-4-neon</text>
+  <text x="430" y="120" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#334155">JSON構造化出力 (application/json)</text>
+  <rect x="318" y="134" width="224" height="106" rx="8" fill="#ecfeff"/>
+  <text x="328" y="154" font-family="sans-serif" font-size="10" fill="#1e293b">• 小春・平蔵・専門家の自然な掛け合い</text>
+  <text x="328" y="172" font-family="sans-serif" font-size="10" fill="#1e293b">• 表示用 text と読み上げ用 tts_text 分離</text>
+  <text x="328" y="190" font-family="sans-serif" font-size="10" fill="#1e293b">• 地名かな開き ＆ &lt;laugh&gt; タグ付与</text>
+  <text x="328" y="208" font-family="sans-serif" font-size="10" fill="#1e293b">• 5〜6コーナー・規定文字数 (3200/4800)</text>
+  <text x="328" y="226" font-family="sans-serif" font-size="10" fill="#1e293b">• 防災ノート・連絡先・リンクも同時生成</text>
+
+  <line x1="556" y1="150" x2="582" y2="150" stroke="#475569" stroke-width="2" marker-end="url(#arr3)"/>
+
+  <!-- Phase C -->
+  <rect x="586" y="48" width="250" height="208" rx="12" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+  <rect x="586" y="48" width="250" height="32" rx="12" fill="#d97706"/>
+  <text x="711" y="69" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#ffffff">Phase C：校閲ゲート（編集デスク）</text>
+  <text x="711" y="102" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="800" fill="#b45309">gemini-4-hydrogen</text>
+  <text x="711" y="120" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#334155">+ Google Search 再監査</text>
+  <rect x="600" y="134" width="222" height="106" rx="8" fill="#fffbeb"/>
+  <text x="610" y="154" font-family="sans-serif" font-size="10" fill="#1e293b">• 全セリフの施設開館・日程・数値を再検索</text>
+  <text x="610" y="172" font-family="sans-serif" font-size="10" fill="#1e293b">• 前年の日付混同などを即検出</text>
+  <text x="610" y="190" font-family="sans-serif" font-size="10" fill="#1e293b">• 小春のボケは直後に訂正があれば許容</text>
+  <text x="610" y="208" font-family="sans-serif" font-size="10" font-weight="700" fill="#92400e">• 問題行だけ FACT_CHECK_JSON で</text>
+  <text x="620" y="224" font-family="sans-serif" font-size="10" font-weight="700" fill="#92400e">ピンポイント外科パッチ → 保存</text>
+</svg>
+
+          <figcaption class="diagram-caption">図解③：調査（Hydrogen）→ 執筆（Neon）→ 自動校閲（Hydrogen）の3フェーズ制作リレー</figcaption>
+        </figure>
+
+        <h3>台本データは「読む用」と「しゃべる用」を分けている（JSON構造化出力）</h3>
+        <p>
+          Phase B の <code>gemini-4-neon</code> は単なる自由文章ではなく、<strong>JSON（ジェイソン）</strong>というプログラムがそのまま読み取れる設計図の形で台本を出力します。ここで非常に重要なのが、1つのセリフの中に<strong>画面表示用の <code>text</code></strong> と<strong>音声合成用の <code>tts_text</code></strong> の2種類を持たせている点です。
+        </p>
+        <div class="code-sample"><span class="code-comment">// episodes/YYYY-MM-DD/episode.json に保存される1セリフ分の構造</span>
+{
+  "speaker": "koharu",
+  "text": "小平駅南口から小川町まで、防災マップアプリを見ながら歩いてみたいです！", <span class="code-comment">// 画面表示用（タグなし）</span>
+  "tts_text": "こだいらえき みなみぐちから おがわちょうまで、&lt;short pause&gt; ぼうさいマップアプリを みながら あるいてみたいです！&lt;laugh&gt;", <span class="code-comment">// 読み上げ用（かな＋感情タグ）</span>
+  "style": "bright, cheerful, curious Japanese morning radio host", <span class="code-comment">// 英語の演技ディレクション</span>
+  "pause_after": 0.34 <span class="code-comment">// 次の人が話すまでの「間」（秒）</span>
+}</div>
+        <div class="tech-spec-box">
+          <strong>Phase C の「小春キャラクター保護」校閲ルール：</strong>
+          ファクトチェックAIは全セリフの日程・数値（耐震基準年や胸骨圧迫のテンポ100〜120回/分など）を厳しく検証し、誤りがあれば <code>=== FACT_CHECK_JSON ===</code> という修正パッチで該当行だけをピンポイント書き換えします。ただし、<strong>「小春が初心者としてお茶目に予想して、すぐ次のターンで平蔵や専門家が優しく訂正している箇所」</strong>は番組の大切な演出として残すよう設計されています。
+        </div>
+      </div>
+    </section>
+
+    <!-- Chapter 4 -->
+    <section class="card tech-chapter" id="sec-4">
+      <div class="section-head">
+        <h2>4. ステップ3 ― 声の演技（Gemini 3.8 Flash TTS）＆ NumPy数式BGM・音響DSP</h2>
+        <span class="hint">src/build_radio.py ・ src/bgm_synth.py</span>
+      </div>
+      <div class="tech-body">
+        <p>
+          完成した台本JSONを受け取るのが <code>src/build_radio.py</code> と <code>src/bgm_synth.py</code> です。ここでは声の合成だけでなく、本物のFMラジオ局のミキサー卓と同じデジタル信号処理（DSP）をPythonとNumPy・FFmpegで行っています。
+        </p>
+        <div class="beginner-box">
+          <strong>🔰 かみ砕きメモ：著作権フリー！BGMを「数式」から作ってるって本当？</strong>
+          はい！インターネット上の音楽素材をダウンロードするのではなく、<code>src/bgm_synth.py</code> の中で<strong>NumPy（ナムパイ）という数値計算ライブラリを使い、高校数学で習うサイン波（sin）を何重にも足し合わせて楽器の音色をゼロから合成</strong>しています。ローズ風の温かなエレキピアノも、朝のチャイムも、小鳥のようなベル音も、すべてプログラムが毎回44,100Hzの音の波として計算し、自然な残響（マルチタップ・リバーブ）をかけて生み出しています。
+        </div>
+        <figure class="diagram-figure">
+          
+<svg viewBox="0 0 860 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="3トラック音響合成と先読みダッキング・-16 LUFSマスタリング回路図">
+  <defs>
+    <marker id="arr4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#334155"/>
+    </marker>
+  </defs>
+  <rect width="860" height="320" rx="14" fill="#f8fafc"/>
+  <text x="430" y="28" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="800" fill="#0f172a">図解④：スタジオ級「3トラック合成 ＆ 0.16秒先読みダッキング・-16 LUFS マスタリング」</text>
+
+  <!-- Track 1: Speech -->
+  <rect x="24" y="48" width="276" height="72" rx="10" fill="#fff1f2" stroke="#e11d48" stroke-width="1.8"/>
+  <text x="38" y="70" font-family="sans-serif" font-size="12" font-weight="800" fill="#be123c">トラック1：会話音声 (Speech)</text>
+  <text x="38" y="89" font-family="sans-serif" font-size="10" fill="#334155">Gemini 3.8 Flash TTS (SHA-256キャッシュ)</text>
+  <text x="38" y="105" font-family="sans-serif" font-size="10" fill="#334155">44.1kHz化・RMS -20dBFS均一化・左右パンニング</text>
+
+  <!-- Track 2: BGM -->
+  <rect x="24" y="134" width="276" height="72" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="1.8"/>
+  <text x="38" y="156" font-family="sans-serif" font-size="12" font-weight="800" fill="#1d4ed8">トラック2：BGMベッド (bgm_synth.py)</text>
+  <text x="38" y="175" font-family="sans-serif" font-size="10" fill="#334155">NumPy数式でエレキピアノ・パッド・ベース生成</text>
+  <text x="38" y="191" font-family="sans-serif" font-size="10" fill="#334155">4,200Hz ローパスで声の帯域をスッキリ空ける</text>
+
+  <!-- Track 3: Jingles -->
+  <rect x="24" y="220" width="276" height="72" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.8"/>
+  <text x="38" y="242" font-family="sans-serif" font-size="12" font-weight="800" fill="#b45309">トラック3：ジングル (4種)</text>
+  <text x="38" y="261" font-family="sans-serif" font-size="10" fill="#334155">OP / Stinger / ゲスト登場 / ED テーマ</text>
+  <text x="38" y="277" font-family="sans-serif" font-size="10" fill="#334155">ベル音＋マルチタップリバーブで番組らしさ演出</text>
+
+  <!-- Ducking Envelope Box -->
+  <rect x="344" y="96" width="224" height="148" rx="12" fill="#ffffff" stroke="#0891b2" stroke-width="2"/>
+  <rect x="344" y="96" width="224" height="28" rx="12" fill="#0891b2"/>
+  <text x="456" y="115" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#ffffff">先読みサイドチェイン・ダッキング</text>
+  <!-- Mini Envelope Waveform -->
+  <rect x="358" y="134" width="196" height="58" rx="6" fill="#0f172a"/>
+  <path d="M 366 146 L 402 146 Q 416 146 424 176 L 490 176 Q 504 176 520 146 L 546 146" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+  <rect x="422" y="138" width="70" height="14" rx="3" fill="#f43f5e" fill-opacity="0.35"/>
+  <text x="457" y="149" text-anchor="middle" font-family="sans-serif" font-size="9" font-weight="700" fill="#fda4af">発話区間</text>
+  <text x="384" y="160" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#bae6fd">0.36</text>
+  <text x="457" y="187" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#7dd3fc">0.11 (0.16s先読み減衰)</text>
+  <text x="456" y="210" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#334155">話し出す0.16秒前からBGMを</text>
+  <text x="456" y="226" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#334155">スッと下げ、話終わりに余韻復帰</text>
+
+  <line x1="300" y1="84" x2="340" y2="140" stroke="#334155" stroke-width="2" marker-end="url(#arr4)"/>
+  <line x1="300" y1="170" x2="340" y2="170" stroke="#334155" stroke-width="2" marker-end="url(#arr4)"/>
+  <line x1="300" y1="256" x2="340" y2="205" stroke="#334155" stroke-width="2" marker-end="url(#arr4)"/>
+
+  <!-- Mastering Output -->
+  <line x1="568" y1="170" x2="598" y2="170" stroke="#334155" stroke-width="2" marker-end="url(#arr4)"/>
+  <rect x="602" y="76" width="234" height="188" rx="12" fill="#ffffff" stroke="#1b5e3c" stroke-width="2"/>
+  <rect x="602" y="76" width="234" height="30" rx="12" fill="#1b5e3c"/>
+  <text x="719" y="96" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#ffffff">FFmpeg 放送規格マスタリング</text>
+  <text x="616" y="128" font-family="sans-serif" font-size="11" font-weight="700" fill="#124028">1. highpass=f=70</text>
+  <text x="626" y="144" font-family="sans-serif" font-size="10" fill="#475569">70Hz以下の不要な超低域ノイズをカット</text>
+  <text x="616" y="168" font-family="sans-serif" font-size="11" font-weight="700" fill="#124028">2. loudnorm I=-16 LUFS</text>
+  <text x="626" y="184" font-family="sans-serif" font-size="10" fill="#475569">ポッドキャスト標準の聴きやすい音量へ均一化</text>
+  <rect x="616" y="200" width="206" height="50" rx="8" fill="#e7f4ec"/>
+  <text x="719" y="220" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="800" fill="#1b5e3c">出力：112kbps ステレオ MP3</text>
+  <text x="719" y="238" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#124028">＋ 正確な秒数入り manifest.json</text>
+</svg>
+
+          <figcaption class="diagram-caption">図解④：TTS音声・数式BGM・ジングルを0.16秒先読みダッキングで合成し、-16 LUFSへ仕上げる音響回路</figcaption>
+        </figure>
+
+        <div class="tech-grid-2">
+          <div class="tech-mini-card">
+            <h4>🎙 2話者・4ターン・420文字ブロック分割とキャッシュ</h4>
+            <code>gemini-3.8-flash-tts</code> のマルチスピーカーAPIは1リクエストで2話者まで自然な掛け合いを生成できます。<code>_group_lines_into_blocks()</code> が台本を「最大2話者・4ターン・420文字以内」に賢く束ねてAPI回数を抑え（15分番組でも約17〜25回程度）、さらに内容を <strong>SHA-256ハッシュ値</strong> で <code>.cache/tts_gemini/</code> に保存するため、台本の1行だけ直して再ビルドする際も変更行以外はAPIを再消費しません。
+          </div>
+          <div class="tech-mini-card">
+            <h4>🎚 先読みダッキング ＆ ポッドキャスト基準 -16 LUFS</h4>
+            BGMがしゃべりを邪魔しないよう、<code>_compute_ducking_envelope()</code> が<strong>話し始める0.16秒前から先読みして</strong>BGM音量を <code>0.36</code> から <code>0.11</code> へ滑らかに下げます（BGM自体も <code>4,200 Hz</code> のローパスフィルタで声の帯域を空けています）。最後は <code>FFmpeg</code> で <code>70 Hz</code> 以下の低域ノイズを除去し、世界標準のラウドネス規格 <strong>-16 LUFS</strong> に整えて <code>112 kbps</code> MP3 と秒数台帳 <code>manifest.json</code> を書き出します。
+          </div>
+        </div>
+
+        <h3>出演者・AIゲストの専用ボイス＆ステレオ定位割り当て</h3>
+        <div class="tech-table-wrap">
+          <table class="tech-table">
+            <thead>
+              <tr>
+                <th>出演者 / 担当</th>
+                <th>役割・テーマ</th>
+                <th>Gemini 3.8 TTS ボイス名</th>
+                <th>ステレオ定位 / 特徴</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>小春</strong></td><td>メインパーソナリティ</td><td><code>Leda</code></td><td>pan -0.10（やや左）／明るく活発</td></tr>
+              <tr><td><strong>平蔵</strong></td><td>パートナーキャスター</td><td><code>Algieba</code></td><td>pan +0.10（やや右）／優しく丁寧</td></tr>
+              <tr><td><strong>ネオン</strong>（特別回）</td><td>AIオーケストレーター</td><td><code>Rasalgethi</code></td><td>pan +0.00（中央）／知的で親しみやすい</td></tr>
+              <tr><td><strong>岩城 剛</strong>（月曜日）</td><td>地震・建築・地盤</td><td><code>Orus</code></td><td>pan +0.00（中央）／曜日別専門家ゲスト</td></tr>
+              <tr><td><strong>雨宮 栞</strong>（火曜日）</td><td>気象・水害・都市河川</td><td><code>Despina</code></td><td>pan +0.00（中央）／曜日別専門家ゲスト</td></tr>
+              <tr><td><strong>火ノ原 鉄平</strong>（水曜日）</td><td>火災・電気・特殊消防機材</td><td><code>Algenib</code></td><td>pan +0.00（中央）／曜日別専門家ゲスト</td></tr>
+              <tr><td><strong>白川 優子</strong>（木曜日）</td><td>災害医療・応急手当・こころのケア</td><td><code>Sulafat</code></td><td>pan +0.00（中央）／曜日別専門家ゲスト</td></tr>
+              <tr><td><strong>出雲 健太</strong>（金曜日）</td><td>食・備蓄・ライフライン</td><td><code>Sadaltager</code></td><td>pan +0.00（中央）／曜日別専門家ゲスト</td></tr>
+              <tr><td><strong>結城 美咲</strong>（土曜日）</td><td>地域コミュニティ・避難所運営・ペット・福祉防災</td><td><code>Aoede</code></td><td>pan +0.00（中央）／曜日別専門家ゲスト</td></tr>
+              <tr><td><strong>星野 創</strong>（日曜日）</td><td>防災テック・ハザードマップ・衛星・最新情報</td><td><code>Charon</code></td><td>pan +0.00（中央）／曜日別専門家ゲスト</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chapter 5 -->
+    <section class="card tech-chapter" id="sec-5">
+      <div class="section-head">
+        <h2>5. ステップ4 ― サーバー不要で動く静的ポータル ＆ 同期字幕プレーヤー</h2>
+        <span class="hint">src/build_site.py ・ docs/</span>
+      </div>
+      <div class="tech-body">
+        <p>
+          多くのWebサービスでは裏側でデータベースやプログラムサーバーを24時間動かしますが、この番組は <code>src/build_site.py</code> が<strong>HTML・CSS・JavaScript・MP3だけの「静的ファイル群（docs/）」</strong>を丸ごと生成します。
+        </p>
+        <div class="beginner-box">
+          <strong>🔰 かみ砕きメモ：なぜ「静的サイト」＋「HTML内JSON埋め込み」なの？</strong>
+          通常のブラウザはセキュリティ保護（CORS制限）のため、ネットサーバーを通さずにPC上のHTMLファイルをダブルクリック（<code>file://</code>）すると外部のJSONファイルを読み込めません。そこで本サイトは、台本やタイムライン・カレンダー情報をすべてHTMLページの中の <code>&lt;script type="application/json"&gt;</code> タグへ直接埋め込んでいます。これにより、GitHub Pagesでの公開はもちろん、<strong>オフラインのWindowsパソコンで直接開いても100%同じように同期再生・検索ができます。</strong>
+        </div>
+        <figure class="diagram-figure">
+          
+<svg viewBox="0 0 860 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="静的HTML生成とブラウザ同期字幕プレーヤーの仕組み">
+  <defs>
+    <marker id="arr5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#1b5e3c"/>
+    </marker>
+  </defs>
+  <rect width="860" height="250" rx="14" fill="#f8fafc"/>
+  <text x="430" y="28" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="800" fill="#0f172a">図解⑤：サーバー不要でローカル＆ネット両対応！「HTML内蔵JSON ＆ 同期字幕プレーヤー」</text>
+
+  <!-- Build Site -->
+  <rect x="24" y="54" width="232" height="168" rx="12" fill="#ffffff" stroke="#1b5e3c" stroke-width="2"/>
+  <rect x="24" y="54" width="232" height="30" rx="12" fill="#1b5e3c"/>
+  <text x="140" y="74" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#ffffff">build_site.py（静的生成）</text>
+  <text x="38" y="106" font-family="sans-serif" font-size="11" font-weight="700" fill="#124028">入力素材:</text>
+  <text x="44" y="124" font-family="sans-serif" font-size="10" fill="#334155">• episode.json (台本・リンク)</text>
+  <text x="44" y="140" font-family="sans-serif" font-size="10" fill="#334155">• manifest.json (開始/終了秒)</text>
+  <text x="44" y="156" font-family="sans-serif" font-size="10" fill="#334155">• program_schedule.json</text>
+  <rect x="38" y="168" width="204" height="42" rx="6" fill="#e7f4ec"/>
+  <text x="140" y="186" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="700" fill="#1b5e3c">HTML内に &lt;script type="application/json"&gt;</text>
+  <text x="140" y="201" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#124028">として丸ごと埋め込むため CORS 回避！</text>
+
+  <line x1="256" y1="138" x2="294" y2="138" stroke="#1b5e3c" stroke-width="2" marker-end="url(#arr5)"/>
+
+  <!-- Output HTML -->
+  <rect x="298" y="54" width="224" height="168" rx="12" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+  <rect x="298" y="54" width="224" height="30" rx="12" fill="#0284c7"/>
+  <text x="410" y="74" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#ffffff">docs/ 公開ファイル群</text>
+  <text x="314" y="106" font-family="sans-serif" font-size="10" fill="#1e293b">• index.html（最新回プレーヤー）</text>
+  <text x="314" y="124" font-family="sans-serif" font-size="10" fill="#1e293b">• calendar.html（放送カレンダー）</text>
+  <text x="314" y="142" font-family="sans-serif" font-size="10" fill="#1e293b">• archive.html（過去回検索）</text>
+  <text x="314" y="160" font-family="sans-serif" font-size="10" fill="#1e293b">• cast.html / characters.html</text>
+  <text x="314" y="178" font-family="sans-serif" font-size="10" fill="#1e293b">• tech.html（この技術解説）</text>
+  <text x="314" y="198" font-family="sans-serif" font-size="10" font-weight="700" fill="#0369a1">ネット(Pages)でも PC直開き(file://)でも動作</text>
+
+  <line x1="522" y1="138" x2="560" y2="138" stroke="#1b5e3c" stroke-width="2" marker-end="url(#arr5)"/>
+
+  <!-- Browser Sync Loop -->
+  <rect x="564" y="54" width="272" height="168" rx="12" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+  <rect x="564" y="54" width="272" height="30" rx="12" fill="#d97706"/>
+  <text x="700" y="74" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#ffffff">ブラウザ内の同期ループ (JS)</text>
+  <rect x="578" y="96" width="244" height="46" rx="8" fill="#fffbeb"/>
+  <text x="700" y="114" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#92400e">① 音声再生 → timeupdate イベント</text>
+  <text x="700" y="131" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">現在秒数に合うセリフを自動ハイライト＆追従</text>
+  <rect x="578" y="156" width="244" height="50" rx="8" fill="#ecfeff"/>
+  <text x="700" y="174" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#0e7490">② 台本タップ → 逆引きシーク</text>
+  <text x="700" y="191" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#475569">audio.currentTime = start_sec で即ジャンプ</text>
+</svg>
+
+          <figcaption class="diagram-caption">図解⑤：build_site.py によるHTML生成と、ブラウザ内 audio.timeupdate による双方向シンク</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Chapter 6 -->
+    <section class="card tech-chapter" id="sec-6">
+      <div class="section-head">
+        <h2>6. ステップ5 ― クラウド自動放送局（GitHub Actions・cron遅延対策・Secrets）</h2>
+        <span class="hint">.github/workflows/daily-radio.yml ・ weekly-editorial.yml</span>
+      </div>
+      <div class="tech-body">
+        <p>
+          自分のパソコンの電源を毎朝6時に点けておかなくても、<strong>GitHub Actions</strong> というクラウド上の仮想コンピュータ（Ubuntu Linux）が決められた時刻に自動で起動し、台本生成から音声合成・GitHubへの保存・GitHub Pages公開までを実行します。
+        </p>
+        <div class="beginner-box">
+          <strong>🔰 かみ砕きメモ：2026年11月23日朝の遅延と「二重起動＋冪等（べきとう）設計」への強化</strong>
+          GitHub Actionsの無料枠の定期実行（<code>cron</code>）は、世界の多くの人が使う時間帯だと数十分〜数時間ほど実行キューで待たされることがあります。実際に11月23日朝は、従来の <code>06:35 JST</code> 設定がキュー混雑で7時までに発火しない事象が確認されました。そこで同日、① <strong>朝05:17 JST（約1時間40分の余裕）</strong> と <strong>朝06:13 JST（予備キャッチアップ）</strong> のオフピーク2段構えへ変更し、② <strong>すでに当日のJSONとMP3が存在すればスキップする「冪等（何度走っても壊れない）チェック」</strong>を組み込みました。さらに日曜の編集長AIも <strong>日曜昼12:17 JST</strong> に前倒ししてカレンダーページまで即更新します。
+        </div>
+        <figure class="diagram-figure">
+          
+<svg viewBox="0 0 860 245" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GitHub Actionsの自動運転タイムラインとcron遅延対策">
+  <rect width="860" height="245" rx="14" fill="#f8fafc"/>
+  <text x="430" y="28" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="800" fill="#0f172a">図解⑥：GitHub Actions「早朝二重起動 ＆ 冪等（べきとう）ガード」タイムライン</text>
+
+  <!-- Main Timeline Axis -->
+  <line x1="48" y1="125" x2="812" y2="125" stroke="#94a3b8" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Node 1: Sun 12:17 -->
+  <circle cx="110" cy="125" r="10" fill="#7c3aed"/>
+  <rect x="30" y="48" width="160" height="60" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.8"/>
+  <text x="110" y="68" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="800" fill="#5b21b6">日曜 12:17 JST</text>
+  <text x="110" y="84" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#334155">編集長AI 週次編成</text>
+  <text x="110" y="99" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#334155">カレンダー＆Pages更新</text>
+
+  <!-- Node 2: Daily 05:17 -->
+  <circle cx="320" cy="125" r="10" fill="#0284c7"/>
+  <rect x="230" y="144" width="180" height="74" rx="8" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.8"/>
+  <text x="320" y="164" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="800" fill="#0369a1">毎日 05:17 JST (第1起動)</text>
+  <text x="320" y="181" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#334155">7時放送へ約1時間40分の余裕</text>
+  <text x="320" y="196" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#334155">混雑を避けたオフピーク分 (:17)</text>
+  <text x="320" y="210" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="700" fill="#0284c7">台本生成・TTS合成・Pages公開</text>
+
+  <!-- Node 3: Daily 06:13 -->
+  <circle cx="545" cy="125" r="10" fill="#d97706"/>
+  <rect x="448" y="48" width="194" height="62" rx="8" fill="#fffbeb" stroke="#d97706" stroke-width="1.8"/>
+  <text x="545" y="68" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="800" fill="#b45309">毎日 06:13 JST (予備起動)</text>
+  <text x="545" y="84" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#334155">05:17が欠損・大幅遅延時に救済</text>
+  <text x="545" y="99" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="700" fill="#92400e">既に当日MP3があれば安全スキップ</text>
+
+  <!-- Node 4: 07:00 Broadcast -->
+  <circle cx="755" cy="125" r="12" fill="#1b5e3c"/>
+  <rect x="678" y="144" width="154" height="74" rx="8" fill="#e7f4ec" stroke="#1b5e3c" stroke-width="2"/>
+  <text x="755" y="166" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="800" fill="#124028">毎朝 07:00 JST</text>
+  <text x="755" y="185" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#1b5e3c">ラジオ番組 配信開始！</text>
+  <text x="755" y="203" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#334155">スマホ・PCからいつでも聴取可</text>
+</svg>
+
+          <figcaption class="diagram-caption">図解⑥：日曜12:17の編集長AI編成と、毎朝05:17／06:13の二重バックアップ自動運転タイムライン</figcaption>
+        </figure>
+        <div class="tech-spec-box">
+          <strong>🔐 APIキーの安全管理（GitHub Secrets）：</strong>
+          Gemini APIキーは課金や利用枠に直結するため、ソースコードや公開リポジトリには絶対に書き込みません。手元では <code>.gitignore</code> で除外された <code>.env</code> ファイル、クラウド上では暗号化金庫である <strong>GitHub Secrets</strong>（<code>GEMINI_API_KEY</code>）に保管し、実行中の仮想マシンのメモリ内だけに安全に渡しています。
+        </div>
+      </div>
+    </section>
+
+    <!-- Chapter 7 -->
+    <section class="card tech-chapter" id="sec-7">
+      <div class="section-head">
+        <h2>7. リポジトリ構成・主要ファイルリファレンス一覧</h2>
+        <span class="hint">設計書マップ</span>
+      </div>
+      <div class="tech-body">
+        <div class="tech-table-wrap">
+          <table class="tech-table">
+            <thead>
+              <tr>
+                <th>パス / ファイル</th>
+                <th>役割（何をする場所か）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>config/characters.json</code></td><td>小春・平蔵のキャラクター設定、TTSボイス名・パン定位・連続成長ルール</td></tr>
+              <tr><td><code>config/weekly_themes.json</code></td><td>月〜日の7つの防災テーマ、7人の専門家ゲスト設定、各10個の解説キーワードバンク</td></tr>
+              <tr><td><code>config/special_days.json</code></td><td>1/17、3/11、9/1などの年次防災記念日＆小平イベントのカウントダウン設定</td></tr>
+              <tr><td><code>config/program_schedule.json</code></td><td>先々までの専門家解説テーマ事前予定・リスナーリクエスト管理（カレンダーと連動）</td></tr>
+              <tr><td><code>data/editorial_plan.json</code></td><td>編集長AIが週単位で作成した週間テーマ軸・エリア別切り口・特別特集</td></tr>
+              <tr><td><code>data/topic_history.json</code> / <code>knowledge_log.json</code></td><td>28日小平ネタ・90日専門家用語の重複防止履歴と、小春たちの防災発見ノート</td></tr>
+              <tr><td><code>src/live_feeds.py</code></td><td>Open-Meteo（小平気象）＆ P2PQuake v2（地震）ライブ取得・緊急特集判定</td></tr>
+              <tr><td><code>src/schedule_calendar.py</code></td><td><code>jpholiday</code> 祝日判定、特別日・編集長プラン・事前編成統合、明日の予告生成</td></tr>
+              <tr><td><code>src/generate_episode.py</code></td><td>Phase A (Hydrogen検索) → Phase B (Neon台本) → Phase C (Hydrogen校閲) 実行本体</td></tr>
+              <tr><td><code>src/plan_weekly_editorial.py</code></td><td>日曜稼働の編集長AI（2週間先行リサーチ＆事前編成を尊重した週別マージ）</td></tr>
+              <tr><td><code>src/bgm_synth.py</code> / <code>src/build_radio.py</code></td><td>NumPy数式BGM/ジングル生成、Gemini 3.8 Flash TTS合成、先読みダッキング、-16 LUFS MP3出力</td></tr>
+              <tr><td><code>src/generate_tech_talk.py</code></td><td>小春×平蔵×ネオンさんの技術解説対談スクリプト生成（<code>data/tech_talk/</code> へ格納）</td></tr>
+              <tr><td><code>src/build_site.py</code> / <code>src/site_*.py</code></td><td><code>docs/</code> 配下の最新回・カレンダー・過去回・出演者・防災ノート・技術解説ページ静的生成</td></tr>
+              <tr><td><code>.github/workflows/daily-radio.yml</code> / <code>weekly-editorial.yml</code></td><td>毎日05:17/06:13 JST自動放送＆Pages公開、日曜12:17 JST週間編成＆カレンダー更新</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:0.55rem; margin-top:0.2rem;">
+          <a class="btn-link" href="index.html">最新回のラジオを聴く →</a>
+          <a class="btn-link" href="calendar.html">放送内容カレンダーを見る →</a>
+          <a class="btn-link" href="cast.html">出演者プロフィール＆ボイス →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>毎朝7時！こだいら防災＆まちラジオ（東京都小平市）／ AIオーケストレーション技術ガイド</footer>
+
+  <script type="application/json" id="tech-talk-data">{"has_audio": false, "audio_src": "audio/kodaira_radio_tech_talk_neon.mp3", "total_duration_sec": 888.18, "total_duration_formatted": "14:48", "segments": [{"id": "opening", "title": "特別編開局！AIオーケストレーター・ネオンさんって誰？", "bgm": "bgm_warm", "intro_jingle": "opening_jingle", "outro_jingle": null, "start_sec": 0.0, "end_sec": 114.21, "duration_sec": 114.21, "lines": [{"index": 0, "global_index": 0, "speaker": "koharu", "speaker_name": "小春", "text": "こんにちは！おはようの方もこんばんはの方も、特別編へようこそ！「毎朝7時！こだいら防災＆まちラジオ」、小春です！", "start_sec": 5.0, "end_sec": 14.82, "duration_sec": 9.82}, {"index": 1, "global_index": 1, "speaker": "heizo", "speaker_name": "平蔵", "text": "こんにちは、平蔵です。今日はリスナーさんから届いた「このラジオの技術的な仕組みを知りたい！」というリクエストにお応えして、特別解説対談をお届けします。", "start_sec": 15.14, "end_sec": 28.3, "duration_sec": 13.16}, {"index": 2, "global_index": 2, "speaker": "koharu", "speaker_name": "小春", "text": "わあ、ついに番組の裏側を大公開ですね！普段は小平の丸ポストやブルーベリーに夢中な私ですが、今日は初心者代表として気になることをどんどん聞いちゃいますよ！", "start_sec": 28.65, "end_sec": 41.98, "duration_sec": 13.33}, {"index": 3, "global_index": 3, "speaker": "heizo", "speaker_name": "平蔵", "text": "僕も一緒に整理しますね。ではさっそくお呼びしましょう。この番組の制作システム全体を設計し、指揮しているAIオーケストレーターのネオンさんです！", "start_sec": 42.3, "end_sec": 54.76, "duration_sec": 12.46}, {"index": 4, "global_index": 4, "speaker": "guest", "speaker_name": "ネオン", "text": "こんにちは、AIオーケストレーターのネオンです。小春さん、平蔵さん、そしてリスナーの皆さん、番組の舞台裏へようこそ。今日は楽しく分かりやすくお話ししますね。", "start_sec": 55.18, "end_sec": 68.86, "duration_sec": 13.68}, {"index": 5, "global_index": 5, "speaker": "koharu", "speaker_name": "小春", "text": "ネオンさん、よろしくお願いします！いきなり素朴な疑問なんですけど、「AIオーケストレーター」って、やっぱりオーケストラの指揮者みたいな役割なんですか？", "start_sec": 69.21, "end_sec": 82.37, "duration_sec": 13.16}, {"index": 6, "global_index": 6, "speaker": "guest", "speaker_name": "ネオン", "text": "まさにその通りです！1つのAIに全部を丸投げするのではなく、調査が得意なAI、執筆が得意なAI、声の演技をするAIや外部ツールを、指揮者のように適材適所で連携させる仕組みを「AIオーケストレーション」と呼びます。", "start_sec": 82.69, "end_sec": 101.29, "duration_sec": 18.6}, {"index": 7, "global_index": 7, "speaker": "koharu", "speaker_name": "小春", "text": "わあ、かっこいい！バイオリンやフルートが息を合わせて曲を奏でるみたいに、いろんなAIとプログラムが協力して毎朝の放送を作っているんですね！", "start_sec": 101.65, "end_sec": 113.76, "duration_sec": 12.11}]}, {"id": "data_and_research", "title": "ステップ1：毎朝の天気・地震・小平の話題をどうやって集めるの？", "bgm": "bgm_news", "intro_jingle": "guest_jingle", "outro_jingle": null, "start_sec": 114.21, "end_sec": 283.18, "duration_sec": 168.97, "lines": [{"index": 0, "global_index": 8, "speaker": "heizo", "speaker_name": "平蔵", "text": "ではステップ1から伺いましょう。毎朝、小平市の天気や地震情報、それに地域の話題まで、プログラムはどうやって最新データを集めているんですか？", "start_sec": 116.71, "end_sec": 128.82, "duration_sec": 12.11}, {"index": 1, "global_index": 9, "speaker": "guest", "speaker_name": "ネオン", "text": "ここで活躍するのが「API」という仕組みです。天気はOpen-Meteoに小平市の中心座標、緯度35.7285、経度139.4775を伝えて、現在の気温や3日分の予報を自動で受け取っています。", "start_sec": 129.16, "end_sec": 146.0, "duration_sec": 16.84}, {"index": 2, "global_index": 10, "speaker": "koharu", "speaker_name": "小春", "text": "待ってください！よく聞く「API」って、結局なんなんですか？レストランとか、身近なものに例えるとどんな感じなんでしょう？", "start_sec": 146.34, "end_sec": 156.87, "duration_sec": 10.53}, {"index": 3, "global_index": 11, "speaker": "guest", "speaker_name": "ネオン", "text": "いい質問ですね。APIはレストランの「注文票と受け渡し窓口」のようなものです。番組プログラムが「小平の天気をください」と決まった書式で注文すると、厨房にあたる外部サーバーが必要なデータだけを届けてくれます。", "start_sec": 157.19, "end_sec": 175.26, "duration_sec": 18.07}, {"index": 4, "global_index": 12, "speaker": "koharu", "speaker_name": "小春", "text": "あー！なるほど！人間が毎回サイトを見に行かなくても、プログラム同士が注文票でやり取りしてるんですね。地震の情報も同じ仕組みなんですか？", "start_sec": 175.61, "end_sec": 187.36, "duration_sec": 11.75}, {"index": 5, "global_index": 13, "speaker": "guest", "speaker_name": "ネオン", "text": "はい、地震はP2PQuake v2のAPIで直近48時間を確認しています。関東や東京で震度4以上、全国で震度5弱以上、または津波警報などがあると、自動で4分延長の緊急防災特集を発動する安全設計です。", "start_sec": 187.68, "end_sec": 205.05, "duration_sec": 17.37}, {"index": 6, "global_index": 14, "speaker": "heizo", "speaker_name": "平蔵", "text": "いざという時に自動で緊急特集に切り替わるのは心強いですね。それに、平日は約10分なのに、土日祝になると自動で15分拡大版になるのも賢いなと思っていました。", "start_sec": 205.41, "end_sec": 218.92, "duration_sec": 13.51}, {"index": 7, "global_index": 15, "speaker": "guest", "speaker_name": "ネオン", "text": "そこはjpholidayというライブラリが日本の祝日や振替休日を自動判定しているんです。さらに事前編成カレンダーのconfig/program_schedule.jsonを最優先で読み込み、リスナーリクエストも反映します。", "start_sec": 219.26, "end_sec": 238.73, "duration_sec": 19.47}, {"index": 8, "global_index": 16, "speaker": "heizo", "speaker_name": "平蔵", "text": "しかも、僕たちの「防災ノート」や過去の話題をしっかり覚えていますよね。同じ小平ネタや防災解説が何度もかぶらない工夫もあるんですか？", "start_sec": 239.08, "end_sec": 250.48, "duration_sec": 11.4}, {"index": 9, "global_index": 17, "speaker": "guest", "speaker_name": "ネオン", "text": "ええ、data/knowledge_log.jsonに毎回の学びを蓄積し、topic_history.jsonで小平の話題は直近28日間、専門家の解説キーワードは過去90日間の重複を自動チェックして避けているんです。", "start_sec": 250.8, "end_sec": 269.75, "duration_sec": 18.95}, {"index": 10, "global_index": 18, "speaker": "heizo", "speaker_name": "平蔵", "text": "なるほど！ステップ1のポイントは「APIで最新の天気と地震を取り、祝日判定と28日・90日の記憶で毎朝新鮮な土台を作っている」ということですね。", "start_sec": 270.1, "end_sec": 282.73, "duration_sec": 12.63}]}, {"id": "script_and_factcheck", "title": "ステップ2：3段階ハイブリッドAIと『嘘をつかない』自動校閲", "bgm": "bgm_feature", "intro_jingle": "stinger", "outro_jingle": null, "start_sec": 283.18, "end_sec": 466.5, "duration_sec": 183.32, "lines": [{"index": 0, "global_index": 19, "speaker": "koharu", "speaker_name": "小春", "text": "材料が集まったら、いよいよ台本作りですね！プログラムが勝手にニュースを読んで台本を書くって、1つのAIが一気にやってるんですか？", "start_sec": 285.38, "end_sec": 296.61, "duration_sec": 11.23}, {"index": 1, "global_index": 20, "speaker": "guest", "speaker_name": "ネオン", "text": "いいえ、ここがこだわりの3段階ハイブリッド構成です。AIは自分の記憶だけで答えると、もっともらしく嘘をつく「ハルシネーション」が起きることがあるため、まずPhase Aで調査専用のAIが動きます。", "start_sec": 296.93, "end_sec": 314.12, "duration_sec": 17.19}, {"index": 2, "global_index": 21, "speaker": "koharu", "speaker_name": "小春", "text": "ハルシネーション！AIのうっかり作り話のことですよね。それをどうやって防いでいるんですか？", "start_sec": 314.46, "end_sec": 322.35, "duration_sec": 7.89}, {"index": 3, "global_index": 22, "speaker": "guest", "speaker_name": "ネオン", "text": "Phase Aではgemini-4-hydrogenにGoogle検索を連携させる「グラウンディング」を使い、小平市の最新イベントや防災ニュースをリアルタイムに裏取りします。確かな事実メモを作ってから次へ渡すんです。", "start_sec": 322.65, "end_sec": 341.6, "duration_sec": 18.95}, {"index": 4, "global_index": 23, "speaker": "heizo", "speaker_name": "平蔵", "text": "調べてから書く、まさに取材記者と放送作家の分業ですね。ではPhase Bの執筆担当が、ネオンさんと同じ名前を持つモデルなんですか？", "start_sec": 341.96, "end_sec": 353.36, "duration_sec": 11.4}, {"index": 5, "global_index": 24, "speaker": "guest", "speaker_name": "ネオン", "text": "そうです！Phase Bではgemini-4-neonが、JSONという決まった形式の構造化出力で台本を書きます。レシピカードのように項目が決まっているからプログラムが迷わず読めて、表示用のtextと読み上げ用のtts_textも分離できます。", "start_sec": 353.68, "end_sec": 375.08, "duration_sec": 21.4}, {"index": 6, "global_index": 25, "speaker": "heizo", "speaker_name": "平蔵", "text": "画面には正確な英語や記号を出して、音声側にはひらがな読みや感情の合図を入れるわけですね。でも、さらにPhase Cのチェックもあるとか。", "start_sec": 375.44, "end_sec": 387.37, "duration_sec": 11.93}, {"index": 7, "global_index": 26, "speaker": "guest", "speaker_name": "ネオン", "text": "はい、Phase Cは自動ファクトチェックです。再びgemini-4-hydrogenがGoogle検索で台本全行を検査し、前年イベントの日付混同や防災の数値基準を裏取りして、問題箇所だけ外科的パッチで修正します。", "start_sec": 387.69, "end_sec": 406.46, "duration_sec": 18.77}, {"index": 8, "global_index": 27, "speaker": "koharu", "speaker_name": "小春", "text": "えっ、すごい厳重！でもちょっと待ってください。私、番組でよく初心者ならではのボケや勘違いを言っちゃうんですけど、あれも全部消されちゃうんですか？", "start_sec": 406.82, "end_sec": 419.45, "duration_sec": 12.63}, {"index": 9, "global_index": 28, "speaker": "guest", "speaker_name": "ネオン", "text": "ふふ、安心してください。小春さんの素朴な勘違いや質問でも、すぐ次のターンで平蔵さんや専門家が正しく訂正していれば、リスナーさんの理解を助ける演出として残す特別な校閲ルールを入れているんです。", "start_sec": 419.77, "end_sec": 436.44, "duration_sec": 16.67}, {"index": 10, "global_index": 29, "speaker": "koharu", "speaker_name": "小春", "text": "わあ、よかったー！私のうっかり発言もちゃんと番組の味として公認されてるんですね！ちなみに、1週間分の流れもAIが考えてるんですか？", "start_sec": 436.79, "end_sec": 448.19, "duration_sec": 11.4}, {"index": 11, "global_index": 30, "speaker": "guest", "speaker_name": "ネオン", "text": "ええ、毎週日曜のお昼にplan_weekly_editorial.pyという編集長AIが起動し、2週間先までリサーチして週間テーマ軸や特集を企画しています。これで毎日つながりのある番組になるんですよ。", "start_sec": 448.51, "end_sec": 466.05, "duration_sec": 17.54}]}, {"id": "tts_and_audio_dsp", "title": "ステップ3：声の演技とNumPy数式BGM・プロ音響マスタリングの秘密", "bgm": "bgm_warm", "intro_jingle": "stinger", "outro_jingle": null, "start_sec": 466.5, "end_sec": 641.09, "duration_sec": 174.59, "lines": [{"index": 0, "global_index": 31, "speaker": "heizo", "speaker_name": "平蔵", "text": "台本が完成したら、ステップ3は声と音の制作ですね。僕たちの掛け合いや笑い声まで自然に再現しているのは、どんな仕組みなんですか？", "start_sec": 468.7, "end_sec": 479.75, "duration_sec": 11.05}, {"index": 1, "global_index": 32, "speaker": "guest", "speaker_name": "ネオン", "text": "音声合成にはgemini-3.8-flash-ttsを使っています。笑い声などの感情タグと英語のstyle演技指示を渡し、最大2話者・4ターン・420文字のブロックに分けて会話ごと生成します。", "start_sec": 480.09, "end_sec": 496.93, "duration_sec": 16.84}, {"index": 2, "global_index": 33, "speaker": "heizo", "speaker_name": "平蔵", "text": "会話ブロック単位で作るから相槌のテンポが自然なんですね。しかも再ビルド時に無駄を減らす工夫や、音の立体感の仕掛けもあるとか。", "start_sec": 497.28, "end_sec": 508.16, "duration_sec": 10.88}, {"index": 3, "global_index": 34, "speaker": "guest", "speaker_name": "ネオン", "text": "ええ、ブロックごとにSHA-256ハッシュでキャッシュ保存し、同じセリフは再利用します。さらにステレオ配置で小春さんを少し左、平蔵さんを少し右にパンニングして、スタジオの対話感を演出しているんです。", "start_sec": 508.48, "end_sec": 525.85, "duration_sec": 17.37}, {"index": 4, "global_index": 35, "speaker": "koharu", "speaker_name": "小春", "text": "わあ、本当に向かい合って喋ってるみたいに聞こえるわけだ！あの、もう一つ気になってたんですけど、番組のBGMって人が弾いてるんじゃないんですか！？", "start_sec": 526.21, "end_sec": 538.84, "duration_sec": 12.63}, {"index": 5, "global_index": 36, "speaker": "guest", "speaker_name": "ネオン", "text": "実はbgm_synth.pyが、NumPyの数式だけでゼロから作曲・合成しているんです！外部音源をダウンロードしない「プロシージャル音源」だから、著作権の心配が一切ないんですよ。", "start_sec": 539.16, "end_sec": 554.77, "duration_sec": 15.61}, {"index": 6, "global_index": 37, "speaker": "koharu", "speaker_name": "小春", "text": "えーっ！数式から音楽ができるんですか！？数学のサイン波みたいなやつを足し算すると、あんな温かいエレキピアノの音になるんですか？", "start_sec": 555.12, "end_sec": 566.17, "duration_sec": 11.05}, {"index": 7, "global_index": 38, "speaker": "guest", "speaker_name": "ネオン", "text": "まさにその通りです！サイン波に倍音を足して音の減衰やリバーブを計算しています。しかも人の声とぶつからないよう、4,200Hzでローパス処理をかけて優しい響きに整えているんです。", "start_sec": 566.49, "end_sec": 581.93, "duration_sec": 15.44}, {"index": 8, "global_index": 39, "speaker": "heizo", "speaker_name": "平蔵", "text": "聞きやすさで言うと、僕たちが話し始めるとBGMがスッと下がって、話し終わると戻りますよね。あれもプログラムが自動で操作してるんですか？", "start_sec": 582.29, "end_sec": 594.04, "duration_sec": 11.75}, {"index": 9, "global_index": 40, "speaker": "guest", "speaker_name": "ネオン", "text": "はい、build_radio.pyが音声区間を0.16秒先読みしてBGMを下げる「先読みサイドチェインダッキング」を実行します。話し始める一瞬前にスッと下がるから、プロの音響ミキサーのように聴こえるんです。", "start_sec": 594.36, "end_sec": 612.43, "duration_sec": 18.07}, {"index": 10, "global_index": 41, "speaker": "heizo", "speaker_name": "平蔵", "text": "0.16秒の先読みですか！最後に、スマホでもイヤホンでもちょうどいい音量に整える仕上げ工程もあるんですよね？", "start_sec": 612.78, "end_sec": 622.25, "duration_sec": 9.47}, {"index": 11, "global_index": 42, "speaker": "guest", "speaker_name": "ネオン", "text": "ええ、仕上げにFFmpegで70Hz以下の低域ノイズをカットし、ポッドキャスト標準の-16 LUFSにマスタリングしてMP3を書き出します。同時に全セリフの秒数が入ったmanifest.jsonも作ります。", "start_sec": 622.57, "end_sec": 640.64, "duration_sec": 18.07}]}, {"id": "web_and_automation", "title": "ステップ4：サーバー不要の同期サイトと毎朝自動放送局のしくみ", "bgm": "bgm_news", "intro_jingle": "stinger", "outro_jingle": null, "start_sec": 641.09, "end_sec": 792.38, "duration_sec": 151.29, "lines": [{"index": 0, "global_index": 43, "speaker": "koharu", "speaker_name": "小春", "text": "音声とタイムラインができたら、いよいよリスナーさんに届けるステップ4ですね！これって大きなサーバーを借りてウェブサイトを動かしているんですか？", "start_sec": 643.29, "end_sec": 655.75, "duration_sec": 12.46}, {"index": 1, "global_index": 44, "speaker": "guest", "speaker_name": "ネオン", "text": "いいえ、サーバーもデータベースも不要です。build_site.pyがdocsフォルダにHTML一式を書き出す「静的サイト」構成なので、GitHub Pagesからそのまま軽快に配信できます。", "start_sec": 656.07, "end_sec": 672.91, "duration_sec": 16.84}, {"index": 2, "global_index": 45, "speaker": "koharu", "speaker_name": "小春", "text": "サーバーがいらないってすごいですね！しかも聴きながら台本が自動で光って、セリフをタップするとその場所にジャンプできるのがすごく便利です！", "start_sec": 673.26, "end_sec": 685.19, "duration_sec": 11.93}, {"index": 3, "global_index": 46, "speaker": "guest", "speaker_name": "ネオン", "text": "台本とタイムラインのJSONをHTML内に直接埋め込んでいるので、GitHub Pagesでもパソコンで直接開いてもエラーなく動き、audio要素のtimeupdateイベントが再生位置と台本を同期させます。", "start_sec": 685.51, "end_sec": 703.76, "duration_sec": 18.25}, {"index": 4, "global_index": 47, "speaker": "heizo", "speaker_name": "平蔵", "text": "ネット環境だけでなくローカルでも動く設計なんですね。そして毎朝すごいなと思うのが、誰かが早起きしてボタンを押さなくても、朝7時に番組が届く仕組みです。", "start_sec": 704.12, "end_sec": 717.28, "duration_sec": 13.16}, {"index": 5, "global_index": 48, "speaker": "guest", "speaker_name": "ネオン", "text": "そこを支えるのがCI/CDとGitHub Actionsです。daily-radio.ymlの設定に従い、日本時間の朝05:17に仮想マシンが自動起動して、取材からサイト公開まで全自動で行います。", "start_sec": 717.62, "end_sec": 734.81, "duration_sec": 17.19}, {"index": 6, "global_index": 49, "speaker": "heizo", "speaker_name": "平蔵", "text": "朝5時17分！きりのいい00分を避けているのは混雑対策ですよね。もし通信エラーなどで失敗しても、ちゃんと7時に間に合う仕掛けがあるんですか？", "start_sec": 735.16, "end_sec": 747.44, "duration_sec": 12.28}, {"index": 7, "global_index": 50, "speaker": "guest", "speaker_name": "ネオン", "text": "鋭いですね、まさにcronの混雑回避です！さらに06:13にもバックアップ実行を仕込み、生成済みならスキップする冪等設計にしています。日曜12:17の編集長AIも同じ仕組みで稼働しますよ。", "start_sec": 747.76, "end_sec": 764.25, "duration_sec": 16.49}, {"index": 8, "global_index": 51, "speaker": "heizo", "speaker_name": "平蔵", "text": "それからセキュリティ面も気になります。公開リポジトリだと、AIを使うための大切なAPIキーが外から見えてしまわないか心配ですよね。", "start_sec": 764.6, "end_sec": 776.0, "duration_sec": 11.4}, {"index": 9, "global_index": 52, "speaker": "guest", "speaker_name": "ネオン", "text": "大切なポイントです。APIキーはコードに絶対書かず、暗号化されたGitHub Secretsという金庫に隠しています。実行する瞬間だけ環境変数として安全に渡されるので安心ですよ。", "start_sec": 776.32, "end_sec": 791.93, "duration_sec": 15.61}]}, {"id": "ending", "title": "今日のまとめ＆番組カレンダー・技術解説ページのご案内", "bgm": "bgm_warm", "intro_jingle": "stinger", "outro_jingle": "outro_jingle", "start_sec": 792.38, "end_sec": 888.18, "duration_sec": 95.8, "lines": [{"index": 0, "global_index": 53, "speaker": "heizo", "speaker_name": "平蔵", "text": "いやあ、裏側を知ると毎朝の放送が何倍も面白くなりますね！今日のまとめは3つ。APIと記憶の土台、3段階ハイブリッドAIと自動校閲、そして数式BGMと自動放送局です！", "start_sec": 794.58, "end_sec": 808.97, "duration_sec": 14.39}, {"index": 1, "global_index": 54, "speaker": "koharu", "speaker_name": "小春", "text": "私、最初は「技術って難しそう」と思ってたんですけど、ネオンさんのたとえ話のおかげで「なるほど！」ってすごくワクワクしました！", "start_sec": 809.31, "end_sec": 820.19, "duration_sec": 10.88}, {"index": 2, "global_index": 55, "speaker": "guest", "speaker_name": "ネオン", "text": "そう言ってもらえて嬉しいです。いろんな技術を使っていますが、すべては「毎朝7時に小平の街の魅力とやさしい防災を安心して届ける」ための道具なんです。これからも裏方として支えていきますね。今日はありがとうございました！", "start_sec": 820.54, "end_sec": 839.31, "duration_sec": 18.77}, {"index": 3, "global_index": 56, "speaker": "koharu", "speaker_name": "小春", "text": "ネオンさん、素敵なメッセージありがとうございます！リスナーの皆さん、今日の仕組みを図解でじっくり読めるページも新しくできたんですよね？", "start_sec": 839.69, "end_sec": 851.44, "duration_sec": 11.75}, {"index": 4, "global_index": 57, "speaker": "heizo", "speaker_name": "平蔵", "text": "はい！番組サイトに新しく加わった「技術解説ページ」と、これからの特集予定が一目でわかる「放送カレンダー」ページも、ぜひ覗いてみてください。", "start_sec": 851.76, "end_sec": 863.87, "duration_sec": 12.11}, {"index": 5, "global_index": 58, "speaker": "koharu", "speaker_name": "小春", "text": "これからも小平の美味しい話題と、いざという時に役立つ防災情報を毎朝元気にお届けしますよ！", "start_sec": 864.21, "end_sec": 871.93, "duration_sec": 7.72}, {"index": 6, "global_index": 59, "speaker": "heizo", "speaker_name": "平蔵", "text": "それでは皆さん、今日も笑顔で、安全で素敵な一日をお過ごしください！また明日の朝7時にお会いしましょう！", "start_sec": 872.23, "end_sec": 881.18, "duration_sec": 8.95}]}]}</script>
+  <script>
+    (function () {
+      const data = JSON.parse(document.getElementById("tech-talk-data").textContent);
+      const audio = document.getElementById("tech-audio");
+      const btnPlay = document.getElementById("tech-btn-play");
+      const btnBack = document.getElementById("tech-btn-back");
+      const btnFwd = document.getElementById("tech-btn-fwd");
+      const btnAutoScroll = document.getElementById("tech-btn-autoscroll");
+      const btnSpeedCycle = document.getElementById("tech-btn-speed-cycle");
+      const scrubber = document.getElementById("tech-scrubber");
+      const timeReadout = document.getElementById("tech-time-readout");
+      const nowChapter = document.getElementById("tech-now-chapter");
+      const chapterList = document.getElementById("tech-chapter-list");
+      const transcriptBody = document.getElementById("tech-transcript-body");
+      const speedButtons = Array.from(document.querySelectorAll("#tech-speed-group button"));
+
+      const speedRates = [1.0, 1.15, 1.25, 1.5, 0.9];
+      let speedIdx = 0;
+      let autoScroll = true;
+      let isScrubbing = false;
+      let lastActiveLineIdx = -1;
+      let lastActiveSegId = null;
+
+      function fmtTime(sec) {
+        const s = Math.max(0, Math.floor(sec || 0));
+        return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+      }
+
+      if (data.has_audio) {
+        audio.src = data.audio_src;
+      } else {
+        document.getElementById("tech-audio-pending").style.display = "block";
+        btnPlay.disabled = true;
+        btnBack.disabled = true;
+        btnFwd.disabled = true;
+        scrubber.disabled = true;
+      }
+
+      const totalEst = data.total_duration_sec || 900;
+      scrubber.max = String(totalEst);
+      timeReadout.textContent = "00:00 / " + fmtTime(totalEst);
+
+      const chapterButtons = new Map();
+      const flatLines = [];
+
+      (data.segments || []).forEach((seg, segIdx) => {
+        const cBtn = document.createElement("button");
+        cBtn.type = "button";
+        cBtn.className = "chapter-btn";
+        const tcSpanTop = document.createElement("span");
+        tcSpanTop.className = "chapter-tc";
+        tcSpanTop.textContent = fmtTime(seg.start_sec) + " 〜 " + fmtTime(seg.end_sec);
+        const titleSpanTop = document.createElement("span");
+        titleSpanTop.className = "chapter-title";
+        titleSpanTop.textContent = (segIdx + 1) + ". " + seg.title;
+        cBtn.appendChild(tcSpanTop);
+        cBtn.appendChild(titleSpanTop);
+        cBtn.addEventListener("click", () => {
+          if (!data.has_audio) return;
+          audio.currentTime = seg.start_sec;
+          audio.play().catch(() => {});
+        });
+        chapterList.appendChild(cBtn);
+        chapterButtons.set(seg.id, cBtn);
+
+        const divEl = document.createElement("div");
+        divEl.className = "seg-divider";
+        const sTitle = document.createElement("span");
+        sTitle.textContent = (segIdx + 1) + ". " + seg.title;
+        const sTc = document.createElement("span");
+        sTc.className = "chapter-tc";
+        sTc.textContent = fmtTime(seg.start_sec);
+        divEl.appendChild(sTitle);
+        divEl.appendChild(sTc);
+        transcriptBody.appendChild(divEl);
+
+        (seg.lines || []).forEach((line) => {
+          const row = document.createElement("div");
+          row.className = "line-item";
+          const tc = document.createElement("span");
+          tc.className = "line-tc";
+          tc.textContent = fmtTime(line.start_sec);
+
+          const sp = document.createElement("span");
+          sp.className = "speaker-pill " + (line.speaker === "guest" ? "speaker-neon" : ("speaker-" + line.speaker));
+          sp.textContent = line.speaker_name;
+
+          const txt = document.createElement("span");
+          txt.className = "line-text";
+          txt.textContent = line.text;
+
+          row.appendChild(tc);
+          row.appendChild(sp);
+          row.appendChild(txt);
+          row.addEventListener("click", () => {
+            if (!data.has_audio) return;
+            audio.currentTime = line.start_sec;
+            audio.play().catch(() => {});
+          });
+          transcriptBody.appendChild(row);
+          flatLines.push({ ...line, segId: seg.id, segTitle: seg.title, el: row });
+        });
+      });
+
+      function applySpeed(rate) {
+        audio.playbackRate = rate;
+        btnSpeedCycle.textContent = rate + "x";
+        speedButtons.forEach((b) => {
+          b.classList.toggle("is-selected", parseFloat(b.dataset.rate || "1") === rate);
+        });
+      }
+
+      function updateSyncUI() {
+        const cur = audio.currentTime || 0;
+        const total = Number.isFinite(audio.duration) ? audio.duration : totalEst;
+        if (!isScrubbing) {
+          scrubber.max = String(total || totalEst);
+          scrubber.value = String(cur);
+        }
+        timeReadout.textContent = fmtTime(cur) + " / " + fmtTime(total);
+
+        if (!data.segments || data.segments.length === 0) return;
+        let activeSeg = data.segments[0];
+        for (const seg of data.segments) {
+          if (cur >= seg.start_sec) activeSeg = seg;
+        }
+        if (activeSeg && activeSeg.id !== lastActiveSegId) {
+          if (lastActiveSegId && chapterButtons.has(lastActiveSegId)) {
+            chapterButtons.get(lastActiveSegId).classList.remove("active");
+          }
+          if (chapterButtons.has(activeSeg.id)) {
+            chapterButtons.get(activeSeg.id).classList.add("active");
+          }
+          nowChapter.textContent = activeSeg.title;
+          lastActiveSegId = activeSeg.id;
+        }
+
+        let activeLineIdx = -1;
+        for (let i = 0; i < flatLines.length; i++) {
+          const l = flatLines[i];
+          if (cur >= l.start_sec && cur <= l.end_sec + 0.35) {
+            activeLineIdx = i;
+            break;
+          }
+          if (cur >= l.start_sec) activeLineIdx = i;
+        }
+        if (activeLineIdx !== lastActiveLineIdx) {
+          if (lastActiveLineIdx >= 0 && flatLines[lastActiveLineIdx]) {
+            flatLines[lastActiveLineIdx].el.classList.remove("active");
+          }
+          if (activeLineIdx >= 0 && flatLines[activeLineIdx]) {
+            const activeEl = flatLines[activeLineIdx].el;
+            activeEl.classList.add("active");
+            if (autoScroll && !audio.paused) {
+              activeEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
+            }
+          }
+          lastActiveLineIdx = activeLineIdx;
+        }
+      }
+
+      btnPlay.addEventListener("click", () => {
+        if (!data.has_audio) return;
+        if (audio.paused) audio.play().catch(() => {});
+        else audio.pause();
+      });
+      btnBack.addEventListener("click", () => {
+        if (!data.has_audio) return;
+        audio.currentTime = Math.max(0, audio.currentTime - 15);
+        updateSyncUI();
+      });
+      btnFwd.addEventListener("click", () => {
+        if (!data.has_audio) return;
+        const total = Number.isFinite(audio.duration) ? audio.duration : totalEst;
+        audio.currentTime = Math.min(total, audio.currentTime + 15);
+        updateSyncUI();
+      });
+      btnAutoScroll.addEventListener("click", () => {
+        autoScroll = !autoScroll;
+        btnAutoScroll.textContent = autoScroll ? "追従ON" : "追従OFF";
+        btnAutoScroll.classList.toggle("active-toggle", autoScroll);
+      });
+      speedButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const rate = parseFloat(btn.dataset.rate || "1");
+          const found = speedRates.indexOf(rate);
+          if (found >= 0) speedIdx = found;
+          applySpeed(rate);
+        });
+      });
+      btnSpeedCycle.addEventListener("click", () => {
+        speedIdx = (speedIdx + 1) % speedRates.length;
+        applySpeed(speedRates[speedIdx]);
+      });
+      scrubber.addEventListener("input", () => {
+        isScrubbing = true;
+        const total = Number.isFinite(audio.duration) ? audio.duration : totalEst;
+        timeReadout.textContent = fmtTime(Number(scrubber.value)) + " / " + fmtTime(total);
+      });
+      scrubber.addEventListener("change", () => {
+        audio.currentTime = Number(scrubber.value);
+        isScrubbing = false;
+        updateSyncUI();
+      });
+      audio.addEventListener("play", () => { btnPlay.textContent = "❚❚ 一時停止"; });
+      audio.addEventListener("pause", () => { btnPlay.textContent = "▶ 対談を再生"; });
+      audio.addEventListener("ended", () => { btnPlay.textContent = "▶ もう一度再生"; });
+      audio.addEventListener("timeupdate", updateSyncUI);
+      audio.addEventListener("loadedmetadata", updateSyncUI);
+    })();
+  </script>
+</body>
+</html>

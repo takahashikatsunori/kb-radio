@@ -102,14 +102,37 @@ def _match_editorial_guide(
     target_date_str: str,
     editorial_plan: dict[str, Any] | None,
 ) -> dict[str, Any] | None:
-    """Find daily editorial guidance matching target_date_str from weekly editorial_plan.json."""
+    """Find daily editorial guidance matching target_date_str from single- or multi-week editorial_plan.json."""
     if not editorial_plan:
         return None
     for g in editorial_plan.get("daily_guides") or []:
         if isinstance(g, dict) and g.get("date") == target_date_str:
             guide = dict(g)
-            guide["weekly_arc"] = editorial_plan.get("weekly_arc")
+            matched_arc = editorial_plan.get("weekly_arc")
+            for wk in editorial_plan.get("weeks") or []:
+                if (
+                    isinstance(wk, dict)
+                    and wk.get("week_start")
+                    and wk.get("week_end")
+                    and wk["week_start"] <= target_date_str <= wk["week_end"]
+                ):
+                    matched_arc = wk.get("weekly_arc") or matched_arc
+                    break
+            guide["weekly_arc"] = matched_arc
             return guide
+    return None
+
+
+def _match_program_schedule(
+    target_date_str: str,
+    program_schedule: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Find pre-planned daily expert theme & user-request entry from config/program_schedule.json."""
+    if not program_schedule:
+        return None
+    for entry in program_schedule.get("entries") or []:
+        if isinstance(entry, dict) and entry.get("date") == target_date_str:
+            return dict(entry)
     return None
 
 
@@ -118,6 +141,7 @@ def resolve_day_plan(
     themes: dict[str, Any],
     special_days: dict[str, Any],
     editorial_plan: dict[str, Any] | None = None,
+    program_schedule: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Compute weekday/holiday rules, target duration/chars, and active special countdown."""
     dt = datetime.strptime(target_date_str, "%Y-%m-%d").date()
@@ -146,6 +170,7 @@ def resolve_day_plan(
         base_edition = "平日レギュラー版（約10分）"
 
     editorial_guide = _match_editorial_guide(target_date_str, editorial_plan)
+    prog_sched = _match_program_schedule(target_date_str, program_schedule)
     scheduled_special = _match_special_day(dt, special_days)
     if scheduled_special is None and editorial_guide:
         ed_sp = editorial_guide.get("editorial_special")
@@ -204,6 +229,7 @@ def resolve_day_plan(
         "edition_label": edition_label,
         "scheduled_special": scheduled_special,
         "editorial_guide": editorial_guide,
+        "program_schedule": prog_sched,
     }
 
 
@@ -212,11 +238,18 @@ def resolve_tomorrow_preview(
     themes: dict[str, Any],
     special_days: dict[str, Any],
     editorial_plan: dict[str, Any] | None = None,
+    program_schedule: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Resolve tomorrow's broadcast plan to generate an accurate ending preview cue."""
     dt = datetime.strptime(target_date_str, "%Y-%m-%d").date()
     tmr_str = (dt + timedelta(days=1)).isoformat()
-    tmr = resolve_day_plan(tmr_str, themes, special_days, editorial_plan=editorial_plan)
+    tmr = resolve_day_plan(
+        tmr_str,
+        themes,
+        special_days,
+        editorial_plan=editorial_plan,
+        program_schedule=program_schedule,
+    )
     guest_name = tmr["day_cfg"]["guest"]["name"]
     theme_name = tmr["day_cfg"]["theme_name"]
     total_min = round(tmr["target_duration_sec"] / 60)
@@ -256,6 +289,10 @@ def resolve_tomorrow_preview(
     tmr_angle = str(tmr_guide.get("kodaira_angle") or "").strip()
     if tmr_angle:
         hint += f"（明日のまちネタ予定：{tmr_angle}）"
+    tmr_sched = tmr.get("program_schedule") or {}
+    tmr_topics = [str(t).strip() for t in (tmr_sched.get("expert_topics") or []) if str(t).strip()]
+    if tmr_topics:
+        hint += f"（明日の解説予定キーワード：{'／'.join(tmr_topics)}）"
 
     return {
         "date": tmr_str,
