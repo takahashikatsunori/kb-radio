@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from site_calendar_page import render_calendar_page
+from site_notebook_page import render_notebook_page
 from site_tech_page import render_tech_page
 
 JST = timezone(timedelta(hours=9))
@@ -2498,86 +2499,6 @@ def _render_cast_page(
 """
 
 
-def _render_characters_page(knowledge_log: dict[str, Any]) -> str:
-    payload = {
-        "entries": list(reversed(knowledge_log.get("entries", []))),
-    }
-    nav_html = _render_nav(
-        "",
-        "characters",
-        page_h1="防災ノート",
-        subhead="小春と平蔵が毎朝まとめる累積・防災＆こだいら発見ノート",
-    )
-    return f"""<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>防災ノート | 毎朝7時！こだいら防災＆まちラジオ</title>
-  <style>{COMMON_CSS}</style>
-</head>
-<body>
-  <header>
-    <div class="header-inner">
-      {nav_html}
-    </div>
-  </header>
-
-  <main class="container single">
-    <div class="card">
-      <div class="panel-body">
-        <div class="note-box" style="margin-bottom:0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.55rem;">
-          <div>
-            <strong>番組キャスター・専門家ゲストの紹介ページが新しくなりました</strong>
-            <div style="font-size:0.82rem; color:var(--muted);">小春・平蔵と曜日ゲスト7名のプロフィール＆自己紹介ボイスはこちら</div>
-          </div>
-          <a class="btn-link" href="cast.html">出演者紹介・声を聴く →</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="section-head">
-        <h2>累積「小春＆平蔵の防災・こだいら発見ノート」</h2>
-      </div>
-      <div class="panel-body" id="log-list"></div>
-    </div>
-  </main>
-
-  <footer>毎朝7時！こだいら防災＆まちラジオ（東京都小平市）</footer>
-
-  <script type="application/json" id="char-data">{_safe_json_for_html(payload)}</script>
-  <script>
-    (function () {{
-      const data = JSON.parse(document.getElementById("char-data").textContent);
-      const logList = document.getElementById("log-list");
-      data.entries.forEach((e) => {{
-        const box = document.createElement("div");
-        box.className = "note-box";
-        const head = document.createElement("strong");
-        head.textContent = e.date + "（" + e.weekday + "）テーマ: " + e.theme + " ／ ゲスト: " + e.guest_name;
-        const ul = document.createElement("ul");
-        (e.learned_points || []).forEach((pt) => {{
-          const li = document.createElement("li");
-          li.textContent = pt;
-          ul.appendChild(li);
-        }});
-        box.appendChild(head);
-        box.appendChild(ul);
-        if (e.kodaira_discovery) {{
-          const disc = document.createElement("div");
-          disc.textContent = "小平発見: " + e.kodaira_discovery;
-          box.appendChild(disc);
-        }}
-        logList.appendChild(box);
-      }});
-    }})();
-  </script>
-</body>
-</html>
-"""
-
-
 def build_site() -> None:
     """Build all docs/ pages for GitHub Pages and local file:// browsing plus script.md files."""
     ep_dirs = sorted(
@@ -2686,7 +2607,20 @@ def build_site() -> None:
         encoding="utf-8",
     )
     (DOCS_DIR / "characters.html").write_text(
-        _render_characters_page(knowledge_log),
+        render_notebook_page(
+            knowledge_log=knowledge_log,
+            bundles=bundles,
+            characters=characters,
+            themes=themes,
+            common_css=COMMON_CSS,
+            nav_html=_render_nav(
+                "",
+                "characters",
+                page_h1="防災ノート",
+                subhead="小春と平蔵が毎朝書きためる手書き・防災＆こだいら発見日記",
+            ),
+            safe_json_fn=_safe_json_for_html,
+        ),
         encoding="utf-8",
     )
     (DOCS_DIR / "tech.html").write_text(
