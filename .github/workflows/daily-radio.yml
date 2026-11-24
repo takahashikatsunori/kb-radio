@@ -2,9 +2,7 @@ name: Daily Kodaira Bousai Radio (07:00 JST)
 
 on:
   schedule:
-    # 20:17 UTC = 05:17 JST (primary: ~1h40m buffer against GitHub Actions cron queue lag)
-    - cron: '17 20 * * *'
-    # 21:13 UTC = 06:13 JST (backup: automatic catch-up if primary cron is dropped; no-op if already built)
+    # 21:13 UTC = 06:13 JST (failsafe backup if local desktop Antigravity 05:15 JST run did not push; no-op / $0 if already built)
     - cron: '13 21 * * *'
   workflow_dispatch:
     inputs:

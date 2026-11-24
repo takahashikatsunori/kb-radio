@@ -246,13 +246,13 @@ def get_verified_kodaira_links() -> list[dict[str, str]]:
         {
             "category": "防災マップ",
             "title": "小平市防災マップ（避難所・給水拠点・備え）",
-            "url": "https://www.city.kodaira.tokyo.jp/kurashi/012/012389.html",
+            "url": "https://www.city.kodaira.tokyo.jp/kurashi/036/036337.html",
             "note": "避難場所や防災施設、安否確認方法がまとまった小平市公式ページ",
         },
         {
             "category": "ハザードマップ",
             "title": "小平市ハザードマップ（浸水予想・土砂災害警戒）",
-            "url": "https://www.city.kodaira.tokyo.jp/kurashi/012/012467.html",
+            "url": "https://www.city.kodaira.tokyo.jp/kurashi/012/012389.html",
             "note": "大雨や台風時の浸水リスクやマイ・タイムライン作成に活用",
         },
         {

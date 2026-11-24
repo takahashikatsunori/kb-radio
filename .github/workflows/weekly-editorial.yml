@@ -1,8 +1,8 @@
-name: Weekly Chief Editor Plan (Sun 12:17 JST)
+name: Weekly Chief Editor Plan (Sun 12:17 JST Failsafe)
 
 on:
   schedule:
-    # 03:17 UTC Sunday = 12:17 JST Sunday (12h buffer before Monday; off-peak minute avoids cron congestion)
+    # 03:17 UTC Sunday = 12:17 JST Sunday (failsafe backup if local desktop Antigravity Sun 11:30 JST run did not push; no-op if already planned)
     - cron: '17 3 * * 0'
   workflow_dispatch:
     inputs:
@@ -10,6 +10,11 @@ on:
         description: '対象週の開始日 (YYYY-MM-DD, 空欄の場合は次の月曜日 JST)'
         required: false
         default: ''
+      force_replan:
+        description: '対象週の週間編成がすでにある場合も再生成する'
+        type: boolean
+        required: false
+        default: false
       research_model:
         description: 'Phase 1 リサーチモデル (デフォルト: gemini-4-hydrogen)'
         required: false
@@ -31,6 +36,8 @@ concurrency:
 jobs:
   plan:
     runs-on: ubuntu-latest
+    outputs:
+      already_planned: ${{ steps.meta.outputs.already_planned }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -46,15 +53,46 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Resolve target week & idempotency check
+        id: meta
+        env:
+          PYTHONUTF8: '1'
+          INPUT_START_DATE: ${{ inputs.start_date }}
+          FORCE_REPLAN: ${{ inputs.force_replan }}
+        run: |
+          python - <<'PY'
+          import json, os, sys
+          from datetime import datetime
+          from pathlib import Path
+          sys.path.insert(0, "src")
+          from generate_episode import JST
+          from plan_weekly_editorial import EDITORIAL_PLAN_PATH, _default_next_monday
+
+          existing = json.loads(EDITORIAL_PLAN_PATH.read_text(encoding="utf-8")) if EDITORIAL_PLAN_PATH.exists() else None
+          input_start = os.environ.get("INPUT_START_DATE", "").strip()
+          target_start = input_start or _default_next_monday(datetime.now(JST), existing_plan=existing).isoformat()
+          existing_weeks = {
+              str(w.get("week_start"))
+              for w in ((existing or {}).get("weeks") or [])
+              if isinstance(w, dict) and w.get("week_start")
+          }
+          if not existing_weeks and existing and existing.get("week_start"):
+              existing_weeks.add(str(existing["week_start"]))
+
+          already = (os.environ.get("FORCE_REPLAN") != "true") and (target_start in existing_weeks)
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write(f"target_start={target_start}\n")
+              fh.write(f"already_planned={'true' if already else 'false'}\n")
+          print(f"Target week start: {target_start} | already_planned={already}")
+          PY
+
       - name: Generate weekly editorial plan (Hydrogen + Neon Chief Editor)
+        if: steps.meta.outputs.already_planned != 'true'
         env:
           PYTHONUTF8: '1'
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          START_FLAG=""
-          if [ -n "${{ inputs.start_date }}" ]; then
-            START_FLAG="--start-date ${{ inputs.start_date }}"
-          fi
+          START_FLAG="--start-date ${{ steps.meta.outputs.target_start }}"
           RESEARCH_MODEL="${{ inputs.research_model }}"
           PLANNER_MODEL="${{ inputs.planner_model }}"
           [ -z "$RESEARCH_MODEL" ] && RESEARCH_MODEL="gemini-4-hydrogen"
@@ -65,12 +103,14 @@ jobs:
             $START_FLAG
 
       - name: Rebuild GitHub Pages portal with updated Calendar
+        if: steps.meta.outputs.already_planned != 'true'
         env:
           PYTHONUTF8: '1'
         run: |
           python src/build_site.py
 
       - name: Commit & push updated editorial_plan.json and docs
+        if: steps.meta.outputs.already_planned != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -84,15 +124,18 @@ jobs:
           fi
 
       - name: Configure GitHub Pages
+        if: steps.meta.outputs.already_planned != 'true'
         uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
+        if: steps.meta.outputs.already_planned != 'true'
         uses: actions/upload-pages-artifact@v4
         with:
           path: docs
 
   deploy:
     needs: plan
+    if: needs.plan.outputs.already_planned != 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
