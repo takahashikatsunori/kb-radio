@@ -39,6 +39,7 @@ DOCS_AUDIO_DIR = ROOT_DIR / "docs" / "audio"
 GEMINI_TTS_MODEL = "gemini-3.8-flash-tts"
 MAX_BLOCK_TURNS = 4
 MAX_BLOCK_CHARS = 420
+MAX_MULTI_TURN_LINE_CHARS = 200
 GEMINI_TTS_TIMEOUT_SEC = 65
 GEMINI_TTS_HARD_WATCHDOG_SEC = 80
 
@@ -101,6 +102,16 @@ def _group_lines_into_blocks(lines: list[dict[str, Any]]) -> list[list[dict[str,
         sp = line["speaker"]
         spoken = line.get("tts_text") or line["text"]
         line_len = len(spoken)
+        is_solo_line = bool(line.get("tts_solo")) or line_len > MAX_MULTI_TURN_LINE_CHARS
+
+        if is_solo_line:
+            if cur_block:
+                blocks.append(cur_block)
+                cur_block = []
+                cur_speakers = set()
+                cur_chars = 0
+            blocks.append([line])
+            continue
 
         next_speakers = cur_speakers | {sp}
         would_exceed_speakers = len(next_speakers) > 2
