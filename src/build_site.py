@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from site_calendar_page import render_calendar_page
+from site_listen_page import render_listen_page
 from site_notebook_page import render_notebook_page
 from site_tech_page import render_tech_page
 
@@ -1177,7 +1178,7 @@ def _render_episode_page(
   </main>
 
   <footer>
-    毎朝7時！こだいら防災＆まちラジオ（東京都小平市）／ 小春 ＆ 平蔵
+    毎朝7時！こだいら防災＆まちラジオ（東京都小平市）／ 小春 ＆ 平蔵 ／ <a href="{root_prefix}listen.html">シンプル聴取ページ</a>
   </footer>
 
   <script type="application/json" id="episode-data">{_safe_json_for_html(payload)}</script>
@@ -2579,6 +2580,15 @@ def build_site() -> None:
 
     (DOCS_DIR / "index.html").write_text(
         _render_episode_page(latest, bundles, root_prefix="", is_home=True),
+        encoding="utf-8",
+    )
+    (DOCS_DIR / "listen.html").write_text(
+        render_listen_page(
+            bundles=sorted_for_latest,
+            characters=characters,
+            themes=themes,
+            safe_json_fn=_safe_json_for_html,
+        ),
         encoding="utf-8",
     )
     (DOCS_DIR / "calendar.html").write_text(

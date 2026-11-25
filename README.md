@@ -27,7 +27,7 @@
 - **Gemini 3.8 Flash TTS による豊かな感情表現**
   - `<laugh>`・`<chuckle>`・`<giggle>`・`<short pause>` 等のインラインタグと `speech_metadata.style` 演技指示、2話者マルチスピーカー合成により、笑い・うなずき・自然な間合いを再現します。
 - **ローカルPC ＆ GitHub Pages 両対応ポータル（`docs/`）**
-  - 最新回プレーヤー（同期台本・チャプター・関連リンク・防災ノート）、[放送内容カレンダー](docs/calendar.html)、[バックナンバー一覧](docs/archive.html)、[出演者紹介](docs/cast.html)、[累積防災ノート](docs/characters.html)、[番組のしくみ・技術解説＆15分対談](docs/tech.html) を生成します。
+  - 最新回プレーヤー（同期台本・チャプター・関連リンク・防災ノート）、[シンプル聴取ページ](docs/listen.html)、[放送内容カレンダー](docs/calendar.html)、[バックナンバー一覧](docs/archive.html)、[出演者紹介](docs/cast.html)、[累積防災ノート](docs/characters.html)、[番組のしくみ・技術解説＆15分対談](docs/tech.html) を生成します。
 
 ---
 
