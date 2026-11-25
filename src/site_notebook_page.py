@@ -322,14 +322,21 @@ body {
 }
 .nb-cover-title {
   margin: 0 0 0.35rem;
-  font-size: clamp(1.26rem, 3.3vw, 1.72rem);
+  font-size: clamp(0.98rem, 4.4vw, 1.72rem);
   font-weight: 600;
   line-height: 1.35;
   color: #2f261c;
+  text-wrap: balance;
 }
 .nb-title-underline {
   background: linear-gradient(transparent 68%, rgba(225, 29, 72, 0.22) 68%);
   padding: 0 0.15rem;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.nb-title-chunk {
+  display: inline-block;
+  white-space: nowrap;
 }
 .nb-cover-desc {
   margin: 0 0 0.75rem;
@@ -1161,7 +1168,7 @@ $NOTEBOOK_CSS</style>
       <div class="nb-cover-top">
         <div>
           <span class="nb-cover-kicker">毎朝の学びを綴るコミュニティ日記</span>
-          <h2 class="nb-cover-title nb-hand"><span class="nb-title-underline">小春＆平蔵の 防災・こだいら発見ノート</span></h2>
+          <h2 class="nb-cover-title nb-hand"><span class="nb-title-underline"><span class="nb-title-chunk">小春＆平蔵の</span> <span class="nb-title-chunk">防災・こだいら発見ノート</span></span></h2>
           <p class="nb-cover-desc">
             毎朝7時の放送で専門家から教わった防災の知恵と、小平のまちの魅力を1日1ページずつ手書き風に記録しています。メモの四角（□）をタップすると、おうち点検の「確認済み」チェックも残せます。
           </p>
