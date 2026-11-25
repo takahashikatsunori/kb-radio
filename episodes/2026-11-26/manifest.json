@@ -8,8 +8,8 @@
     "tts_engine": "gemini",
     "tts_model": "gemini-3.8-flash-tts",
     "tts_requests": 21,
-    "total_duration_sec": 903.55,
-    "total_duration_formatted": "15:04",
+    "total_duration_sec": 905.75,
+    "total_duration_formatted": "15:06",
     "line_count": 53
   },
   "segments": [
@@ -546,8 +546,8 @@
       "outro_jingle": "outro_jingle",
       "start_sec": 766.105,
       "speech_start_sec": 768.305,
-      "end_sec": 903.055,
-      "duration_sec": 136.95,
+      "end_sec": 905.255,
+      "duration_sec": 139.15,
       "lines": [
         {
           "index": 0,
@@ -596,8 +596,8 @@
           "speaker_name": "平蔵",
           "text": "明日も「小平市 ペット防災相談会＆オリジナル防災マップ講座 締切スペシャル」あと1日のカウントダウン特別コーナー付き約13分拡大版！赤レンガと紅葉の大沼町「ガスミュージアム」企画展「時代を創るモダン・テクノロジー」と小平のうどん・製粉文化、ファームショップ中村園で誕生し切るとハート形の旬の黄色いキウイ「東京ゴールド」と12月7日までの「小平くだもの野菜スタンプラリー」、明日開幕の平櫛田中彫刻美術館「福来る」展もご紹介します。",
           "start_sec": 836.225,
-          "end_sec": 874.17,
-          "duration_sec": 37.945
+          "end_sec": 876.37,
+          "duration_sec": 40.145
         },
         {
           "index": 5,
@@ -605,8 +605,8 @@
           "speaker": "koharu",
           "speaker_name": "小春",
           "text": "ハート形のキウイに福来る展、明日も楽しみですね！今日はあかしあ通りのパンを想像しながら、足首ぐるぐる運動で元気に出発しましょー！",
-          "start_sec": 874.49,
-          "end_sec": 887.027,
+          "start_sec": 876.69,
+          "end_sec": 889.227,
           "duration_sec": 12.537
         },
         {
@@ -615,8 +615,8 @@
           "speaker": "heizo",
           "speaker_name": "平蔵",
           "text": "寒暖差に気をつけて水分もしっかりとって、今日も笑顔でいってらっしゃい！お気をつけて！",
-          "start_sec": 887.027,
-          "end_sec": 895.255,
+          "start_sec": 889.227,
+          "end_sec": 897.455,
           "duration_sec": 8.228
         }
       ]
