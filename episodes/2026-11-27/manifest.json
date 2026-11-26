@@ -1,0 +1,585 @@
+{
+  "meta": {
+    "title": "毎朝7時！こだいら防災＆まちラジオ",
+    "subtitle": "第6回・2026-11-27（金曜日）朝7時号 ― ガスミュージアムの紅葉＆旬の東京ゴールド！ローリングストック・カセットボンベ7年の法則＆明日28日締切直前スペシャル",
+    "episode_date": "2026-11-27",
+    "episode_number": 6,
+    "output_filename": "kodaira_radio_20261127.mp3",
+    "tts_engine": "gemini",
+    "tts_model": "gemini-3.8-flash-tts",
+    "tts_requests": 21,
+    "total_duration_sec": 799.39,
+    "total_duration_formatted": "13:19",
+    "line_count": 49
+  },
+  "segments": [
+    {
+      "id": "opening",
+      "title": "朝7時のごあいさつ＆今朝の小平お天気・地震と全国ニュース",
+      "bgm": "bgm_warm",
+      "intro_jingle": "opening_jingle",
+      "outro_jingle": null,
+      "start_sec": 0.0,
+      "speech_start_sec": 5.0,
+      "end_sec": 104.42,
+      "duration_sec": 104.42,
+      "lines": [
+        {
+          "index": 0,
+          "global_index": 0,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "おはようございます！11月27日、金曜日、朝7時です！「毎朝7時！こだいら防災＆まちラジオ」第6回、小春です！",
+          "start_sec": 5.0,
+          "end_sec": 15.308,
+          "duration_sec": 10.308
+        },
+        {
+          "index": 1,
+          "global_index": 1,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "おはようございます、平蔵です。11月最後の金曜日ですね。今朝の小平は昨日より少し冷え込みが和らいでいます。",
+          "start_sec": 15.308,
+          "end_sec": 25.242,
+          "duration_sec": 9.934
+        },
+        {
+          "index": 2,
+          "global_index": 2,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "昨日は朝3度台でしたもんね！今朝のお天気と週末予報、全国ニュースも教えてください！",
+          "start_sec": 25.242,
+          "end_sec": 32.927,
+          "duration_sec": 7.685
+        },
+        {
+          "index": 3,
+          "global_index": 3,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "今朝5時台の小平市は快晴、6.1度、湿度78パーセント。今日は曇りで最高15.8度、最低6.1度、降水確率19パーセント。寒暖差に備え服装調整を。沖縄では前線で激しい雨や土砂災害への警戒が続き、明日の小平も小雨で降水確率100パーセント、最高18.1度。日曜は晴れですが寒気で最高12.5度、最低5.7度と冷え込みます。",
+          "start_sec": 32.927,
+          "end_sec": 62.915,
+          "duration_sec": 29.988
+        },
+        {
+          "index": 4,
+          "global_index": 4,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "地震は今朝4時33分ごろ父島近海でマグニチュード5.5、父島・母島で震度2。未明に石川県能登地方、昨夜は熊本県天草・芦北地方や陸奥湾で震度2、昨日昼は茨城県南部で震度1。いずれも津波の心配はありません。",
+          "start_sec": 63.255,
+          "end_sec": 86.782,
+          "duration_sec": 23.527
+        },
+        {
+          "index": 5,
+          "global_index": 5,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "ありがとうございます！今日は約13分の特別コーナー拡大版！大沼町・鈴木町の紅葉と旬グルメ、冬の備蓄術、明日28日の締切直前スペシャルをお届けします！",
+          "start_sec": 86.782,
+          "end_sec": 104.02,
+          "duration_sec": 17.238
+        }
+      ]
+    },
+    {
+      "id": "kodaira_life",
+      "title": "大沼町・鈴木町の晩秋めぐり！ガスミュージアム紅葉＆東京ゴールド＆本日開幕「福来る」展",
+      "bgm": "bgm_news",
+      "intro_jingle": "stinger",
+      "outro_jingle": null,
+      "start_sec": 104.42,
+      "speech_start_sec": 106.62,
+      "end_sec": 281.185,
+      "duration_sec": 176.765,
+      "lines": [
+        {
+          "index": 0,
+          "global_index": 6,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "今日のまちネタは大沼町・鈴木町エリア！まず訪ねたいのが、大沼町4丁目の「ガスミュージアム（がす資料館）」です。",
+          "start_sec": 106.62,
+          "end_sec": 117.845,
+          "duration_sec": 11.225
+        },
+        {
+          "index": 1,
+          "global_index": 7,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "花小金井駅北口からバスで「ガスミュージアム入口」下車すぐの赤レンガ洋館ですよね！紅葉も見頃ですけど、立派だから入館料は高いんですか？",
+          "start_sec": 117.845,
+          "end_sec": 131.314,
+          "duration_sec": 13.469
+        },
+        {
+          "index": 2,
+          "global_index": 8,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "なんと入館無料、無料駐車場もあります！明治42年築の旧本郷出張所を復元移築した「ガス灯館」と、明治45年築の旧千住工場計量器室を移築した「くらし館」が並び、紅葉との対比が見事なんです。",
+          "start_sec": 131.314,
+          "end_sec": 150.09,
+          "duration_sec": 18.776
+        },
+        {
+          "index": 3,
+          "global_index": 9,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "明治の赤レンガを見られて無料なんですか！？開催中の企画展も面白そうですよね！",
+          "start_sec": 150.09,
+          "end_sec": 157.845,
+          "duration_sec": 7.755
+        },
+        {
+          "index": 4,
+          "global_index": 10,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "12月25日金曜までガス灯館2階で「時代を創るモダン・テクノロジー」を開催中。都市ガスや鉄道史に加え、製粉ミュージアム協力で武蔵野・小平のうどん文化も紹介。10時〜17時で最終入館16時30分まで、月曜休館で月曜祝日の翌日が振替休館。今週は24日火曜が振替休館でしたから、今日金曜と週末は開館です！",
+          "start_sec": 158.125,
+          "end_sec": 188.665,
+          "duration_sec": 30.54
+        },
+        {
+          "index": 5,
+          "global_index": 11,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "うどん文化まで！さらに大沼町6丁目「ファームショップ中村園」発祥の黄色いキウイ「東京ゴールド」も今が旬ですよね！縦に切ると断面がハート形で平均糖度15〜16パーセント！鈴木町の直売所めぐりも楽しいし、直売所で買えば12月7日までの「小平くだもの野菜スタンプラリー」のスタンプがもらえますよね？",
+          "start_sec": 188.665,
+          "end_sec": 218.59,
+          "duration_sec": 29.925
+        },
+        {
+          "index": 6,
+          "global_index": 12,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "あ、そこ要注意！直売所デジタルスタンプラリーは11月22日に終了していて、12月7日月曜まで開催中の「小平くだもの野菜スタンプラリー」は市内の参加飲食店で小平産メニューを異なる2店舗で食べて集める企画なんです。抽選70名に7,000円相当の小平産農産物セットが当たり、応募は12月16日必着ですよ。",
+          "start_sec": 218.87,
+          "end_sec": 247.981,
+          "duration_sec": 29.111
+        },
+        {
+          "index": 7,
+          "global_index": 13,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "なるほど、直売所は旬のお買い物、スタンプラリーは飲食店で小平グルメですね！中村園さんは不定休・雨天休業なので事前確認がおすすめとのこと！",
+          "start_sec": 247.981,
+          "end_sec": 261.267,
+          "duration_sec": 13.286
+        },
+        {
+          "index": 8,
+          "global_index": 14,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "さらに本日11月27日金曜から来年2月14日まで、学園西町の小平市平櫛田中彫刻美術館で企画展「福来る」が開幕！大黒・恵比寿など縁起の良い作品や書が集結。10時〜16時、一般300円、毎週火曜休館です。",
+          "start_sec": 261.267,
+          "end_sec": 280.805,
+          "duration_sec": 19.538
+        }
+      ]
+    },
+    {
+      "id": "guest_talk",
+      "title": "出雲健太さんと学ぶ！ローリングストック＆フェーズフリーとカセットボンベ7年の法則",
+      "bgm": "bgm_warm",
+      "intro_jingle": "guest_jingle",
+      "outro_jingle": null,
+      "start_sec": 281.185,
+      "speech_start_sec": 283.685,
+      "end_sec": 466.265,
+      "duration_sec": 185.08,
+      "lines": [
+        {
+          "index": 0,
+          "global_index": 15,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "ここからは金曜テーマ「食・備蓄・ライフライン」！ゲストはライフライン防災研究家の出雲健太さんです！",
+          "start_sec": 283.685,
+          "end_sec": 291.974,
+          "duration_sec": 8.289
+        },
+        {
+          "index": 1,
+          "global_index": 16,
+          "speaker": "guest",
+          "speaker_name": "出雲 健太",
+          "text": "おはようございます、出雲健太です！ガスミュージアムのエネルギー史に小平うどん、ハート形の東京ゴールドまで、お腹が空くお話でしたね！",
+          "start_sec": 291.974,
+          "end_sec": 302.97,
+          "duration_sec": 10.996
+        },
+        {
+          "index": 2,
+          "global_index": 17,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "今日は冬の停電でも温かい食卓を守る「ローリングストックとフェーズフリー」、そして「カセットコンロとボンベ」の備えを教えてください！",
+          "start_sec": 303.29,
+          "end_sec": 314.824,
+          "duration_sec": 11.534
+        },
+        {
+          "index": 3,
+          "global_index": 18,
+          "speaker": "guest",
+          "speaker_name": "出雲 健太",
+          "text": "まず「フェーズフリー」は、日常と非常時の境目をなくし、普段の便利なモノや暮らしをそのまま災害時にも役立てる考え方。その代表が農林水産省も推奨する「ローリングストック」です。",
+          "start_sec": 314.824,
+          "end_sec": 330.085,
+          "duration_sec": 15.261
+        },
+        {
+          "index": 4,
+          "global_index": 19,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "普段食べるパックご飯や缶詰、乾麺のうどんなどを少し多めに買い、古い順に食べて買い足す循環備蓄ですね。",
+          "start_sec": 330.425,
+          "end_sec": 339.823,
+          "duration_sec": 9.398
+        },
+        {
+          "index": 5,
+          "global_index": 20,
+          "speaker": "guest",
+          "speaker_name": "出雲 健太",
+          "text": "その通り！目安は「最低3日分、できれば1週間分×人数分」。支援物資到着に3日以上、流通やインフラ復旧には1週間以上かかることが多いからです。日持ちする根菜やキウイ、小平名物の乾麺うどんにレトルトつゆを組み合わせれば、冬でもホッとする一杯が作れますよ！",
+          "start_sec": 339.823,
+          "end_sec": 363.32,
+          "duration_sec": 23.497
+        },
+        {
+          "index": 6,
+          "global_index": 21,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "あったかうどん最高！うち、10年以上前のカセットコンロと新品のボンベが戸棚に眠ってるんですけど、未使用ならずっと使えますよね？",
+          "start_sec": 363.67,
+          "end_sec": 374.266,
+          "duration_sec": 10.596
+        },
+        {
+          "index": 7,
+          "global_index": 22,
+          "speaker": "guest",
+          "speaker_name": "出雲 健太",
+          "text": "おっと小春さん、ストップです！未使用でも内部のゴムパッキンが経年劣化し、ガス漏れや引火の原因になります！",
+          "start_sec": 374.266,
+          "end_sec": 383.013,
+          "duration_sec": 8.747
+        },
+        {
+          "index": 8,
+          "global_index": 23,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "ええっ、使ってなくても劣化するんですか！？使用期限は何年なんでしょう……？",
+          "start_sec": 383.013,
+          "end_sec": 389.236,
+          "duration_sec": 6.223
+        },
+        {
+          "index": 9,
+          "global_index": 24,
+          "speaker": "guest",
+          "speaker_name": "出雲 健太",
+          "text": "日本ガス石油機器工業会の目安では、ボンベは「製造後約7年以内」、コンロ本体は「製造後約10年」が買い替え目安！10月7日は10年と7年で「カセットこんろとボンベの日」なんです。ボンベは缶の底の8桁数字、コンロは側面シールで製造年月を確認できます。",
+          "start_sec": 389.236,
+          "end_sec": 409.925,
+          "duration_sec": 20.689
+        },
+        {
+          "index": 10,
+          "global_index": 25,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "覚えやすいですね！備蓄本数の目安と、使うときのNG行動も教えてください。",
+          "start_sec": 410.275,
+          "end_sec": 417.047,
+          "duration_sec": 6.772
+        },
+        {
+          "index": 11,
+          "global_index": 26,
+          "speaker": "guest",
+          "speaker_name": "出雲 健太",
+          "text": "目安は「1人1週間あたり約6本」。週末のお鍋やあったかうどん作りで古いボンベから使って買い足しましょう！そして鉄則は「ボンベを絶対に加熱させない」こと。2台並べ、ボンベカバーを覆う大鍋、IHやガス台の上への設置、アルミホイル巻きは輻射熱で破裂の恐れがあり厳禁です。",
+          "start_sec": 417.047,
+          "end_sec": 441.88,
+          "duration_sec": 24.833
+        },
+        {
+          "index": 12,
+          "global_index": 27,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "IHクッキングヒーターの上にうっかり置きっぱなし、やりがちですよね！期限切れのボンベが見つかったらどう処分すればいいですか？",
+          "start_sec": 442.22,
+          "end_sec": 453.088,
+          "duration_sec": 10.868
+        },
+        {
+          "index": 13,
+          "global_index": 28,
+          "speaker": "guest",
+          "speaker_name": "出雲 健太",
+          "text": "必ず中身を完全に使い切り、振ってシャカシャカ音がしないのを確認してから小平市の分別ルールで出してくださいね。今週末のお鍋から楽しく見直しましょう！",
+          "start_sec": 453.088,
+          "end_sec": 465.885,
+          "duration_sec": 12.797
+        }
+      ]
+    },
+    {
+      "id": "special_feature",
+      "title": "【特別コーナー】いよいよ明日11月28日！ペット防災相談会＆オリジナル防災マップ講座 締切直前スペシャル",
+      "bgm": "bgm_feature",
+      "intro_jingle": "stinger",
+      "outro_jingle": null,
+      "start_sec": 466.265,
+      "speech_start_sec": 468.465,
+      "end_sec": 578.41,
+      "duration_sec": 112.145,
+      "lines": [
+        {
+          "index": 0,
+          "global_index": 29,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "ここからは特別拡大コーナー！「小平市 ペット防災相談会＆オリジナル防災マップ講座 締切スペシャル」、いよいよ明日11月28日土曜まであと1日です！",
+          "start_sec": 468.465,
+          "end_sec": 482.039,
+          "duration_sec": 13.574
+        },
+        {
+          "index": 1,
+          "global_index": 30,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "まず明日28日土曜10時〜15時、小川町1丁目「きつねっぱら公園子どもキャンプ場」で予定の「ドッグランの開催 with 犬のしつけ方及び防災相談会」ですが、明日の小平は小雨・降水確率100パーセント予報です。",
+          "start_sec": 482.039,
+          "end_sec": 501.378,
+          "duration_sec": 19.339
+        },
+        {
+          "index": 2,
+          "global_index": 31,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "雨天中止ですよね！中止の場合はどうなりますか？",
+          "start_sec": 501.378,
+          "end_sec": 505.655,
+          "duration_sec": 4.277
+        },
+        {
+          "index": 3,
+          "global_index": 32,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "はい、雨天中止で中止時は年度内延期予定です。明朝お出かけ前に必ず小平市公式ホームページか環境政策課 042-312-1796 で開催可否を確認してください。",
+          "start_sec": 505.655,
+          "end_sec": 520.16,
+          "duration_sec": 14.505
+        },
+        {
+          "index": 4,
+          "global_index": 33,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "開催時や延期日に備え、犬の首輪に装着した「令和8年度狂犬病予防注射済票」と1年以内の「混合ワクチン予防接種証明書」を必携！無料・申込不要で、防災士の佐々木邦夫さんの相談会は市内在住者対象です。",
+          "start_sec": 520.48,
+          "end_sec": 539.955,
+          "duration_sec": 19.475
+        },
+        {
+          "index": 5,
+          "global_index": 34,
+          "speaker": "guest",
+          "speaker_name": "出雲 健太",
+          "text": "ペットのフードや水も、食べ慣れたものを5日〜7日分ローリングストックしておくと安心ですよ。",
+          "start_sec": 539.955,
+          "end_sec": 549.085,
+          "duration_sec": 9.13
+        },
+        {
+          "index": 6,
+          "global_index": 35,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "そして2つ目は雨に関係なく明日締切！小川町2丁目・中央公民館の「こだいらのオリジナル防災マップをつくろう」は12月12日・19日土曜10時〜正午の全2回、講師は小野修平さん、無料・定員30人抽選。申込みフォームか、月曜休館を除く 042-341-0861 へ明日28日までにどうぞ！",
+          "start_sec": 549.385,
+          "end_sec": 578.03,
+          "duration_sec": 28.645
+        }
+      ]
+    },
+    {
+      "id": "daily_bousai",
+      "title": "暮らしの防災チェック！本格寒波前の水道管凍結予防＆小平市の応急給水拠点",
+      "bgm": "bgm_news",
+      "intro_jingle": "stinger",
+      "outro_jingle": null,
+      "start_sec": 578.41,
+      "speech_start_sec": 580.61,
+      "end_sec": 660.025,
+      "duration_sec": 81.615,
+      "lines": [
+        {
+          "index": 0,
+          "global_index": 36,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "続いて暮らしの防災チェック！日曜からは寒気も入ります。本格寒波の前に備えたいのが「水道管の凍結予防」ですね。",
+          "start_sec": 580.61,
+          "end_sec": 589.423,
+          "duration_sec": 8.813
+        },
+        {
+          "index": 1,
+          "global_index": 37,
+          "speaker": "guest",
+          "speaker_name": "出雲 健太",
+          "text": "東京都水道局の目安では「マイナス4度以下」や日陰・風当たりの強い露出管が要注意。保温チューブや布を巻き濡れないようビニールテープで保護し、万が一の破裂に備えてメーターボックス内の「元栓（止水栓）」の位置を確認しておきましょう。",
+          "start_sec": 589.423,
+          "end_sec": 607.865,
+          "duration_sec": 18.442
+        },
+        {
+          "index": 2,
+          "global_index": 38,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "もし冬の朝に凍って水が出なくなったら、やかんの熱湯をかければすぐ溶けますよね？",
+          "start_sec": 608.205,
+          "end_sec": 615.449,
+          "duration_sec": 7.244
+        },
+        {
+          "index": 3,
+          "global_index": 39,
+          "speaker": "guest",
+          "speaker_name": "出雲 健太",
+          "text": "熱湯は絶対NG！急な温度差で破裂する恐れがあります。自然解凍を待つか、タオルの上から40度程度のぬるま湯をゆっくりかけてくださいね。",
+          "start_sec": 615.449,
+          "end_sec": 627.71,
+          "duration_sec": 12.261
+        },
+        {
+          "index": 4,
+          "global_index": 40,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "断水時に向かう小平市内の主な給水拠点は、小川浄水所、上水南浄水所、市立津田公園の応急給水槽、そして避難所となる小中学校や小平元気村おがわ東の貯水槽です。",
+          "start_sec": 628.03,
+          "end_sec": 644.155,
+          "duration_sec": 16.125
+        },
+        {
+          "index": 5,
+          "global_index": 41,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "給水拠点に行くための清潔なポリタンクやリュックも準備しておきます！東京都の「東京備蓄ナビ」で家族に合う備蓄リストを調べるのも週末にぴったりですね！",
+          "start_sec": 644.155,
+          "end_sec": 659.645,
+          "duration_sec": 15.49
+        }
+      ]
+    },
+    {
+      "id": "ending",
+      "title": "小春＆平蔵の防災ノート＆明日の土曜18分拡大版予告",
+      "bgm": "bgm_warm",
+      "intro_jingle": "stinger",
+      "outro_jingle": "outro_jingle",
+      "start_sec": 660.025,
+      "speech_start_sec": 662.225,
+      "end_sec": 798.89,
+      "duration_sec": 138.865,
+      "lines": [
+        {
+          "index": 0,
+          "global_index": 42,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "お別れの時間です！出雲さん、おいしい備蓄から水道対策まで、今日すぐ台所を見直します！ありがとうございました！",
+          "start_sec": 662.225,
+          "end_sec": 670.636,
+          "duration_sec": 8.411
+        },
+        {
+          "index": 1,
+          "global_index": 43,
+          "speaker": "guest",
+          "speaker_name": "出雲 健太",
+          "text": "こちらこそありがとうございました！ぜひ週末のお鍋から、楽しくローリングストックを始めてみてくださいね。",
+          "start_sec": 670.636,
+          "end_sec": 678.58,
+          "duration_sec": 7.944
+        },
+        {
+          "index": 2,
+          "global_index": 44,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "今日の防災ノートです。①ローリングストック＆フェーズフリーで最低3日〜1週間分を備える。②カセットボンベ約7年・コンロ約10年・1人1週間約6本、過熱NG行動を避ける。③寒波前に水道管保温・元栓・給水拠点を確認、凍結時の熱湯は厳禁です。",
+          "start_sec": 678.9,
+          "end_sec": 703.918,
+          "duration_sec": 25.018
+        },
+        {
+          "index": 3,
+          "global_index": 45,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "明日11月28日土曜の予告！テーマは「地域コミュニティ・避難所運営・ペット・福祉防災」、ゲストは結城美咲さん！土曜15分特集版に「小平市 ペット防災相談会＆オリジナル防災マップ講座 締切スペシャル」当日特別コーナーを加えた、約18分拡大版です！",
+          "start_sec": 703.918,
+          "end_sec": 729.785,
+          "duration_sec": 25.867
+        },
+        {
+          "index": 4,
+          "global_index": 46,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "まちネタは朝から夜まで楽しむ小平の土曜日プラン！午前は花小金井駅近くのパン屋「アベイユ」や「たけのこ公園にキッチンカーがやってくる！Vol.6」（10時〜15時）、夕方17時半からは明日開幕の「萩山公園ライトアップ『きらめく紅葉につつまれて』」（11月28日〜12月13日・100本以上のイロハモミジ）へ巡る絶景ルート。解説は「ペット同行避難と同伴避難の違い・しつけ・ワクチン証明」「自主防災組織とご近所の共助」です！",
+          "start_sec": 730.085,
+          "end_sec": 769.435,
+          "duration_sec": 39.35
+        },
+        {
+          "index": 5,
+          "global_index": 47,
+          "speaker": "koharu",
+          "speaker_name": "小春",
+          "text": "18分豪華ですね！今日はガスミュージアムの赤レンガとハート形の東京ゴールドを思い浮かべて、元気に出発しましょー！",
+          "start_sec": 769.755,
+          "end_sec": 780.817,
+          "duration_sec": 11.062
+        },
+        {
+          "index": 6,
+          "global_index": 48,
+          "speaker": "heizo",
+          "speaker_name": "平蔵",
+          "text": "寒暖差に気をつけて、今夜はカセットボンベの底もチェックしてみてくださいね。今日も笑顔でいってらっしゃい！",
+          "start_sec": 780.817,
+          "end_sec": 791.09,
+          "duration_sec": 10.273
+        }
+      ]
+    }
+  ]
+}

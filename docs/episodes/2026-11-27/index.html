@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>毎朝7時！こだいら防災＆まちラジオ | 第6回 (2026-11-27)</title>
+  <style>
+    :root {
+      --guest-color: #b45309;
+      --guest-bg: #fffbeb;
+    }
+    
+:root {
+  --forest: #1b5e3c;
+  --forest-dark: #124028;
+  --forest-soft: #e7f4ec;
+  --paper: #f8f7f3;
+  --card: #ffffff;
+  --ink: #1f2937;
+  --muted: #5b6472;
+  --border: #dfe4de;
+  --amber: #d97706;
+  --amber-soft: #fef3c7;
+  --koharu: #e11d48;
+  --koharu-soft: #fff1f2;
+  --heizo: #2563eb;
+  --heizo-soft: #eff6ff;
+  --guest: var(--guest-color, #4338ca);
+  --guest-soft: var(--guest-bg, #eef2ff);
+  --shadow: 0 6px 20px rgba(18, 64, 40, 0.08);
+}
+* { box-sizing: border-box; }
+html, body {
+  overflow-x: clip;
+  max-width: 100%;
+}
+body {
+  margin: 0;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", system-ui, -apple-system, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.65;
+  -webkit-tap-highlight-color: transparent;
+}
+a { color: var(--forest); }
+
+/* Compact app-style header */
+header {
+  background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest) 65%, #2b7a50 100%);
+  color: #ffffff;
+  border-bottom: 3px solid var(--amber);
+}
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.65rem 1rem 0.75rem;
+}
+.brand-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+.brand {
+  font-weight: 800;
+  font-size: clamp(0.98rem, 4vw, 1.22rem);
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.01em;
+}
+.time-pill {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.16rem 0.55rem;
+  border-radius: 999px;
+  background: var(--amber);
+  color: #fff;
+}
+.nav-links {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.32rem;
+}
+.nav-links a {
+  color: rgba(255, 255, 255, 0.94);
+  text-decoration: none;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.34rem 0.2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.15s;
+}
+.nav-links a:hover, .nav-links a.active {
+  background: #ffffff;
+  color: var(--forest-dark);
+  border-color: #ffffff;
+}
+.page-subhead {
+  margin: 0.55rem 0 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+.page-h1 {
+  margin: 0.45rem 0 0;
+  font-size: clamp(1.08rem, 4vw, 1.45rem);
+  line-height: 1.3;
+}
+
+/* Main layout */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(310px, 0.95fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+.container.single {
+  grid-template-columns: minmax(0, 1fr);
+}
+.col-main, .col-side, .card, .now-playing, .section-head, .seg-divider, .mobile-tabs {
+  min-width: 0;
+  max-width: 100%;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.ep-hero {
+  padding: 0.78rem 1rem;
+  border-left: 4px solid var(--amber);
+}
+.ep-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.theme-pill {
+  display: inline-block;
+  padding: 0.14rem 0.55rem;
+  border-radius: 999px;
+  background: var(--guest-soft);
+  color: var(--guest);
+  font-weight: 700;
+}
+.edition-pill {
+  display: inline-block;
+  padding: 0.14rem 0.55rem;
+  border-radius: 999px;
+  background: var(--amber-soft);
+  color: #92400e;
+  font-weight: 700;
+}
+.ep-title {
+  margin: 0.35rem 0 0;
+  font-size: clamp(0.98rem, 3.6vw, 1.22rem);
+  line-height: 1.38;
+  color: var(--forest-dark);
+  overflow-wrap: anywhere;
+}
+.section-head {
+  padding: 0.75rem 1rem;
+  background: #fcfcfa;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.3rem 0.6rem;
+}
+.section-head h2 {
+  margin: 0;
+  font-size: 0.96rem;
+  color: var(--forest-dark);
+  flex: 1 1 180px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.hint {
+  font-size: 0.76rem;
+  color: var(--muted);
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* Slim sticky player */
+.player-card {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding: 0.72rem 1rem;
+  border-top: 3px solid var(--forest);
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(8px);
+}
+.audio-pending-banner {
+  background: var(--amber-soft);
+  border: 1px solid #f59e0b;
+  color: #92400e;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.55rem;
+}
+.now-playing {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+.now-chapter {
+  flex: 1 1 auto;
+  font-size: 0.88rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.time-readout {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--heizo);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.scrubber {
+  width: 100%;
+  accent-color: var(--forest);
+  cursor: pointer;
+  height: 22px;
+  margin: 0.2rem 0 0.35rem;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--ink);
+  padding: 0.4rem 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  min-height: 36px;
+  white-space: nowrap;
+}
+button:hover:not(:disabled) {
+  background: var(--forest-soft);
+  border-color: var(--forest);
+}
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+button.primary {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #fff;
+  padding: 0.42rem 0.95rem;
+}
+button.primary:hover:not(:disabled) { background: var(--forest-dark); }
+button.active-toggle {
+  background: var(--heizo-soft);
+  border-color: var(--heizo);
+  color: var(--heizo);
+}
+.speed-group button.is-selected {
+  background: var(--forest);
+  color: #fff;
+  border-color: var(--forest);
+}
+.speed-cycle-btn {
+  display: none;
+}
+
+/* Mobile 3-tab bar */
+.mobile-tabs {
+  display: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+  background: #ecefe9;
+  padding: 0.3rem;
+  border-radius: 12px;
+}
+.mobile-tabs button {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.8rem;
+  min-height: 36px;
+  padding: 0.35rem 0.25rem;
+  border-radius: 9px;
+}
+.mobile-tabs button.active {
+  background: #ffffff;
+  color: var(--forest-dark);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Chapters accordion */
+.chapter-summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+.chapter-summary h2 {
+  flex: 1 1 auto;
+}
+.chapter-summary .hint {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.chapter-summary::-webkit-details-marker {
+  display: none;
+}
+.chapter-summary .hint::after {
+  content: " ▼";
+  font-size: 0.7rem;
+}
+.chapter-details[open] .chapter-summary .hint::after {
+  content: " ▲";
+}
+.chapter-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.45rem;
+  padding: 0.75rem 0.95rem;
+}
+.chapter-btn {
+  text-align: left;
+  padding: 0.5rem 0.65rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.14rem;
+  white-space: normal;
+  min-height: auto;
+}
+.chapter-btn.active {
+  background: var(--forest-soft);
+  border-color: var(--forest);
+  box-shadow: inset 3px 0 0 var(--forest);
+}
+.chapter-tc {
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--heizo);
+  font-weight: 700;
+  flex: 0 0 auto;
+}
+.chapter-title {
+  font-size: 0.82rem;
+  line-height: 1.35;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Transcript */
+.transcript-body {
+  padding: 0.8rem 0.95rem 1.25rem;
+  max-height: 68vh;
+  overflow-y: auto;
+}
+.seg-divider {
+  margin: 1rem 0 0.55rem;
+  padding: 0.42rem 0.7rem;
+  background: var(--forest-soft);
+  border-left: 4px solid var(--forest);
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--forest-dark);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+  scroll-margin-top: 150px;
+}
+.seg-divider > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.seg-divider:first-child { margin-top: 0; }
+.line-item {
+  display: grid;
+  grid-template-columns: 48px 86px minmax(0, 1fr);
+  grid-template-areas: "tc speaker text";
+  gap: 0.5rem;
+  padding: 0.52rem 0.6rem;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  align-items: baseline;
+  scroll-margin-top: 150px;
+}
+.line-item:hover { background: #f3f5f2; }
+.line-item.active {
+  background: var(--amber-soft);
+  border-color: #f59e0b;
+}
+.line-tc {
+  grid-area: tc;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.76rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.speaker-pill {
+  grid-area: speaker;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.14rem 0.48rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.speaker-koharu { background: var(--koharu-soft); color: var(--koharu); }
+.speaker-heizo { background: var(--heizo-soft); color: var(--heizo); }
+.speaker-guest { background: var(--guest-soft); color: var(--guest); }
+.line-text {
+  grid-area: text;
+  font-size: 0.94rem;
+  overflow-wrap: anywhere;
+}
+
+/* Right panels & cards */
+.panel-body {
+  padding: 0.8rem 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.link-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 0.72rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fcfcfa;
+  transition: border-color 0.15s, background 0.15s;
+}
+.link-card:hover {
+  border-color: var(--forest);
+  background: var(--forest-soft);
+}
+.pill-tag {
+  display: inline-block;
+  font-size: 0.71rem;
+  font-weight: 700;
+  padding: 0.1rem 0.48rem;
+  border-radius: 999px;
+  background: var(--forest-soft);
+  color: var(--forest-dark);
+  margin-bottom: 0.22rem;
+}
+.link-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--forest-dark);
+  margin: 0 0 0.18rem;
+  overflow-wrap: anywhere;
+}
+.link-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.note-box {
+  padding: 0.72rem 0.85rem;
+  border-radius: 10px;
+  background: #fcfcfa;
+  border: 1px solid var(--border);
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+.note-box ul {
+  margin: 0.35rem 0 0.45rem;
+  padding-left: 1.15rem;
+}
+.tel-link {
+  color: var(--heizo);
+  font-weight: 700;
+  text-decoration: underline;
+}
+.guest-card {
+  padding: 0.8rem 0.95rem;
+  border-left: 4px solid var(--guest);
+  background: var(--guest-soft);
+  border-radius: 10px;
+}
+.kw-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+.kw-chip {
+  font-size: 0.74rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.archive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: 0.85rem;
+  padding: 0.9rem;
+}
+.archive-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.9rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  overflow-wrap: anywhere;
+}
+.btn-link {
+  display: inline-block;
+  text-decoration: none;
+  background: var(--forest);
+  color: #fff;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 0.48rem 0.85rem;
+  border-radius: 8px;
+  text-align: center;
+}
+.btn-link:hover { background: var(--forest-dark); }
+footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.9rem 1rem 2rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Mobile breakpoint (<= 920px): single column + tab switching */
+@media (max-width: 920px) {
+  .container {
+    display: block;
+    width: 100%;
+    padding: 0.65rem 0.7rem;
+  }
+  .mobile-tabs {
+    display: grid;
+  }
+  .player-card {
+    margin: 0 0 0.65rem;
+    border-radius: 12px;
+    padding: 0.6rem 0.78rem;
+  }
+  main[data-active-tab="script"] #tab-panel-script { display: block; }
+  main[data-active-tab="script"] .col-side { display: none; }
+
+  main[data-active-tab="links"] #tab-panel-script { display: none; }
+  main[data-active-tab="links"] .col-side { display: block; }
+  main[data-active-tab="links"] #tab-panel-links { display: block; }
+  main[data-active-tab="links"] #tab-panel-notes { display: none; }
+
+  main[data-active-tab="notes"] #tab-panel-script { display: none; }
+  main[data-active-tab="notes"] .col-side { display: block; }
+  main[data-active-tab="notes"] #tab-panel-links { display: none; }
+  main[data-active-tab="notes"] #tab-panel-notes { display: block; }
+}
+
+/* Narrow phone breakpoint (<= 640px): vertical-only controls, accordion chapters, 2-row transcript */
+@media (max-width: 640px) {
+  .header-inner { padding: 0.55rem 0.7rem 0.62rem; }
+  .brand-bar { margin-bottom: 0.45rem; }
+  .nav-links { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.25rem; }
+  .nav-links a { font-size: 0.72rem; padding: 0.34rem 0.14rem; }
+  .ep-hero { padding: 0.62rem 0.75rem; margin-bottom: 0.6rem; }
+  .controls { gap: 0.25rem; }
+  .btn-group { gap: 0.25rem; }
+  .speed-group { display: none; }
+  .speed-cycle-btn { display: inline-flex; align-items: center; }
+  button { padding: 0.34rem 0.48rem; font-size: 0.76rem; min-height: 36px; }
+  button.primary { padding: 0.34rem 0.68rem; }
+
+  .chapter-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0.6rem 0.75rem;
+    gap: 0.38rem;
+  }
+  .chapter-btn {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.45rem;
+    width: 100%;
+    padding: 0.48rem 0.62rem;
+  }
+  .chapter-tc {
+    flex: 0 0 auto;
+  }
+
+  .transcript-body {
+    max-height: none;
+    overflow-y: visible;
+    padding: 0.65rem 0.75rem 1.2rem;
+  }
+  .line-item {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "speaker tc"
+      "text text";
+    gap: 0.28rem 0.55rem;
+    padding: 0.55rem 0.55rem;
+    border-bottom: 1px solid #f0f2ee;
+  }
+  .line-tc {
+    justify-self: end;
+    font-size: 0.74rem;
+  }
+  .line-text {
+    font-size: 0.95rem;
+    line-height: 1.72;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="brand-bar"><a class="brand" href="../../index.html">こだいら防災＆まちラジオ</a><span class="time-pill">毎朝7時</span></div><nav class="nav-links" aria-label="メインメニュー"><a href="../../index.html">最新回</a><a href="../../calendar.html">カレンダー</a><a href="../../archive.html" class="active">過去回</a><a href="../../cast.html">出演者</a><a href="../../characters.html">防災ノート</a><a href="../../tech.html">番組のしくみ</a></nav>
+    </div>
+  </header>
+
+  <main class="container" id="main-root" data-active-tab="script">
+    <section class="col-main">
+      <div class="card ep-hero">
+        <div class="ep-meta-row">
+          <span class="theme-pill">金曜テーマ：食・備蓄・ライフライン</span>
+          <span class="edition-pill">特別コーナー拡大版（約13分）</span><span class="edition-pill">特別特集: 小平市 ペット防災相談会＆オリジナル防災マップ講座 締切スペシャル（あと1日）</span>
+          <span>2026-11-27（金）・13:19・ゲスト: 出雲 健太</span>
+        </div>
+        <h1 class="ep-title">第6回・2026-11-27（金曜日）朝7時号 ― ガスミュージアムの紅葉＆旬の東京ゴールド！ローリングストック・カセットボンベ7年の法則＆明日28日締切直前スペシャル</h1>
+      </div>
+
+      <div class="card player-card">
+        <div id="audio-pending" class="audio-pending-banner" style="display:none;">
+          この回のMP3音声はまだ生成されていません（<code>.env</code> に <code>GEMINI_API_KEY</code> を設定し <code>build_radio.py</code> を実行すると音声再生ができます）。下の台本・タイムライン・関連リンクはそのままお読みいただけます。
+        </div>
+        <audio id="radio-audio" preload="metadata"></audio>
+        <div class="now-playing">
+          <div class="now-chapter" id="now-chapter">再生ボタンを押してお聴きください</div>
+          <div class="time-readout" id="time-readout">00:00 / 13:19</div>
+        </div>
+        <input type="range" class="scrubber" id="scrubber" min="0" max="100" step="0.1" value="0" aria-label="再生位置シークバー" />
+        <div class="controls">
+          <div class="btn-group">
+            <button type="button" class="primary" id="btn-play">▶ 再生</button>
+            <button type="button" id="btn-back">-15s</button>
+            <button type="button" id="btn-fwd">+15s</button>
+          </div>
+          <div class="btn-group speed-group" id="speed-group">
+            <button type="button" data-rate="0.9">0.9x</button>
+            <button type="button" data-rate="1" class="is-selected">1.0x</button>
+            <button type="button" data-rate="1.15">1.15x</button>
+            <button type="button" data-rate="1.25">1.25x</button>
+          </div>
+          <div class="btn-group">
+            <button type="button" id="btn-speed-cycle" class="speed-cycle-btn">1.0x</button>
+            <button type="button" id="btn-autoscroll" class="active-toggle">追従ON</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mobile-tabs" id="mobile-tabs" role="tablist" aria-label="表示切替">
+        <button type="button" role="tab" data-tab="script" class="active">台本・目次</button>
+        <button type="button" role="tab" data-tab="links">リンク・天気</button>
+        <button type="button" role="tab" data-tab="notes">ノート・過去回</button>
+      </div>
+
+      <div id="tab-panel-script">
+        <details id="chapter-details" class="card chapter-details">
+          <summary class="section-head chapter-summary">
+            <h2>チャプター目次</h2>
+            <span class="hint">開閉</span>
+          </summary>
+          <div class="chapter-list" id="chapter-list"></div>
+        </details>
+
+        <div class="card">
+          <div class="section-head">
+            <h2>同期台本</h2>
+            <span class="hint">セリフをタップで再生</span>
+          </div>
+          <div class="transcript-body" id="transcript-body"></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="col-side">
+      <div id="tab-panel-links">
+        <div class="card">
+          <div class="section-head">
+            <h2>本日のゲスト＆天気</h2>
+            <span class="hint">曜日テーマ</span>
+          </div>
+          <div class="panel-body" id="guest-weather-panel"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <h2>今日の話題・関連リンク</h2>
+            <span class="hint">タップで公式ページへ</span>
+          </div>
+          <div class="panel-body" id="links-panel"></div>
+        </div>
+      </div>
+
+      <div id="tab-panel-notes">
+        <div class="card">
+          <div class="section-head">
+            <h2>小春＆平蔵の防災ノート</h2>
+            <span class="hint">今日の学び・連絡先</span>
+          </div>
+          <div class="panel-body" id="notes-panel"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <h2>バックナンバー</h2>
+            <a href="../../archive.html" class="hint">一覧を見る →</a>
+          </div>
+          <div class="panel-body" id="recent-panel"></div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    毎朝7時！こだいら防災＆まちラジオ（東京都小平市）／ 小春 ＆ 平蔵 ／ <a href="../../listen.html">シンプル聴取ページ</a>
+  </footer>
+
+  <script type="application/json" id="episode-data">{"meta": {"title": "毎朝7時！こだいら防災＆まちラジオ", "subtitle": "第6回・2026-11-27（金曜日）朝7時号 ― ガスミュージアムの紅葉＆旬の東京ゴールド！ローリングストック・カセットボンベ7年の法則＆明日28日締切直前スペシャル", "episode_date": "2026-11-27", "episode_number": 6, "weekday": "friday", "weekday_ja": "金曜日", "is_weekend": false, "is_holiday": false, "holiday_name": "", "edition_label": "特別コーナー拡大版（約13分）", "special_feature": {"kind": "scheduled_countdown", "title": "小平市 ペット防災相談会＆オリジナル防災マップ講座 締切スペシャル", "phase_label": "あと1日", "focus": "11月28日（土）開催の子どもキャンプ場ドッグラン＆ペット防災相談会（狂犬病済票・混合ワクチン証明書要持参）と中央公民館『こだいらのオリジナル防災マップをつくろう』申込締切直前ガイド", "extra_minutes": 3}, "tomorrow_preview": {"date": "2026-11-28", "edition_label": "土日15分＋特別特集拡大版（約18分）", "is_holiday": false, "holiday_name": "", "has_special": true}, "theme_name": "食・備蓄・ライフライン", "theme_badge": "金曜テーマ：食・備蓄・ライフライン", "target_duration_sec": 780, "output_filename": "kodaira_radio_20261127.mp3", "kodaira_topics": ["大沼町「ガスミュージアム（GAS MUSEUM がす資料館）」の明治赤レンガ建築と紅葉＆企画展「時代を創るモダン・テクノロジー」（2026年10月3日〜12月25日・入館無料・月曜休館／月曜祝日の翌日振替休館）と小平のうどん・製粉文化", "大沼町「ファームショップ中村園」発祥・切ると断面がハート形の黄色いキウイ「東京ゴールド」＆鈴木町・大沼町の庭先直売所めぐり＆12月7日（月）までの飲食店企画「小平くだもの野菜スタンプラリー」", "本日11月27日（金）開幕！学園西町「小平市平櫛田中彫刻美術館」企画展「福来る」（〜2027年2月14日・火曜休館）", "明日11月28日（土）開催予定 きつねっぱら公園子どもキャンプ場「ドッグランの開催 with 犬のしつけ方及び防災相談会」降水確率100%に伴う雨天中止確認＆必須持ち物ガイド（あと1日）", "明日11月28日（土）申込締切 中央公民館「こだいらのオリジナル防災マップをつくろう」（小川町2丁目・全2回無料・あと1日）"], "kodaira_areas": ["大沼町（ガスミュージアム・ファームショップ中村園）", "鈴木町（農産物直売所周辺）", "学園西町（平櫛田中彫刻美術館）", "小川町1丁目（きつねっぱら公園子どもキャンプ場・小川浄水所）", "小川町2丁目（中央公民館）", "上水南町・津田町（上水南浄水所・津田公園給水拠点）"], "models": {"research": "antigravity-local", "script": "antigravity-local", "factcheck": "antigravity-local"}, "voices": {"koharu": {"name": "小春", "reading": "こはる", "role": "メインパーソナリティ（「小平」の「小」）", "gemini_voice": "Leda", "edge_voice": "ja-JP-NanamiNeural", "edge_rate": "+4%", "edge_pitch": "+1Hz", "default_style": "bright, cheerful, lively, smiling Japanese morning radio host", "pan": -0.1, "ui": {"color": "#e11d48", "bg_soft": "#fff1f2"}}, "heizo": {"name": "平蔵", "reading": "へいぞう", "role": "パートナーキャスター（「小平」の「平」）", "gemini_voice": "Algieba", "edge_voice": "ja-JP-KeitaNeural", "edge_rate": "+2%", "edge_pitch": "-1Hz", "default_style": "warm, gentle, reassuring, friendly Japanese radio co-host", "pan": 0.1, "ui": {"color": "#2563eb", "bg_soft": "#eff6ff"}}, "guest": {"name": "出雲 健太", "reading": "いずも けんた", "role": "ライフライン防災研究家（備蓄・生活インフラ担当・架空ゲスト）", "gemini_voice": "Sadaltager", "edge_voice": "ja-JP-KeitaNeural", "edge_rate": "+1%", "edge_pitch": "+0Hz", "default_style": "knowledgeable, cheerful, practical Japanese lifestyle expert", "pan": 0.0, "ui": {"color": "#b45309", "bg_soft": "#fffbeb"}}}, "fact_check": {"model": "antigravity-local", "status": "patched", "checked_claims_count": 30, "issues_found": 2, "patches_applied": 2, "summary": "全イベント日程・開催年（2026年ガスミュージアム企画展「時代を創るモダン・テクノロジー」10/3〜12/25、本日11/27開幕の平櫛田中彫刻美術館「福来る」展〜2027/2/14、10/30〜12/7「小平くだもの野菜スタンプラリー」および11/22終了の直売所デジタルスタンプラリーとの区別、明日11/28きつねっぱら公園ドッグラン＆ペット防災相談会の雨天中止・年度内延期条件および中央公民館防災マップ講座締切、明日予告のたけのこ公園キッチンカーVol.6・萩山公園ライトアップ11/28〜12/13・花小金井アベイユ）、休館日・営業時間（月曜祝日の翌日振替休館含む）、防災数値（農水省ローリングストック3日〜1週間、JGKAボンベ7年・コンロ10年・1人1週間約6本・過熱NG行動、東京都水道局マイナス4℃凍結基準・ぬるま湯40℃・熱湯厳禁）、小平市応急給水拠点3か所＋学校貯水槽、電話番号7件および参考リンク8件（全件HTTP 200到達確認）を独立検証。ガスミュージアム最終入館時刻の公式統一（16:30まで）と東京都水道局多摩お客さまセンターのIP電話用番号・24時間緊急漏水対応の補記、あわせて文字数レンジ最適化の2件を修正反映しました。", "issues": [{"severity": "minor", "claim": "ガスミュージアム最終入館時刻の表記揺れ（外部サイト16:00 vs 公式16:30）", "reason": "一部まとめサイトに16:00記載がある一方、ガスミュージアム公式サイト（gasmuseum.jp）では開館10:00〜17:00・最終入館16:30までと案内されていたため、公式基準に統一する必要があった", "verified_fact": "ガスミュージアム（大沼町4-31-25・042-342-1715）は開館10:00〜17:00（最終入館16:30まで）、入館無料、毎週月曜休館（月曜祝日の場合は開館し翌日火曜が振替休館）"}, {"severity": "minor", "claim": "東京都水道局多摩お客さまセンター連絡先の補足不足と初稿の総文字数超過（5,365文字）", "reason": "多摩地区の漏水・凍結受付はナビダイヤル0570-091-101に加えてIP電話等用の042-548-5110（緊急漏水24時間対応）も併記すると実用的であり、また台本全体の文字数を目標レンジ3,616〜4,704文字に収める調整が必要だった", "verified_fact": "東京都水道局多摩お客さまセンター（漏水・凍結0570-091-101／IP電話等042-548-5110・緊急漏水24時間）を正確に併記し、全事実と予告要素を保ったまま文字数を目標レンジ中央付近へ最適化した"}]}}, "manifest_meta": {"title": "毎朝7時！こだいら防災＆まちラジオ", "subtitle": "第6回・2026-11-27（金曜日）朝7時号 ― ガスミュージアムの紅葉＆旬の東京ゴールド！ローリングストック・カセットボンベ7年の法則＆明日28日締切直前スペシャル", "episode_date": "2026-11-27", "episode_number": 6, "output_filename": "kodaira_radio_20261127.mp3", "tts_engine": "gemini", "tts_model": "gemini-3.8-flash-tts", "tts_requests": 21, "total_duration_sec": 799.39, "total_duration_formatted": "13:19", "line_count": 49, "estimated": false}, "guest": {"id": "guest_izumo", "name": "出雲 健太", "reading": "いずも けんた", "title": "ライフライン防災研究家（備蓄・生活インフラ担当・架空ゲスト）", "theme": "食・備蓄・ライフライン", "voice_name": "Sadaltager", "personality": "「おいしい防災ごはん」と現実的なインフラ復旧知識に精通した気さくなお兄さん。食いしん坊な小春と「これ作ってみよう！」と盛り上がる名コンビ。", "keywords_featured": ["ローリングストックとフェーズフリー", "カセットコンロとボンベの適正備蓄本数・使用期限", "水道管凍結予防と応急給水拠点（小川浄水所・上水南浄水所・津田公園）"]}, "cast_href": "../../cast.html#guest_izumo", "has_audio": true, "audio_src": "../../audio/kodaira_radio_20261127.mp3", "weather": {"ok": true, "source": "Open-Meteo (小平市座標)", "fetched_at_jst": "2026-11-27T05:15:54+09:00", "current": {"temperature_c": 6.1, "humidity_pct": 78, "weather": "快晴", "wind_speed_kmh": 4.3}, "daily": [{"date": "2026-11-27", "weather": "曇り", "temp_max_c": 15.8, "temp_min_c": 6.1, "precip_prob_max": 19}, {"date": "2026-11-28", "weather": "小雨", "temp_max_c": 18.1, "temp_min_c": 9.1, "precip_prob_max": 100}, {"date": "2026-11-29", "weather": "おおむね晴れ", "temp_max_c": 12.5, "temp_min_c": 5.7, "precip_prob_max": 6}], "advisories": ["朝晩と日中の寒暖差が大きいので服装調整に注意"]}, "links": [{"category": "小平市公式", "title": "東京都小平市 公式ホームページ", "url": "https://www.city.kodaira.tokyo.jp/", "note": "小平くだもの野菜スタンプラリー・平櫛田中彫刻美術館「福来る」展・11/28ドッグラン開催可否・中央公民館講座などの一次発信元"}, {"category": "大沼町スポット", "title": "GAS MUSEUM ガスミュージアム（がす資料館）公式", "url": "https://www.gasmuseum.jp/", "note": "企画展「時代を創るモダン・テクノロジー」（〜12/25）・開館時間・休館日・アクセス案内"}, {"category": "備蓄・カセットコンロ", "title": "一般社団法人 日本ガス石油機器工業会（JGKA）", "url": "https://www.jgka.or.jp/", "note": "カセットボンベ使用期限約7年・こんろ本体約10年・1人1週間約6本の備蓄目安と安全な使い方"}, {"category": "備蓄チェック", "title": "東京備蓄ナビ（東京都）", "url": "https://www.bichiku.metro.tokyo.lg.jp/", "note": "家族構成や住まいに合わせた水・食料・カセットボンベなどの必要備蓄品と数量をシミュレーション"}, {"category": "水道・凍結予防", "title": "東京都水道局 公式ホームページ", "url": "https://www.waterworks.metro.tokyo.lg.jp/", "note": "水道管の凍結防止対策（マイナス4度以下・保温・元栓確認）や災害時給水ステーション情報"}, {"category": "防災マップ", "title": "小平市防災マップ（避難所・給水拠点・備え）", "url": "https://www.city.kodaira.tokyo.jp/kurashi/036/036337.html", "note": "避難場所・小川浄水所や小中学校の応急給水拠点・安否確認方法がまとまった小平市公式ページ"}, {"category": "東京都防災", "title": "東京都防災ホームページ", "url": "https://www.bousai.metro.tokyo.lg.jp/", "note": "東京都防災アプリ・在宅避難やローリングストック・冬の防災情報"}, {"category": "気象・地震", "title": "気象庁ホームページ", "url": "https://www.jma.go.jp/jma/index.html", "note": "沖縄の大雨警戒・週末の雨と寒気・全国の地震情報の公式発表"}], "references": [{"category": "大沼町・鈴木町まちネタ", "title": "ガスミュージアム企画展／東京ゴールド＆スタンプラリー／平櫛田中彫刻美術館「福来る」展", "detail": "①GAS MUSEUM ガスミュージアム（小平市大沼町4-31-25、花小金井駅北口から西武バス武21系統「ガスミュージアム入口」徒歩約3分・無料駐車場あり）。明治42年築の旧東京ガス本郷出張所（ガス灯館）と明治45年築の旧千住工場計量器室（くらし館）の赤レンガ洋館と紅葉が見頃。企画展「時代を創るモダン・テクノロジー」（2026年10月3日〜12月25日・ガス灯館2階ギャラリー）では都市ガスや鉄道史のほか製粉ミュージアム協力で武蔵野・小平のうどん文化も紹介。開館10:00〜17:00（最終入館16:30まで）、入館無料、月曜休館（月曜祝日の場合は開館し翌日火曜が振替休館）。②大沼町6-13-13「ファームショップ中村園」発祥の黄色いキウイ「東京ゴールド」は平均糖度15〜16%で縦断面がハート形（不定休・雨天休業のため事前確認推奨）。飲食店を巡る「小平くだもの野菜スタンプラリー」は2026年10月30日〜12月7日（異なる2店舗で小平産メニュー注文・応募締切12月16日必着、抽選70名に7,000円相当の小平産農産物セット。※直売所デジタルスタンプラリーは11月22日終了）。③小平市平櫛田中彫刻美術館（学園西町1-7-5・一橋学園駅南口徒歩約10分）で本日11月27日（金）〜2027年2月14日（日）企画展「福来る」開幕。開館10:00〜16:00（入館15:30まで）、一般300円・小中学生150円、火曜休館（祝日の場合は翌日）。", "contact": "ガスミュージアム（042-342-1715）／小平市産業振興課商工担当（042-346-9534）／平櫛田中彫刻美術館（042-341-0098）"}, {"category": "食・備蓄・ライフライン", "title": "ローリングストック＆フェーズフリー／カセットコンロとボンベの適正備蓄・安全ルール", "detail": "①農林水産省推奨のローリングストックは普段食べる食品を少し多めに買い、古い順に食べて買い足す循環備蓄。目安は最低3日分、できれば1週間分×人数分。日常時と非常時の境目をなくす「フェーズフリー」の代表的な実践。②日本ガス石油機器工業会（JGKA）の目安では、未使用でも内部ゴム部品が経年劣化するため、カセットボンベの使用期限は製造後約7年以内（缶底面の8桁数字で確認）、カセットコンロ本体の買い替え目安は製造後約10年（本体側面シールで確認）。1人1週間あたりの備蓄目安は約6本。③爆発・火災を防ぐNG行動：2台並べて大鉄板を載せない、ボンベカバーを覆う大鍋・鉄板を使わない、IHクッキングヒーターやガス台の上に置かない、アルミホイルを巻かない。", "contact": "東京備蓄ナビ（https://www.bichiku.metro.tokyo.lg.jp/）／日本ガス石油機器工業会（https://www.jgka.or.jp/）"}, {"category": "11月28日イベント（あと1日）", "title": "ペット防災相談会（雨天中止確認必須）／オリジナル防災マップ講座締切", "detail": "①明日11/28（土）10:00〜15:00、きつねっぱら公園子どもキャンプ場（小川町1-3005）で「ドッグランの開催 with 犬のしつけ方及び防災相談会」（無料・申込不要、ドッグラン市内外可・個別相談は市内在住者対象・相談員：NPO法人ぶるーべりー愛犬ふぁみりー協会理事長／防災士 佐々木邦夫氏）。11/28の小平は小雨・降水確率100%予報のため、雨天中止（中止時は年度内延期予定）の開催可否を明朝必ず市HPまたは環境政策課で確認。参加時は令和8年度狂犬病予防注射済票（首輪装着）と1年以内の混合ワクチン予防接種証明書が必須。②中央公民館（小川町2-1325）「こだいらのオリジナル防災マップをつくろう」（12/12・19土曜10:00〜12:00・全2回無料・定員30人抽選・講師 小野修平氏）は明日11/28（土）申込締切（雨天無関係）。", "contact": "小平市環境政策課（042-312-1796）／中央公民館（042-341-0861・月曜休館除く）"}, {"category": "冬の水道・応急給水", "title": "水道管凍結予防（マイナス4℃以下・元栓確認）＆小平市内の災害時給水拠点", "detail": "①東京都水道局によると気温マイナス4℃以下、または日陰・風当たりの強い露出管は凍結リスクが高まる。保温チューブや布を巻き濡れないようビニールテープで保護し、万が一の破裂に備えて水道メーターボックス内の元栓（止水栓）の位置を事前確認。凍結時は熱湯厳禁（破損の恐れ）、自然解凍かタオルの上から40℃程度のぬるま湯をゆっくりかける。②小平市の主な災害時給水ステーション（応急給水拠点）は小川浄水所（小川町1-847）、上水南浄水所（上水南町3-12-36）、市立津田公園（津田町3-39・小規模応急給水槽）のほか、避難所となる市立小中学校や小平元気村おがわ東の飲料貯水槽。給水時は清潔なポリタンクやリュックを持参。", "contact": "東京都水道局多摩お客さまセンター漏水・凍結（0570-091-101／IP電話等 042-548-5110・緊急漏水24時間）／小平市防災危機管理課（042-346-9519）"}], "learned_notes": {"learned_points": ["日常と非常時の境目をなくす「フェーズフリー」の考え方のもと、普段の食材や小平うどんの乾麺・缶詰などを少し多めに買って古い順に食べながら補充するローリングストックを最低3日〜1週間分×人数分で回すことが安心につながること", "カセットボンベは未使用でも内部パッキンの経年劣化があるため製造後約7年以内（缶底面の8桁数字を確認）、コンロ本体は約10年が買い替え目安で、1人1週間約6本を目安に備え、2台並べ・ボンベカバーを覆う大鍋・IH上の設置・アルミホイル巻きなどの過熱NG行動を避けること", "本格寒波前は気温マイナス4℃以下を目安に露出水道管の保温とメーターボックス内元栓の位置確認をしておき、凍結時は熱湯厳禁でぬるま湯を使うこと、また断水時は小川浄水所・上水南浄水所・津田公園や小中学校貯水槽などの給水拠点へ清潔な容器を持って向かうこと"], "kodaira_discovery": "大沼町の赤レンガ建築「ガスミュージアム」で明治からの暮らしのエネルギー史や小平のうどん文化に触れ、旬のキウイ「東京ゴールド」やスタンプラリーを楽しみながら、冬の温かい食卓を守るカセットコンロ備蓄と水道対策につなげられること。"}, "segments": [{"id": "opening", "title": "朝7時のごあいさつ＆今朝の小平お天気・地震と全国ニュース", "bgm": "bgm_warm", "intro_jingle": "opening_jingle", "outro_jingle": null, "start_sec": 0.0, "speech_start_sec": 5.0, "end_sec": 104.42, "duration_sec": 104.42, "lines": [{"index": 0, "global_index": 0, "speaker": "koharu", "speaker_name": "小春", "text": "おはようございます！11月27日、金曜日、朝7時です！「毎朝7時！こだいら防災＆まちラジオ」第6回、小春です！", "start_sec": 5.0, "end_sec": 15.308, "duration_sec": 10.308}, {"index": 1, "global_index": 1, "speaker": "heizo", "speaker_name": "平蔵", "text": "おはようございます、平蔵です。11月最後の金曜日ですね。今朝の小平は昨日より少し冷え込みが和らいでいます。", "start_sec": 15.308, "end_sec": 25.242, "duration_sec": 9.934}, {"index": 2, "global_index": 2, "speaker": "koharu", "speaker_name": "小春", "text": "昨日は朝3度台でしたもんね！今朝のお天気と週末予報、全国ニュースも教えてください！", "start_sec": 25.242, "end_sec": 32.927, "duration_sec": 7.685}, {"index": 3, "global_index": 3, "speaker": "heizo", "speaker_name": "平蔵", "text": "今朝5時台の小平市は快晴、6.1度、湿度78パーセント。今日は曇りで最高15.8度、最低6.1度、降水確率19パーセント。寒暖差に備え服装調整を。沖縄では前線で激しい雨や土砂災害への警戒が続き、明日の小平も小雨で降水確率100パーセント、最高18.1度。日曜は晴れですが寒気で最高12.5度、最低5.7度と冷え込みます。", "start_sec": 32.927, "end_sec": 62.915, "duration_sec": 29.988}, {"index": 4, "global_index": 4, "speaker": "heizo", "speaker_name": "平蔵", "text": "地震は今朝4時33分ごろ父島近海でマグニチュード5.5、父島・母島で震度2。未明に石川県能登地方、昨夜は熊本県天草・芦北地方や陸奥湾で震度2、昨日昼は茨城県南部で震度1。いずれも津波の心配はありません。", "start_sec": 63.255, "end_sec": 86.782, "duration_sec": 23.527}, {"index": 5, "global_index": 5, "speaker": "koharu", "speaker_name": "小春", "text": "ありがとうございます！今日は約13分の特別コーナー拡大版！大沼町・鈴木町の紅葉と旬グルメ、冬の備蓄術、明日28日の締切直前スペシャルをお届けします！", "start_sec": 86.782, "end_sec": 104.02, "duration_sec": 17.238}]}, {"id": "kodaira_life", "title": "大沼町・鈴木町の晩秋めぐり！ガスミュージアム紅葉＆東京ゴールド＆本日開幕「福来る」展", "bgm": "bgm_news", "intro_jingle": "stinger", "outro_jingle": null, "start_sec": 104.42, "speech_start_sec": 106.62, "end_sec": 281.185, "duration_sec": 176.765, "lines": [{"index": 0, "global_index": 6, "speaker": "heizo", "speaker_name": "平蔵", "text": "今日のまちネタは大沼町・鈴木町エリア！まず訪ねたいのが、大沼町4丁目の「ガスミュージアム（がす資料館）」です。", "start_sec": 106.62, "end_sec": 117.845, "duration_sec": 11.225}, {"index": 1, "global_index": 7, "speaker": "koharu", "speaker_name": "小春", "text": "花小金井駅北口からバスで「ガスミュージアム入口」下車すぐの赤レンガ洋館ですよね！紅葉も見頃ですけど、立派だから入館料は高いんですか？", "start_sec": 117.845, "end_sec": 131.314, "duration_sec": 13.469}, {"index": 2, "global_index": 8, "speaker": "heizo", "speaker_name": "平蔵", "text": "なんと入館無料、無料駐車場もあります！明治42年築の旧本郷出張所を復元移築した「ガス灯館」と、明治45年築の旧千住工場計量器室を移築した「くらし館」が並び、紅葉との対比が見事なんです。", "start_sec": 131.314, "end_sec": 150.09, "duration_sec": 18.776}, {"index": 3, "global_index": 9, "speaker": "koharu", "speaker_name": "小春", "text": "明治の赤レンガを見られて無料なんですか！？開催中の企画展も面白そうですよね！", "start_sec": 150.09, "end_sec": 157.845, "duration_sec": 7.755}, {"index": 4, "global_index": 10, "speaker": "heizo", "speaker_name": "平蔵", "text": "12月25日金曜までガス灯館2階で「時代を創るモダン・テクノロジー」を開催中。都市ガスや鉄道史に加え、製粉ミュージアム協力で武蔵野・小平のうどん文化も紹介。10時〜17時で最終入館16時30分まで、月曜休館で月曜祝日の翌日が振替休館。今週は24日火曜が振替休館でしたから、今日金曜と週末は開館です！", "start_sec": 158.125, "end_sec": 188.665, "duration_sec": 30.54}, {"index": 5, "global_index": 11, "speaker": "koharu", "speaker_name": "小春", "text": "うどん文化まで！さらに大沼町6丁目「ファームショップ中村園」発祥の黄色いキウイ「東京ゴールド」も今が旬ですよね！縦に切ると断面がハート形で平均糖度15〜16パーセント！鈴木町の直売所めぐりも楽しいし、直売所で買えば12月7日までの「小平くだもの野菜スタンプラリー」のスタンプがもらえますよね？", "start_sec": 188.665, "end_sec": 218.59, "duration_sec": 29.925}, {"index": 6, "global_index": 12, "speaker": "heizo", "speaker_name": "平蔵", "text": "あ、そこ要注意！直売所デジタルスタンプラリーは11月22日に終了していて、12月7日月曜まで開催中の「小平くだもの野菜スタンプラリー」は市内の参加飲食店で小平産メニューを異なる2店舗で食べて集める企画なんです。抽選70名に7,000円相当の小平産農産物セットが当たり、応募は12月16日必着ですよ。", "start_sec": 218.87, "end_sec": 247.981, "duration_sec": 29.111}, {"index": 7, "global_index": 13, "speaker": "koharu", "speaker_name": "小春", "text": "なるほど、直売所は旬のお買い物、スタンプラリーは飲食店で小平グルメですね！中村園さんは不定休・雨天休業なので事前確認がおすすめとのこと！", "start_sec": 247.981, "end_sec": 261.267, "duration_sec": 13.286}, {"index": 8, "global_index": 14, "speaker": "heizo", "speaker_name": "平蔵", "text": "さらに本日11月27日金曜から来年2月14日まで、学園西町の小平市平櫛田中彫刻美術館で企画展「福来る」が開幕！大黒・恵比寿など縁起の良い作品や書が集結。10時〜16時、一般300円、毎週火曜休館です。", "start_sec": 261.267, "end_sec": 280.805, "duration_sec": 19.538}]}, {"id": "guest_talk", "title": "出雲健太さんと学ぶ！ローリングストック＆フェーズフリーとカセットボンベ7年の法則", "bgm": "bgm_warm", "intro_jingle": "guest_jingle", "outro_jingle": null, "start_sec": 281.185, "speech_start_sec": 283.685, "end_sec": 466.265, "duration_sec": 185.08, "lines": [{"index": 0, "global_index": 15, "speaker": "heizo", "speaker_name": "平蔵", "text": "ここからは金曜テーマ「食・備蓄・ライフライン」！ゲストはライフライン防災研究家の出雲健太さんです！", "start_sec": 283.685, "end_sec": 291.974, "duration_sec": 8.289}, {"index": 1, "global_index": 16, "speaker": "guest", "speaker_name": "出雲 健太", "text": "おはようございます、出雲健太です！ガスミュージアムのエネルギー史に小平うどん、ハート形の東京ゴールドまで、お腹が空くお話でしたね！", "start_sec": 291.974, "end_sec": 302.97, "duration_sec": 10.996}, {"index": 2, "global_index": 17, "speaker": "koharu", "speaker_name": "小春", "text": "今日は冬の停電でも温かい食卓を守る「ローリングストックとフェーズフリー」、そして「カセットコンロとボンベ」の備えを教えてください！", "start_sec": 303.29, "end_sec": 314.824, "duration_sec": 11.534}, {"index": 3, "global_index": 18, "speaker": "guest", "speaker_name": "出雲 健太", "text": "まず「フェーズフリー」は、日常と非常時の境目をなくし、普段の便利なモノや暮らしをそのまま災害時にも役立てる考え方。その代表が農林水産省も推奨する「ローリングストック」です。", "start_sec": 314.824, "end_sec": 330.085, "duration_sec": 15.261}, {"index": 4, "global_index": 19, "speaker": "heizo", "speaker_name": "平蔵", "text": "普段食べるパックご飯や缶詰、乾麺のうどんなどを少し多めに買い、古い順に食べて買い足す循環備蓄ですね。", "start_sec": 330.425, "end_sec": 339.823, "duration_sec": 9.398}, {"index": 5, "global_index": 20, "speaker": "guest", "speaker_name": "出雲 健太", "text": "その通り！目安は「最低3日分、できれば1週間分×人数分」。支援物資到着に3日以上、流通やインフラ復旧には1週間以上かかることが多いからです。日持ちする根菜やキウイ、小平名物の乾麺うどんにレトルトつゆを組み合わせれば、冬でもホッとする一杯が作れますよ！", "start_sec": 339.823, "end_sec": 363.32, "duration_sec": 23.497}, {"index": 6, "global_index": 21, "speaker": "koharu", "speaker_name": "小春", "text": "あったかうどん最高！うち、10年以上前のカセットコンロと新品のボンベが戸棚に眠ってるんですけど、未使用ならずっと使えますよね？", "start_sec": 363.67, "end_sec": 374.266, "duration_sec": 10.596}, {"index": 7, "global_index": 22, "speaker": "guest", "speaker_name": "出雲 健太", "text": "おっと小春さん、ストップです！未使用でも内部のゴムパッキンが経年劣化し、ガス漏れや引火の原因になります！", "start_sec": 374.266, "end_sec": 383.013, "duration_sec": 8.747}, {"index": 8, "global_index": 23, "speaker": "koharu", "speaker_name": "小春", "text": "ええっ、使ってなくても劣化するんですか！？使用期限は何年なんでしょう……？", "start_sec": 383.013, "end_sec": 389.236, "duration_sec": 6.223}, {"index": 9, "global_index": 24, "speaker": "guest", "speaker_name": "出雲 健太", "text": "日本ガス石油機器工業会の目安では、ボンベは「製造後約7年以内」、コンロ本体は「製造後約10年」が買い替え目安！10月7日は10年と7年で「カセットこんろとボンベの日」なんです。ボンベは缶の底の8桁数字、コンロは側面シールで製造年月を確認できます。", "start_sec": 389.236, "end_sec": 409.925, "duration_sec": 20.689}, {"index": 10, "global_index": 25, "speaker": "heizo", "speaker_name": "平蔵", "text": "覚えやすいですね！備蓄本数の目安と、使うときのNG行動も教えてください。", "start_sec": 410.275, "end_sec": 417.047, "duration_sec": 6.772}, {"index": 11, "global_index": 26, "speaker": "guest", "speaker_name": "出雲 健太", "text": "目安は「1人1週間あたり約6本」。週末のお鍋やあったかうどん作りで古いボンベから使って買い足しましょう！そして鉄則は「ボンベを絶対に加熱させない」こと。2台並べ、ボンベカバーを覆う大鍋、IHやガス台の上への設置、アルミホイル巻きは輻射熱で破裂の恐れがあり厳禁です。", "start_sec": 417.047, "end_sec": 441.88, "duration_sec": 24.833}, {"index": 12, "global_index": 27, "speaker": "koharu", "speaker_name": "小春", "text": "IHクッキングヒーターの上にうっかり置きっぱなし、やりがちですよね！期限切れのボンベが見つかったらどう処分すればいいですか？", "start_sec": 442.22, "end_sec": 453.088, "duration_sec": 10.868}, {"index": 13, "global_index": 28, "speaker": "guest", "speaker_name": "出雲 健太", "text": "必ず中身を完全に使い切り、振ってシャカシャカ音がしないのを確認してから小平市の分別ルールで出してくださいね。今週末のお鍋から楽しく見直しましょう！", "start_sec": 453.088, "end_sec": 465.885, "duration_sec": 12.797}]}, {"id": "special_feature", "title": "【特別コーナー】いよいよ明日11月28日！ペット防災相談会＆オリジナル防災マップ講座 締切直前スペシャル", "bgm": "bgm_feature", "intro_jingle": "stinger", "outro_jingle": null, "start_sec": 466.265, "speech_start_sec": 468.465, "end_sec": 578.41, "duration_sec": 112.145, "lines": [{"index": 0, "global_index": 29, "speaker": "koharu", "speaker_name": "小春", "text": "ここからは特別拡大コーナー！「小平市 ペット防災相談会＆オリジナル防災マップ講座 締切スペシャル」、いよいよ明日11月28日土曜まであと1日です！", "start_sec": 468.465, "end_sec": 482.039, "duration_sec": 13.574}, {"index": 1, "global_index": 30, "speaker": "heizo", "speaker_name": "平蔵", "text": "まず明日28日土曜10時〜15時、小川町1丁目「きつねっぱら公園子どもキャンプ場」で予定の「ドッグランの開催 with 犬のしつけ方及び防災相談会」ですが、明日の小平は小雨・降水確率100パーセント予報です。", "start_sec": 482.039, "end_sec": 501.378, "duration_sec": 19.339}, {"index": 2, "global_index": 31, "speaker": "koharu", "speaker_name": "小春", "text": "雨天中止ですよね！中止の場合はどうなりますか？", "start_sec": 501.378, "end_sec": 505.655, "duration_sec": 4.277}, {"index": 3, "global_index": 32, "speaker": "heizo", "speaker_name": "平蔵", "text": "はい、雨天中止で中止時は年度内延期予定です。明朝お出かけ前に必ず小平市公式ホームページか環境政策課 042-312-1796 で開催可否を確認してください。", "start_sec": 505.655, "end_sec": 520.16, "duration_sec": 14.505}, {"index": 4, "global_index": 33, "speaker": "koharu", "speaker_name": "小春", "text": "開催時や延期日に備え、犬の首輪に装着した「令和8年度狂犬病予防注射済票」と1年以内の「混合ワクチン予防接種証明書」を必携！無料・申込不要で、防災士の佐々木邦夫さんの相談会は市内在住者対象です。", "start_sec": 520.48, "end_sec": 539.955, "duration_sec": 19.475}, {"index": 5, "global_index": 34, "speaker": "guest", "speaker_name": "出雲 健太", "text": "ペットのフードや水も、食べ慣れたものを5日〜7日分ローリングストックしておくと安心ですよ。", "start_sec": 539.955, "end_sec": 549.085, "duration_sec": 9.13}, {"index": 6, "global_index": 35, "speaker": "heizo", "speaker_name": "平蔵", "text": "そして2つ目は雨に関係なく明日締切！小川町2丁目・中央公民館の「こだいらのオリジナル防災マップをつくろう」は12月12日・19日土曜10時〜正午の全2回、講師は小野修平さん、無料・定員30人抽選。申込みフォームか、月曜休館を除く 042-341-0861 へ明日28日までにどうぞ！", "start_sec": 549.385, "end_sec": 578.03, "duration_sec": 28.645}]}, {"id": "daily_bousai", "title": "暮らしの防災チェック！本格寒波前の水道管凍結予防＆小平市の応急給水拠点", "bgm": "bgm_news", "intro_jingle": "stinger", "outro_jingle": null, "start_sec": 578.41, "speech_start_sec": 580.61, "end_sec": 660.025, "duration_sec": 81.615, "lines": [{"index": 0, "global_index": 36, "speaker": "heizo", "speaker_name": "平蔵", "text": "続いて暮らしの防災チェック！日曜からは寒気も入ります。本格寒波の前に備えたいのが「水道管の凍結予防」ですね。", "start_sec": 580.61, "end_sec": 589.423, "duration_sec": 8.813}, {"index": 1, "global_index": 37, "speaker": "guest", "speaker_name": "出雲 健太", "text": "東京都水道局の目安では「マイナス4度以下」や日陰・風当たりの強い露出管が要注意。保温チューブや布を巻き濡れないようビニールテープで保護し、万が一の破裂に備えてメーターボックス内の「元栓（止水栓）」の位置を確認しておきましょう。", "start_sec": 589.423, "end_sec": 607.865, "duration_sec": 18.442}, {"index": 2, "global_index": 38, "speaker": "koharu", "speaker_name": "小春", "text": "もし冬の朝に凍って水が出なくなったら、やかんの熱湯をかければすぐ溶けますよね？", "start_sec": 608.205, "end_sec": 615.449, "duration_sec": 7.244}, {"index": 3, "global_index": 39, "speaker": "guest", "speaker_name": "出雲 健太", "text": "熱湯は絶対NG！急な温度差で破裂する恐れがあります。自然解凍を待つか、タオルの上から40度程度のぬるま湯をゆっくりかけてくださいね。", "start_sec": 615.449, "end_sec": 627.71, "duration_sec": 12.261}, {"index": 4, "global_index": 40, "speaker": "heizo", "speaker_name": "平蔵", "text": "断水時に向かう小平市内の主な給水拠点は、小川浄水所、上水南浄水所、市立津田公園の応急給水槽、そして避難所となる小中学校や小平元気村おがわ東の貯水槽です。", "start_sec": 628.03, "end_sec": 644.155, "duration_sec": 16.125}, {"index": 5, "global_index": 41, "speaker": "koharu", "speaker_name": "小春", "text": "給水拠点に行くための清潔なポリタンクやリュックも準備しておきます！東京都の「東京備蓄ナビ」で家族に合う備蓄リストを調べるのも週末にぴったりですね！", "start_sec": 644.155, "end_sec": 659.645, "duration_sec": 15.49}]}, {"id": "ending", "title": "小春＆平蔵の防災ノート＆明日の土曜18分拡大版予告", "bgm": "bgm_warm", "intro_jingle": "stinger", "outro_jingle": "outro_jingle", "start_sec": 660.025, "speech_start_sec": 662.225, "end_sec": 798.89, "duration_sec": 138.865, "lines": [{"index": 0, "global_index": 42, "speaker": "koharu", "speaker_name": "小春", "text": "お別れの時間です！出雲さん、おいしい備蓄から水道対策まで、今日すぐ台所を見直します！ありがとうございました！", "start_sec": 662.225, "end_sec": 670.636, "duration_sec": 8.411}, {"index": 1, "global_index": 43, "speaker": "guest", "speaker_name": "出雲 健太", "text": "こちらこそありがとうございました！ぜひ週末のお鍋から、楽しくローリングストックを始めてみてくださいね。", "start_sec": 670.636, "end_sec": 678.58, "duration_sec": 7.944}, {"index": 2, "global_index": 44, "speaker": "heizo", "speaker_name": "平蔵", "text": "今日の防災ノートです。①ローリングストック＆フェーズフリーで最低3日〜1週間分を備える。②カセットボンベ約7年・コンロ約10年・1人1週間約6本、過熱NG行動を避ける。③寒波前に水道管保温・元栓・給水拠点を確認、凍結時の熱湯は厳禁です。", "start_sec": 678.9, "end_sec": 703.918, "duration_sec": 25.018}, {"index": 3, "global_index": 45, "speaker": "koharu", "speaker_name": "小春", "text": "明日11月28日土曜の予告！テーマは「地域コミュニティ・避難所運営・ペット・福祉防災」、ゲストは結城美咲さん！土曜15分特集版に「小平市 ペット防災相談会＆オリジナル防災マップ講座 締切スペシャル」当日特別コーナーを加えた、約18分拡大版です！", "start_sec": 703.918, "end_sec": 729.785, "duration_sec": 25.867}, {"index": 4, "global_index": 46, "speaker": "heizo", "speaker_name": "平蔵", "text": "まちネタは朝から夜まで楽しむ小平の土曜日プラン！午前は花小金井駅近くのパン屋「アベイユ」や「たけのこ公園にキッチンカーがやってくる！Vol.6」（10時〜15時）、夕方17時半からは明日開幕の「萩山公園ライトアップ『きらめく紅葉につつまれて』」（11月28日〜12月13日・100本以上のイロハモミジ）へ巡る絶景ルート。解説は「ペット同行避難と同伴避難の違い・しつけ・ワクチン証明」「自主防災組織とご近所の共助」です！", "start_sec": 730.085, "end_sec": 769.435, "duration_sec": 39.35}, {"index": 5, "global_index": 47, "speaker": "koharu", "speaker_name": "小春", "text": "18分豪華ですね！今日はガスミュージアムの赤レンガとハート形の東京ゴールドを思い浮かべて、元気に出発しましょー！", "start_sec": 769.755, "end_sec": 780.817, "duration_sec": 11.062}, {"index": 6, "global_index": 48, "speaker": "heizo", "speaker_name": "平蔵", "text": "寒暖差に気をつけて、今夜はカセットボンベの底もチェックしてみてくださいね。今日も笑顔でいってらっしゃい！", "start_sec": 780.817, "end_sec": 791.09, "duration_sec": 10.273}]}], "recent_episodes": [{"date": "2026-11-27", "weekday_ja": "金曜日", "theme": "食・備蓄・ライフライン", "guest_name": "出雲 健太", "href": "../../episodes/2026-11-27/index.html", "has_audio": true}, {"date": "2026-11-26", "weekday_ja": "木曜日", "theme": "災害医療・応急手当・こころのケア", "guest_name": "白川 優子", "href": "../../episodes/2026-11-26/index.html", "has_audio": true}, {"date": "2026-11-25", "weekday_ja": "水曜日", "theme": "火災・電気・特殊消防機材", "guest_name": "火ノ原 鉄平", "href": "../../episodes/2026-11-25/index.html", "has_audio": true}, {"date": "2026-11-24", "weekday_ja": "火曜日", "theme": "気象・水害・都市河川", "guest_name": "雨宮 栞", "href": "../../episodes/2026-11-24/index.html", "has_audio": true}, {"date": "2026-11-23", "weekday_ja": "月曜日", "theme": "地震・建築・地盤", "guest_name": "岩城 剛", "href": "../../episodes/2026-11-23/index.html", "has_audio": true}, {"date": "2026-11-22", "weekday_ja": "日曜日", "theme": "スピンオフ特集：小川パレット徹底ガイド", "guest_name": "", "href": "../../episodes/2026-11-22-spinoff-ogawa-palette/index.html", "has_audio": true}, {"date": "2026-11-22", "weekday_ja": "日曜日", "theme": "防災テック・ハザードマップ・衛星・最新情報", "guest_name": "星野 創", "href": "../../episodes/2026-11-22/index.html", "has_audio": true}]}</script>
+  <script>
+    (function () {
+      const data = JSON.parse(document.getElementById("episode-data").textContent);
+      const mainRoot = document.getElementById("main-root");
+      const audio = document.getElementById("radio-audio");
+      const btnPlay = document.getElementById("btn-play");
+      const btnBack = document.getElementById("btn-back");
+      const btnFwd = document.getElementById("btn-fwd");
+      const btnAutoScroll = document.getElementById("btn-autoscroll");
+      const btnSpeedCycle = document.getElementById("btn-speed-cycle");
+      const scrubber = document.getElementById("scrubber");
+      const timeReadout = document.getElementById("time-readout");
+      const nowChapter = document.getElementById("now-chapter");
+      const chapterDetails = document.getElementById("chapter-details");
+      const chapterList = document.getElementById("chapter-list");
+      const transcriptBody = document.getElementById("transcript-body");
+      const speedButtons = Array.from(document.querySelectorAll("#speed-group button"));
+      const mobileTabButtons = Array.from(document.querySelectorAll("#mobile-tabs button"));
+
+      if (chapterDetails && window.innerWidth > 920) {
+        chapterDetails.open = true;
+      }
+
+      const speedRates = [1.0, 1.15, 1.25, 1.5, 0.9];
+      let speedIdx = 0;
+      let autoScroll = true;
+      let isScrubbing = false;
+      let lastActiveLineIdx = -1;
+      let lastActiveSegId = null;
+
+      function fmtTime(sec) {
+        const s = Math.max(0, Math.floor(sec || 0));
+        return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+      }
+
+      function appendContactWithTelLinks(container, text) {
+        const phoneRe = /(0\d{1,4}-\d{1,4}-\d{3,4})/g;
+        let last = 0;
+        let m;
+        while ((m = phoneRe.exec(text)) !== null) {
+          if (m.index > last) {
+            container.appendChild(document.createTextNode(text.slice(last, m.index)));
+          }
+          const a = document.createElement("a");
+          a.className = "tel-link";
+          a.href = "tel:" + m[1];
+          a.textContent = m[1];
+          container.appendChild(a);
+          last = phoneRe.lastIndex;
+        }
+        if (last < text.length) {
+          container.appendChild(document.createTextNode(text.slice(last)));
+        }
+      }
+
+      if (data.has_audio) {
+        audio.src = data.audio_src;
+      } else {
+        document.getElementById("audio-pending").style.display = "block";
+        btnPlay.disabled = true;
+        btnBack.disabled = true;
+        btnFwd.disabled = true;
+        scrubber.disabled = true;
+      }
+
+      const totalEst = data.manifest_meta.total_duration_sec || 600;
+      scrubber.max = String(totalEst);
+      timeReadout.textContent = "00:00 / " + fmtTime(totalEst);
+
+      const chapterButtons = new Map();
+      const flatLines = [];
+
+      data.segments.forEach((seg, segIdx) => {
+        const cBtn = document.createElement("button");
+        cBtn.type = "button";
+        cBtn.className = "chapter-btn";
+        const tcSpanTop = document.createElement("span");
+        tcSpanTop.className = "chapter-tc";
+        tcSpanTop.textContent = fmtTime(seg.start_sec) + " 〜 " + fmtTime(seg.end_sec);
+        const titleSpanTop = document.createElement("span");
+        titleSpanTop.className = "chapter-title";
+        titleSpanTop.textContent = (segIdx + 1) + ". " + seg.title;
+        cBtn.appendChild(tcSpanTop);
+        cBtn.appendChild(titleSpanTop);
+        cBtn.addEventListener("click", () => {
+          if (!data.has_audio) return;
+          audio.currentTime = seg.start_sec;
+          audio.play().catch(() => {});
+          if (chapterDetails && window.innerWidth <= 920) {
+            chapterDetails.open = false;
+          }
+        });
+        chapterList.appendChild(cBtn);
+        chapterButtons.set(seg.id, cBtn);
+
+        const divEl = document.createElement("div");
+        divEl.className = "seg-divider";
+        const sTitle = document.createElement("span");
+        sTitle.textContent = (segIdx + 1) + ". " + seg.title;
+        const sTc = document.createElement("span");
+        sTc.className = "chapter-tc";
+        sTc.textContent = fmtTime(seg.start_sec);
+        divEl.appendChild(sTitle);
+        divEl.appendChild(sTc);
+        transcriptBody.appendChild(divEl);
+
+        seg.lines.forEach((line) => {
+          const row = document.createElement("div");
+          row.className = "line-item";
+          const tc = document.createElement("span");
+          tc.className = "line-tc";
+          tc.textContent = fmtTime(line.start_sec);
+
+          const sp = document.createElement("span");
+          sp.className = "speaker-pill speaker-" + line.speaker;
+          sp.textContent = line.speaker_name;
+
+          const txt = document.createElement("span");
+          txt.className = "line-text";
+          txt.textContent = line.text;
+
+          row.appendChild(tc);
+          row.appendChild(sp);
+          row.appendChild(txt);
+          row.addEventListener("click", () => {
+            if (!data.has_audio) return;
+            audio.currentTime = line.start_sec;
+            audio.play().catch(() => {});
+          });
+          transcriptBody.appendChild(row);
+          flatLines.push({ ...line, segId: seg.id, segTitle: seg.title, el: row });
+        });
+      });
+
+      const gwPanel = document.getElementById("guest-weather-panel");
+      const gCard = document.createElement("div");
+      gCard.className = "guest-card";
+      const gTitle = document.createElement("div");
+      gTitle.style.fontWeight = "700";
+      if (data.guest && data.guest.name) {
+        gTitle.textContent = data.guest.name + "（" + (data.guest.title || "") + "）";
+      } else {
+        gTitle.textContent = (data.meta && data.meta.theme_badge) || "小春＆平蔵 スピンオフ特別企画";
+      }
+      const gDesc = document.createElement("div");
+      gDesc.style.fontSize = "0.82rem";
+      gDesc.style.marginTop = "0.25rem";
+      gDesc.textContent = (data.guest && data.guest.personality) || "";
+      const kwWrap = document.createElement("div");
+      kwWrap.className = "kw-wrap";
+      const chipList = (data.guest && data.guest.keywords_featured && data.guest.keywords_featured.length > 0)
+        ? data.guest.keywords_featured
+        : ((data.meta && data.meta.kodaira_topics) || []);
+      chipList.forEach((kw) => {
+        const chip = document.createElement("span");
+        chip.className = "kw-chip";
+        chip.textContent = kw;
+        kwWrap.appendChild(chip);
+      });
+      gCard.appendChild(gTitle);
+      gCard.appendChild(gDesc);
+      gCard.appendChild(kwWrap);
+      const gCastLink = document.createElement("a");
+      gCastLink.href = data.cast_href || "cast.html";
+      gCastLink.style.display = "inline-block";
+      gCastLink.style.marginTop = "0.55rem";
+      gCastLink.style.fontSize = "0.8rem";
+      gCastLink.style.fontWeight = "700";
+      gCastLink.style.textDecoration = "none";
+      gCastLink.textContent = "出演者プロフィール＆自己紹介を聴く →";
+      gCard.appendChild(gCastLink);
+      gwPanel.appendChild(gCard);
+
+      if (data.weather && data.weather.daily && data.weather.daily.length > 0) {
+        const wToday = data.weather.daily[0];
+        const wBox = document.createElement("div");
+        wBox.className = "note-box";
+        const wHead = document.createElement("strong");
+        wHead.textContent = "今朝の小平市のお天気（" + wToday.date + "）";
+        const wText = document.createElement("div");
+        wText.textContent =
+          wToday.weather + " ／ 最高 " + wToday.temp_max_c + "℃・最低 " + wToday.temp_min_c +
+          "℃ ／ 降水確率 " + wToday.precip_prob_max + "%";
+        wBox.appendChild(wHead);
+        wBox.appendChild(wText);
+        gwPanel.appendChild(wBox);
+      }
+
+      const linksPanel = document.getElementById("links-panel");
+      (data.links || []).forEach((lk) => {
+        const a = document.createElement("a");
+        a.className = "link-card";
+        a.href = lk.url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        const cat = document.createElement("span");
+        cat.className = "pill-tag";
+        cat.textContent = lk.category || "関連リンク";
+        const title = document.createElement("div");
+        title.className = "link-title";
+        title.textContent = (lk.title || lk.url) + " ↗";
+        const note = document.createElement("p");
+        note.className = "link-note";
+        note.textContent = lk.note || lk.url;
+        a.appendChild(cat);
+        a.appendChild(title);
+        a.appendChild(note);
+        linksPanel.appendChild(a);
+      });
+
+      const notesPanel = document.getElementById("notes-panel");
+      const nBox = document.createElement("div");
+      nBox.className = "note-box";
+      const nTitle = document.createElement("strong");
+      nTitle.textContent = "今日身につけたポイント";
+      const ul = document.createElement("ul");
+      (data.learned_notes.learned_points || []).forEach((pt) => {
+        const li = document.createElement("li");
+        li.textContent = pt;
+        ul.appendChild(li);
+      });
+      nBox.appendChild(nTitle);
+      nBox.appendChild(ul);
+      if (data.learned_notes.kodaira_discovery) {
+        const disc = document.createElement("div");
+        disc.style.marginTop = "0.35rem";
+        disc.textContent = "小平発見: " + data.learned_notes.kodaira_discovery;
+        nBox.appendChild(disc);
+      }
+      notesPanel.appendChild(nBox);
+
+      (data.references || []).forEach((ref) => {
+        const rBox = document.createElement("div");
+        rBox.className = "note-box";
+        const rTag = document.createElement("span");
+        rTag.className = "pill-tag";
+        rTag.textContent = ref.category || "メモ";
+        const rTitle = document.createElement("div");
+        rTitle.style.fontWeight = "700";
+        rTitle.textContent = ref.title || "";
+        const rDet = document.createElement("div");
+        rDet.style.fontSize = "0.8rem";
+        rDet.style.color = "var(--muted)";
+        rDet.textContent = ref.detail || "";
+        const rCon = document.createElement("div");
+        rCon.style.fontSize = "0.84rem";
+        rCon.style.fontWeight = "700";
+        rCon.style.marginTop = "0.2rem";
+        appendContactWithTelLinks(rCon, ref.contact || "");
+        rBox.appendChild(rTag);
+        rBox.appendChild(rTitle);
+        rBox.appendChild(rDet);
+        rBox.appendChild(rCon);
+        notesPanel.appendChild(rBox);
+      });
+
+      const recentPanel = document.getElementById("recent-panel");
+      (data.recent_episodes || []).forEach((ep) => {
+        const a = document.createElement("a");
+        a.className = "link-card";
+        a.href = ep.href;
+        const tag = document.createElement("span");
+        tag.className = "pill-tag";
+        tag.textContent = ep.date + "（" + ep.weekday_ja + "）";
+        const title = document.createElement("div");
+        title.className = "link-title";
+        title.textContent = ep.theme;
+        const note = document.createElement("p");
+        note.className = "link-note";
+        note.textContent = (ep.guest_name ? ("ゲスト: " + ep.guest_name) : "小春＆平蔵スペシャル") + (ep.has_audio ? " ／ 音声あり" : " ／ 台本公開");
+        a.appendChild(tag);
+        a.appendChild(title);
+        a.appendChild(note);
+        recentPanel.appendChild(a);
+      });
+
+      mobileTabButtons.forEach((tb) => {
+        tb.addEventListener("click", () => {
+          const tab = tb.dataset.tab || "script";
+          mainRoot.dataset.activeTab = tab;
+          mobileTabButtons.forEach((b) => b.classList.toggle("active", b === tb));
+        });
+      });
+
+      function applySpeed(rate) {
+        audio.playbackRate = rate;
+        btnSpeedCycle.textContent = rate + "x";
+        speedButtons.forEach((b) => {
+          b.classList.toggle("is-selected", parseFloat(b.dataset.rate || "1") === rate);
+        });
+      }
+
+      function updateSyncUI() {
+        const cur = audio.currentTime || 0;
+        const total = Number.isFinite(audio.duration) ? audio.duration : totalEst;
+        if (!isScrubbing) {
+          scrubber.max = String(total || totalEst);
+          scrubber.value = String(cur);
+        }
+        timeReadout.textContent = fmtTime(cur) + " / " + fmtTime(total);
+
+        let activeSeg = data.segments[0];
+        for (const seg of data.segments) {
+          if (cur >= seg.start_sec) activeSeg = seg;
+        }
+        if (activeSeg && activeSeg.id !== lastActiveSegId) {
+          if (lastActiveSegId && chapterButtons.has(lastActiveSegId)) {
+            chapterButtons.get(lastActiveSegId).classList.remove("active");
+          }
+          if (chapterButtons.has(activeSeg.id)) {
+            const chEl = chapterButtons.get(activeSeg.id);
+            chEl.classList.add("active");
+          }
+          nowChapter.textContent = activeSeg.title;
+          lastActiveSegId = activeSeg.id;
+        }
+
+        let activeLineIdx = -1;
+        for (let i = 0; i < flatLines.length; i++) {
+          const l = flatLines[i];
+          if (cur >= l.start_sec && cur <= l.end_sec + 0.35) {
+            activeLineIdx = i;
+            break;
+          }
+          if (cur >= l.start_sec) activeLineIdx = i;
+        }
+        if (activeLineIdx !== lastActiveLineIdx) {
+          if (lastActiveLineIdx >= 0 && flatLines[lastActiveLineIdx]) {
+            flatLines[lastActiveLineIdx].el.classList.remove("active");
+          }
+          if (activeLineIdx >= 0 && flatLines[activeLineIdx]) {
+            const activeEl = flatLines[activeLineIdx].el;
+            activeEl.classList.add("active");
+            if (autoScroll && !audio.paused && mainRoot.dataset.activeTab === "script") {
+              activeEl.scrollIntoView({ block: "center", behavior: "smooth" });
+            }
+          }
+          lastActiveLineIdx = activeLineIdx;
+        }
+      }
+
+      btnPlay.addEventListener("click", () => {
+        if (!data.has_audio) return;
+        if (audio.paused) audio.play().catch(() => {});
+        else audio.pause();
+      });
+      btnBack.addEventListener("click", () => {
+        if (!data.has_audio) return;
+        audio.currentTime = Math.max(0, audio.currentTime - 15);
+        updateSyncUI();
+      });
+      btnFwd.addEventListener("click", () => {
+        if (!data.has_audio) return;
+        const total = Number.isFinite(audio.duration) ? audio.duration : totalEst;
+        audio.currentTime = Math.min(total, audio.currentTime + 15);
+        updateSyncUI();
+      });
+      btnAutoScroll.addEventListener("click", () => {
+        autoScroll = !autoScroll;
+        btnAutoScroll.textContent = autoScroll ? "追従ON" : "追従OFF";
+        btnAutoScroll.classList.toggle("active-toggle", autoScroll);
+      });
+      speedButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const rate = parseFloat(btn.dataset.rate || "1");
+          const found = speedRates.indexOf(rate);
+          if (found >= 0) speedIdx = found;
+          applySpeed(rate);
+        });
+      });
+      btnSpeedCycle.addEventListener("click", () => {
+        speedIdx = (speedIdx + 1) % speedRates.length;
+        applySpeed(speedRates[speedIdx]);
+      });
+      scrubber.addEventListener("input", () => {
+        isScrubbing = true;
+        const total = Number.isFinite(audio.duration) ? audio.duration : totalEst;
+        timeReadout.textContent = fmtTime(Number(scrubber.value)) + " / " + fmtTime(total);
+      });
+      scrubber.addEventListener("change", () => {
+        audio.currentTime = Number(scrubber.value);
+        isScrubbing = false;
+        updateSyncUI();
+      });
+      audio.addEventListener("play", () => { btnPlay.textContent = "❚❚ 停止"; });
+      audio.addEventListener("pause", () => { btnPlay.textContent = "▶ 再生"; });
+      audio.addEventListener("ended", () => { btnPlay.textContent = "▶ 再生"; });
+      audio.addEventListener("timeupdate", updateSyncUI);
+      audio.addEventListener("loadedmetadata", updateSyncUI);
+    })();
+  </script>
+</body>
+</html>
