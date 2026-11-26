@@ -256,6 +256,10 @@ def _build_notebook_payload(
 
 NOTEBOOK_CSS = r"""
 /* Handwritten diary desk & notebook aesthetic */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 body {
   background-color: #efe7d8;
   background-image:
@@ -843,7 +847,7 @@ body {
   line-height: 1.3;
 }
 
-/* Pixel-locked ruled writing sheet */
+/* Pixel-locked ruled writing sheet (CSS fallback + JS exact line-box sync) */
 .nb-ruled-body {
   --nb-line: 32px;
   --nb-baseline-shift: 3px;
@@ -861,9 +865,27 @@ body {
   background-position: 0 0;
   background-origin: border-box;
 }
+.nb-ruled-body.is-synced {
+  background-image: none;
+}
+.nb-rule-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.nb-rule-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #ddd4bc;
+}
 
 /* Section subheadings inside page */
 .nb-sec-title {
+  position: relative;
+  z-index: 1;
   display: block;
   margin: 0;
   padding: 0;
@@ -886,6 +908,8 @@ body {
 
 /* Interactive Checkable Learned Points */
 .nb-memo-list {
+  position: relative;
+  z-index: 1;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -903,8 +927,10 @@ body {
   cursor: pointer;
   transition: background 0.14s ease;
 }
-.nb-memo-item:hover {
-  background: rgba(252, 242, 207, 0.45);
+@media (hover: hover) {
+  .nb-memo-item:hover {
+    background: rgba(252, 242, 207, 0.45);
+  }
 }
 .nb-chk-btn {
   flex: 0 0 auto;
@@ -1644,6 +1670,11 @@ $NOTEBOOK_CSS</style>
           const ruledBody = document.createElement("div");
           ruledBody.className = "nb-ruled-body";
 
+          const ruleLayer = document.createElement("div");
+          ruleLayer.className = "nb-rule-layer";
+          ruleLayer.setAttribute("aria-hidden", "true");
+          ruledBody.appendChild(ruleLayer);
+
           const secTitle = document.createElement("h3");
           secTitle.className = "nb-sec-title";
           const bar = document.createElement("span");
@@ -1696,6 +1727,7 @@ $NOTEBOOK_CSS</style>
               saveChecks(checksMap);
               syncCheckVisual();
               updateStats();
+              syncRuledBody(ruledBody);
             });
 
             li.appendChild(btn);
@@ -1761,6 +1793,213 @@ $NOTEBOOK_CSS</style>
           article.appendChild(foot);
           listEl.appendChild(article);
         });
+
+        scheduleSyncRuledLines();
+      }
+
+      function collectVisualLines(el, baseTop) {
+        if (!el || typeof document.createRange !== "function") return [];
+        const cs = window.getComputedStyle(el);
+        const lineHint = parseFloat(cs.lineHeight) || 30;
+        const threshold = Math.max(10, lineHint * 0.45);
+        const rawRects = [];
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+        let textNode;
+        while ((textNode = walker.nextNode())) {
+          if (!textNode.nodeValue || !textNode.nodeValue.trim()) continue;
+          const parentEl = textNode.parentElement;
+          const isChip = !!(parentEl && parentEl.classList && parentEl.classList.contains("nb-done-chip"));
+          const range = document.createRange();
+          range.selectNodeContents(textNode);
+          const rects = range.getClientRects();
+          for (let i = 0; i < rects.length; i += 1) {
+            const r = rects[i];
+            if (r.width > 0.5 && r.height > 0.5) {
+              rawRects.push({
+                top: r.top - baseTop,
+                bottom: r.bottom - baseTop,
+                mid: ((r.top + r.bottom) / 2) - baseTop,
+                height: r.height,
+                isChip: isChip,
+              });
+            }
+          }
+        }
+        if (rawRects.length === 0) return [];
+        rawRects.sort(function (a, b) {
+          return a.mid - b.mid;
+        });
+
+        const clusters = [];
+        rawRects.forEach(function (frag) {
+          let matched = null;
+          for (let j = clusters.length - 1; j >= 0; j -= 1) {
+            if (Math.abs(frag.mid - clusters[j].mid) <= threshold) {
+              matched = clusters[j];
+              break;
+            }
+          }
+          if (!matched) {
+            clusters.push({
+              top: frag.top,
+              bottom: frag.bottom,
+              mid: frag.mid,
+              height: frag.height,
+              hasMain: !frag.isChip,
+            });
+          } else {
+            if (frag.isChip && matched.hasMain) {
+              return;
+            }
+            if (!frag.isChip && !matched.hasMain) {
+              matched.top = frag.top;
+              matched.bottom = frag.bottom;
+              matched.mid = frag.mid;
+              matched.height = frag.height;
+              matched.hasMain = true;
+              return;
+            }
+            matched.top = Math.min(matched.top, frag.top);
+            matched.bottom = Math.max(matched.bottom, frag.bottom);
+            matched.mid = (matched.top + matched.bottom) / 2;
+            matched.height = matched.bottom - matched.top;
+          }
+        });
+        return clusters;
+      }
+
+      function computeMedianStep(linesByMemo, memoEls) {
+        const diffs = [];
+        linesByMemo.forEach(function (lines) {
+          for (let i = 1; i < lines.length; i += 1) {
+            const d = lines[i].mid - lines[i - 1].mid;
+            if (d > 14 && d < 80) diffs.push(d);
+          }
+        });
+        if (diffs.length > 0) {
+          diffs.sort(function (a, b) {
+            return a - b;
+          });
+          const midIdx = Math.floor(diffs.length / 2);
+          return diffs.length % 2 === 1 ? diffs[midIdx] : (diffs[midIdx - 1] + diffs[midIdx]) / 2;
+        }
+        if (memoEls.length > 0) {
+          const lh = parseFloat(window.getComputedStyle(memoEls[0]).lineHeight);
+          if (lh > 14) return lh;
+        }
+        return 30;
+      }
+
+      function syncRuledBody(ruledBody) {
+        if (!ruledBody) return;
+        const ruleLayer = ruledBody.querySelector(".nb-rule-layer");
+        const secTitle = ruledBody.querySelector(".nb-sec-title");
+        const ul = ruledBody.querySelector(".nb-memo-list");
+        if (!ruleLayer || !ul) return;
+
+        const memoEls = Array.prototype.slice.call(ul.querySelectorAll(".nb-memo-text"));
+        const baseTopBefore = ruledBody.getBoundingClientRect().top;
+        const initialMemoLines = memoEls.map(function (el) {
+          return collectVisualLines(el, baseTopBefore);
+        });
+        const lineStep = computeMedianStep(initialMemoLines, memoEls);
+        const stepPx = Math.round(lineStep) + "px";
+
+        if (ul.style.gap !== stepPx) {
+          ul.style.gap = stepPx;
+        }
+        if (ruledBody.style.paddingBottom !== stepPx) {
+          ruledBody.style.paddingBottom = stepPx;
+        }
+
+        const baseTop = ruledBody.getBoundingClientRect().top;
+        const liEls = Array.prototype.slice.call(ul.querySelectorAll(".nb-memo-item"));
+        liEls.forEach(function (li) {
+          const chk = li.querySelector(".nb-chk-btn");
+          const txt = li.querySelector(".nb-memo-text");
+          if (!chk || !txt) return;
+          const tLines = collectVisualLines(txt, baseTop);
+          if (tLines.length === 0) return;
+          const liTop = li.getBoundingClientRect().top - baseTop;
+          const chkH = chk.offsetHeight || 20;
+          const targetMargin = Math.max(0, Math.round((tLines[0].mid - liTop) - (chkH / 2))) + "px";
+          if (chk.style.marginTop !== targetMargin) {
+            chk.style.marginTop = targetMargin;
+          }
+        });
+
+        const finalBaseTop = ruledBody.getBoundingClientRect().top;
+        const allLines = [];
+        if (secTitle) {
+          collectVisualLines(secTitle, finalBaseTop).forEach(function (ln) {
+            allLines.push(ln);
+          });
+        }
+        memoEls.forEach(function (el) {
+          collectVisualLines(el, finalBaseTop).forEach(function (ln) {
+            allLines.push(ln);
+          });
+        });
+        if (allLines.length === 0) return;
+
+        allLines.sort(function (a, b) {
+          return a.mid - b.mid;
+        });
+
+        const ruleYs = [];
+        allLines.forEach(function (ln) {
+          const offset = Math.min(lineStep * 0.44, (ln.height / 2) + 3.5);
+          const y = Math.round((ln.mid + offset) * 2) / 2;
+          if (ruleYs.length === 0 || y - ruleYs[ruleYs.length - 1] > lineStep * 0.45) {
+            ruleYs.push(y);
+          }
+        });
+
+        const filledYs = [];
+        for (let i = 0; i < ruleYs.length; i += 1) {
+          const curY = ruleYs[i];
+          if (i > 0) {
+            const prevY = ruleYs[i - 1];
+            const gap = curY - prevY;
+            if (gap > lineStep * 1.55) {
+              const steps = Math.max(2, Math.round(gap / lineStep));
+              for (let k = 1; k < steps; k += 1) {
+                filledYs.push(Math.round((prevY + gap * (k / steps)) * 2) / 2);
+              }
+            }
+          }
+          filledYs.push(curY);
+        }
+        if (filledYs.length > 0) {
+          filledYs.push(Math.round((filledYs[filledYs.length - 1] + lineStep) * 2) / 2);
+        }
+
+        const frag = document.createDocumentFragment();
+        filledYs.forEach(function (y) {
+          const lineEl = document.createElement("div");
+          lineEl.className = "nb-rule-line";
+          lineEl.style.top = y + "px";
+          frag.appendChild(lineEl);
+        });
+        ruleLayer.textContent = "";
+        ruleLayer.appendChild(frag);
+        ruledBody.classList.add("is-synced");
+      }
+
+      function syncAllRuledLines() {
+        const sheets = document.querySelectorAll("#notebook-pages .nb-ruled-body");
+        for (let i = 0; i < sheets.length; i += 1) {
+          syncRuledBody(sheets[i]);
+        }
+      }
+
+      let syncRafId = 0;
+      function scheduleSyncRuledLines() {
+        if (syncRafId) return;
+        syncRafId = window.requestAnimationFrame(function () {
+          syncRafId = 0;
+          syncAllRuledLines();
+        });
       }
 
       document.getElementById("nb-search").addEventListener("input", function (ev) {
@@ -1775,11 +2014,36 @@ $NOTEBOOK_CSS</style>
         renderPages();
       });
 
+      if (document.fonts) {
+        if (document.fonts.ready && typeof document.fonts.ready.then === "function") {
+          document.fonts.ready.then(scheduleSyncRuledLines);
+        }
+        if (typeof document.fonts.addEventListener === "function") {
+          document.fonts.addEventListener("loadingdone", scheduleSyncRuledLines);
+        }
+      }
+      if (typeof ResizeObserver === "function") {
+        const pagesHost = document.getElementById("notebook-pages");
+        let lastObservedWidth = pagesHost ? pagesHost.getBoundingClientRect().width : 0;
+        const ro = new ResizeObserver(function (entriesObs) {
+          if (!entriesObs || entriesObs.length === 0) return;
+          const newWidth = entriesObs[0].contentRect.width;
+          if (Math.abs(newWidth - lastObservedWidth) > 0.5) {
+            lastObservedWidth = newWidth;
+            scheduleSyncRuledLines();
+          }
+        });
+        if (pagesHost) ro.observe(pagesHost);
+      }
+      window.addEventListener("resize", scheduleSyncRuledLines);
+      window.addEventListener("orientationchange", scheduleSyncRuledLines);
+
       updateStats();
       renderPolaroids();
       renderGuestRally();
       renderTabs();
       renderPages();
+      window.setTimeout(scheduleSyncRuledLines, 350);
     })();
   </script>
 </body>
