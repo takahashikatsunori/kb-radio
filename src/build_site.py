@@ -12,6 +12,17 @@ from typing import Any
 from site_calendar_page import render_calendar_page
 from site_listen_page import render_listen_page
 from site_notebook_page import render_notebook_page
+from site_share import (
+    DEFAULT_HERO_ALT,
+    DEFAULT_SITE_BASE_URL,
+    build_episode_og_meta,
+    clean_episode_headline,
+    format_short_date_ja,
+    load_weekly_banners,
+    render_share_redirect_page,
+    resolve_episode_image,
+    resolve_site_base_url,
+)
 from site_tech_page import render_tech_page
 
 JST = timezone(timedelta(hours=9))
@@ -442,6 +453,43 @@ header {
   padding: 0.78rem 1rem;
   border-left: 4px solid var(--amber);
 }
+.ep-hero-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-height: 290px;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 0.65rem;
+  background: #dff0e6;
+}
+.ep-hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ep-hero-spot-badge,
+.archive-spot-badge {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  max-width: calc(100% - 1rem);
+  padding: 0.2rem 0.58rem;
+  border-radius: 999px;
+  background: rgba(18, 64, 40, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
 .ep-meta-row {
   display: flex;
   flex-wrap: wrap;
@@ -597,6 +645,126 @@ button.active-toggle {
   border-color: var(--forest);
 }
 .speed-cycle-btn {
+  display: none;
+}
+.share-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--forest-soft);
+  border-color: rgba(27, 94, 60, 0.35);
+  color: var(--forest-dark);
+}
+.share-toggle-btn[aria-expanded="true"] {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #ffffff;
+}
+.share-icon {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+}
+.share-panel {
+  margin-top: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid #d5e2d8;
+  background: #f8faf7;
+}
+.share-panel[hidden] {
+  display: none;
+}
+.share-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+.share-panel-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--forest-dark);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+button.share-panel-close {
+  min-height: 28px;
+  width: 28px;
+  padding: 0;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.share-btn {
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 36px;
+  padding: 0.36rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  transition: filter 0.15s, background 0.15s, border-color 0.15s;
+}
+.share-btn[hidden] {
+  display: none;
+}
+.share-btn-native {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #ffffff;
+}
+.share-btn-native:hover {
+  background: var(--forest-dark);
+  border-color: var(--forest-dark);
+}
+.share-btn-line {
+  background: #06c755;
+  color: #ffffff;
+}
+.share-btn-x {
+  background: #111827;
+  color: #ffffff;
+}
+.share-btn-copy {
+  background: #ffffff;
+  color: var(--forest-dark);
+  border-color: rgba(27, 94, 60, 0.35);
+}
+.share-btn-line:hover,
+.share-btn-x:hover {
+  filter: brightness(1.07);
+}
+.share-btn-copy:hover {
+  background: var(--forest-soft);
+  border-color: var(--forest);
+}
+.share-feedback {
+  margin-top: 0.38rem;
+  min-height: 1.15em;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--forest-dark);
+}
+.share-feedback:empty {
   display: none;
 }
 
@@ -852,6 +1020,28 @@ button.active-toggle {
   gap: 0.45rem;
   overflow-wrap: anywhere;
 }
+.archive-thumb-wrap {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #dff0e6;
+  margin-bottom: 0.15rem;
+}
+.archive-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.archive-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 0.2rem;
+}
 .btn-link {
   display: inline-block;
   text-decoration: none;
@@ -864,6 +1054,19 @@ button.active-toggle {
   text-align: center;
 }
 .btn-link:hover { background: var(--forest-dark); }
+.btn-link-secondary {
+  display: inline-block;
+  text-decoration: none;
+  background: #ffffff;
+  color: var(--forest-dark);
+  border: 1.5px solid var(--forest);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.44rem 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+}
+.btn-link-secondary:hover { background: var(--forest-soft); }
 footer {
   max-width: 1200px;
   margin: 0 auto;
@@ -955,6 +1158,14 @@ footer {
     font-size: 0.95rem;
     line-height: 1.72;
   }
+  .share-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .share-btn {
+    padding: 0.36rem 0.55rem;
+    font-size: 0.76rem;
+  }
 }
 """
 
@@ -991,6 +1202,9 @@ def _render_episode_page(
     all_bundles: list[dict[str, Any]],
     root_prefix: str,
     is_home: bool,
+    editorial_plan: dict[str, Any] | None = None,
+    site_base_url: str = DEFAULT_SITE_BASE_URL,
+    weekly_banners: dict[str, Any] | None = None,
 ) -> str:
     episode = bundle["episode"]
     manifest = bundle["manifest"]
@@ -1002,7 +1216,16 @@ def _render_episode_page(
     audio_rel = f"{root_prefix}audio/{meta['output_filename']}"
     is_spinoff = bool(meta.get("is_spinoff"))
     ep_label = meta.get("episode_label") or f"第{meta['episode_number']}回"
+    slug = bundle["slug"]
+    share_site_rel = f"episodes/{slug}/"
     payload = {
+        "slug": slug,
+        "site_base_url": site_base_url,
+        "share_rel_path": share_site_rel if is_home else f"{root_prefix}{share_site_rel}",
+        "share_site_rel_path": share_site_rel,
+        "share_date_label": format_short_date_ja(meta["episode_date"], meta.get("weekday_ja", "")),
+        "share_headline": clean_episode_headline(meta.get("subtitle", ""), fallback=meta.get("theme_name", "")),
+        "is_spinoff": is_spinoff,
         "meta": meta,
         "manifest_meta": mf_meta,
         "guest": guest,
@@ -1039,6 +1262,37 @@ def _render_episode_page(
     side_panel_hint = "特別企画" if is_spinoff else "曜日テーマ"
     notes_panel_title = "小春＆平蔵のまとめメモ" if is_spinoff else "小春＆平蔵の防災ノート"
     nav_html = _render_nav(root_prefix, "latest" if is_home else "archive")
+    og_meta_html = build_episode_og_meta(
+        bundle,
+        page_rel_url="" if is_home else share_site_rel,
+        site_base_url=site_base_url,
+        editorial_plan=editorial_plan,
+        program_title=meta.get("title") or "毎朝7時！こだいら防災＆まちラジオ",
+        og_type="website" if is_home else "article",
+        weekly_banners=weekly_banners,
+    )
+    ep_img = resolve_episode_image(
+        bundle,
+        editorial_plan=editorial_plan,
+        weekly_banners=weekly_banners,
+    )
+    ep_img_rel = str(ep_img.get("rel_path") or "").strip()
+    ep_img_alt = str(ep_img.get("alt") or DEFAULT_HERO_ALT).strip()
+    ep_spot_text = str(ep_img.get("caption") or ep_img.get("spot_name") or "").strip()
+    ep_hero_media_html = ""
+    if ep_img_rel:
+        spot_badge_html = (
+            f'<span class="ep-hero-spot-badge">📍 {html.escape(ep_spot_text)}</span>'
+            if ep_spot_text
+            else ""
+        )
+        ep_hero_media_html = (
+            '<div class="ep-hero-media">'
+            f'<img src="{html.escape(root_prefix + ep_img_rel, quote=True)}" '
+            f'alt="{html.escape(ep_img_alt, quote=True)}" loading="eager" />'
+            f"{spot_badge_html}"
+            "</div>"
+        )
 
     special_pills_html = ""
     if meta.get("is_holiday") or meta.get("special_feature") or is_spinoff:
@@ -1058,6 +1312,7 @@ def _render_episode_page(
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title_esc} | {html.escape(ep_label)} ({date_esc})</title>
+  {og_meta_html}
   <style>
     :root {{
       --guest-color: {html.escape(guest_ui.get("color", "#4338ca"))};
@@ -1076,6 +1331,7 @@ def _render_episode_page(
   <main class="container" id="main-root" data-active-tab="script">
     <section class="col-main">
       <div class="card ep-hero">
+        {ep_hero_media_html}
         <div class="ep-meta-row">
           <span class="theme-pill">{theme_badge_esc}</span>
           {special_pills_html}
@@ -1109,7 +1365,24 @@ def _render_episode_page(
           <div class="btn-group">
             <button type="button" id="btn-speed-cycle" class="speed-cycle-btn">1.0x</button>
             <button type="button" id="btn-autoscroll" class="active-toggle">追従ON</button>
+            <button type="button" id="btn-share-toggle" class="share-toggle-btn" aria-expanded="false" aria-controls="share-panel">
+              <svg class="share-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              <span>シェア</span>
+            </button>
           </div>
+        </div>
+        <div class="share-panel" id="share-panel" hidden>
+          <div class="share-panel-head">
+            <span class="share-panel-title" id="share-panel-title">この回をシェア</span>
+            <button type="button" class="share-panel-close" id="btn-share-close" aria-label="シェアメニューを閉じる">×</button>
+          </div>
+          <div class="share-actions">
+            <button type="button" class="share-btn share-btn-native" id="btn-share-native" hidden>他のアプリで共有</button>
+            <a class="share-btn share-btn-line" id="btn-share-line" href="#" target="_blank" rel="noopener noreferrer">LINEで送る</a>
+            <a class="share-btn share-btn-x" id="btn-share-x" href="#" target="_blank" rel="noopener noreferrer">Xでシェア</a>
+            <button type="button" class="share-btn share-btn-copy" id="btn-share-copy">URLをコピー</button>
+          </div>
+          <div class="share-feedback" id="share-feedback" aria-live="polite"></div>
         </div>
       </div>
 
@@ -1571,6 +1844,140 @@ def _render_episode_page(
       audio.addEventListener("ended", () => {{ btnPlay.textContent = "▶ 再生"; }});
       audio.addEventListener("timeupdate", updateSyncUI);
       audio.addEventListener("loadedmetadata", updateSyncUI);
+
+      const btnShareToggle = document.getElementById("btn-share-toggle");
+      const sharePanel = document.getElementById("share-panel");
+      const sharePanelTitle = document.getElementById("share-panel-title");
+      const btnShareClose = document.getElementById("btn-share-close");
+      const btnShareNative = document.getElementById("btn-share-native");
+      const btnShareLine = document.getElementById("btn-share-line");
+      const btnShareX = document.getElementById("btn-share-x");
+      const btnShareCopy = document.getElementById("btn-share-copy");
+      const shareFeedback = document.getElementById("share-feedback");
+      let shareCopyTimer = null;
+
+      function buildShareInfo() {{
+        const relPath = data.share_rel_path || ("episodes/" + data.slug + "/");
+        const siteRelPath = data.share_site_rel_path || ("episodes/" + data.slug + "/");
+        let shareUrl = "";
+        if (window.location.protocol === "http:" || window.location.protocol === "https:") {{
+          try {{
+            shareUrl = new URL(relPath, window.location.href).toString();
+          }} catch (_) {{}}
+        }}
+        if (!shareUrl) {{
+          let cleanBase = data.site_base_url || "";
+          while (cleanBase.endsWith("/")) cleanBase = cleanBase.slice(0, -1);
+          let cleanRel = siteRelPath;
+          while (cleanRel.startsWith("/")) cleanRel = cleanRel.slice(1);
+          shareUrl = cleanBase ? (cleanBase + "/" + cleanRel) : siteRelPath;
+        }}
+        const dateLabel = data.share_date_label || (data.meta && data.meta.episode_date) || "";
+        const prefix = data.is_spinoff ? ("特別編・" + dateLabel) : dateLabel;
+        const rawHeadline = data.share_headline || (data.meta && (data.meta.subtitle || data.meta.theme_name)) || "";
+        const shortHeadline = rawHeadline.length > 72 ? (rawHeadline.slice(0, 71) + "…") : rawHeadline;
+        const progTitle = (data.meta && data.meta.title) || "毎朝7時！こだいら防災＆まちラジオ";
+        const shareText = "【" + prefix + "】" + shortHeadline + "｜" + progTitle;
+        const shareTitle = "【" + prefix + "】" + rawHeadline;
+        return {{
+          url: shareUrl,
+          text: shareText,
+          title: shareTitle,
+          label: prefix + "の回をシェア"
+        }};
+      }}
+
+      function copyToClipboard(text) {{
+        if (window.isSecureContext && navigator.clipboard && typeof navigator.clipboard.writeText === "function") {{
+          return navigator.clipboard.writeText(text);
+        }}
+        return new Promise((resolve, reject) => {{
+          try {{
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.setAttribute("readonly", "");
+            ta.style.position = "fixed";
+            ta.style.top = "-9999px";
+            ta.style.left = "-9999px";
+            document.body.appendChild(ta);
+            ta.select();
+            const ok = document.execCommand("copy");
+            document.body.removeChild(ta);
+            if (ok) resolve();
+            else reject(new Error("copy failed"));
+          }} catch (err) {{
+            reject(err);
+          }}
+        }});
+      }}
+
+      function setShareFeedback(msg) {{
+        if (shareFeedback) shareFeedback.textContent = msg || "";
+      }}
+
+      function closeSharePanel() {{
+        if (!sharePanel || !btnShareToggle) return;
+        sharePanel.hidden = true;
+        btnShareToggle.setAttribute("aria-expanded", "false");
+      }}
+
+      const shareInfo = buildShareInfo();
+      if (sharePanelTitle) sharePanelTitle.textContent = shareInfo.label;
+      if (btnShareLine) {{
+        btnShareLine.href = "https://social-plugins.line.me/lineit/share?url=" + encodeURIComponent(shareInfo.url) + "&text=" + encodeURIComponent(shareInfo.text);
+      }}
+      if (btnShareX) {{
+        btnShareX.href = "https://x.com/intent/tweet?text=" + encodeURIComponent(shareInfo.text) + "&url=" + encodeURIComponent(shareInfo.url);
+      }}
+      if (btnShareNative && typeof navigator.share === "function") {{
+        btnShareNative.hidden = false;
+      }}
+      if (btnShareToggle && sharePanel) {{
+        btnShareToggle.addEventListener("click", () => {{
+          const nextHidden = !sharePanel.hidden;
+          sharePanel.hidden = nextHidden;
+          btnShareToggle.setAttribute("aria-expanded", nextHidden ? "false" : "true");
+        }});
+      }}
+      if (btnShareClose) {{
+        btnShareClose.addEventListener("click", closeSharePanel);
+      }}
+      document.addEventListener("keydown", (ev) => {{
+        if (ev.key === "Escape" && sharePanel && !sharePanel.hidden) {{
+          closeSharePanel();
+        }}
+      }});
+      if (btnShareCopy) {{
+        btnShareCopy.addEventListener("click", () => {{
+          copyToClipboard(shareInfo.url).then(() => {{
+            btnShareCopy.textContent = "✓ コピーしました";
+            setShareFeedback("この回のURLをコピーしました");
+            if (shareCopyTimer) clearTimeout(shareCopyTimer);
+            shareCopyTimer = setTimeout(() => {{
+              btnShareCopy.textContent = "URLをコピー";
+            }}, 2200);
+          }}).catch(() => {{
+            setShareFeedback("コピーできませんでした。URL欄から直接コピーしてください");
+          }});
+        }});
+      }}
+      if (btnShareNative) {{
+        btnShareNative.addEventListener("click", () => {{
+          if (typeof navigator.share !== "function") return;
+          navigator.share({{
+            title: shareInfo.title,
+            text: shareInfo.text,
+            url: shareInfo.url
+          }}).catch((err) => {{
+            if (err && err.name === "AbortError") return;
+            copyToClipboard(shareInfo.url).then(() => {{
+              setShareFeedback("共有画面を開けなかったため、URLをコピーしました");
+            }}).catch(() => {{
+              setShareFeedback("共有画面を開けませんでした");
+            }});
+          }});
+        }});
+      }}
     }})();
   </script>
 </body>
@@ -1578,7 +1985,11 @@ def _render_episode_page(
 """
 
 
-def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
+def _render_archive_page(
+    all_bundles: list[dict[str, Any]],
+    editorial_plan: dict[str, Any] | None = None,
+    weekly_banners: dict[str, Any] | None = None,
+) -> str:
     items = []
     for b in reversed(all_bundles):
         ep = b["episode"]
@@ -1587,8 +1998,14 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
         guest = ep.get("guest", {})
         notes = ep.get("learned_notes", {})
         sp_feat = meta.get("special_feature")
+        ep_img = resolve_episode_image(
+            b,
+            editorial_plan=editorial_plan,
+            weekly_banners=weekly_banners,
+        )
         items.append(
             {
+                "slug": b["slug"],
                 "date": meta["episode_date"],
                 "episode_number": meta["episode_number"],
                 "episode_label": meta.get("episode_label") or f"第{meta['episode_number']}回",
@@ -1604,7 +2021,12 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
                 "guest_title": guest.get("title", ""),
                 "duration": mf["meta"]["total_duration_formatted"],
                 "has_audio": b["has_audio"],
+                "hero_image": str(ep_img.get("rel_path") or ""),
+                "hero_alt": str(ep_img.get("alt") or DEFAULT_HERO_ALT),
+                "hero_spot_name": str(ep_img.get("spot_name") or ""),
+                "hero_caption": str(ep_img.get("caption") or ""),
                 "href": f"episodes/{b['slug']}/index.html",
+                "listen_href": f"listen.html?ep={b['slug']}",
                 "learned_points": notes.get("learned_points", []),
                 "keywords": guest.get("keywords_featured", []),
             }
@@ -1728,6 +2150,24 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
         filtered.forEach((it) => {{
           const card = document.createElement("article");
           card.className = "archive-card";
+          if (it.hero_image) {{
+            const thumbWrap = document.createElement("div");
+            thumbWrap.className = "archive-thumb-wrap";
+            const img = document.createElement("img");
+            img.className = "archive-thumb";
+            img.src = it.hero_image;
+            img.alt = it.hero_alt || it.theme_name;
+            img.loading = "lazy";
+            thumbWrap.appendChild(img);
+            const spotText = (it.hero_caption || it.hero_spot_name || "").trim();
+            if (spotText) {{
+              const badge = document.createElement("span");
+              badge.className = "archive-spot-badge";
+              badge.textContent = "📍 " + spotText;
+              thumbWrap.appendChild(badge);
+            }}
+            card.appendChild(thumbWrap);
+          }}
           const tag = document.createElement("span");
           tag.className = "pill-tag";
           tag.textContent = it.episode_label + " ・ " + it.date + "（" + it.weekday_ja + "）";
@@ -1750,14 +2190,22 @@ def _render_archive_page(all_bundles: list[dict[str, Any]]) -> str:
           const g = document.createElement("div");
           g.style.fontSize = "0.82rem";
           g.textContent = (it.guest_name ? ("ゲスト: " + it.guest_name) : "小春＆平蔵スペシャル") + " ／ " + it.duration + (it.has_audio ? "（音声あり）" : "（台本）");
+          const actions = document.createElement("div");
+          actions.className = "archive-actions";
           const btn = document.createElement("a");
           btn.className = "btn-link";
           btn.href = it.href;
           btn.textContent = "この回を聴く・台本を読む →";
+          const btnListen = document.createElement("a");
+          btnListen.className = "btn-link-secondary";
+          btnListen.href = it.listen_href || ("listen.html?ep=" + encodeURIComponent(it.slug || it.date));
+          btnListen.textContent = "リスナー版で聴く";
+          actions.appendChild(btn);
+          actions.appendChild(btnListen);
           card.appendChild(h3);
           card.appendChild(sub);
           card.appendChild(g);
-          card.appendChild(btn);
+          card.appendChild(actions);
           grid.appendChild(card);
         }});
       }}
@@ -2535,6 +2983,7 @@ def build_site() -> None:
         if (DATA_DIR / "editorial_plan.json").exists()
         else None
     )
+    weekly_banners = load_weekly_banners()
     program_schedule = (
         _load_json(CONFIG_DIR / "program_schedule.json")
         if (CONFIG_DIR / "program_schedule.json").exists()
@@ -2552,6 +3001,8 @@ def build_site() -> None:
     )
 
     bundles = [_load_episode_bundle(p) for p in ep_dirs]
+    site_base_url = resolve_site_base_url(characters)
+    program_title = str((characters.get("program") or {}).get("title") or "毎朝7時！こだいら防災＆まちラジオ")
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
     DOCS_AUDIO_DIR.mkdir(parents=True, exist_ok=True)
     (DOCS_DIR / ".nojekyll").write_text("", encoding="utf-8")
@@ -2561,8 +3012,27 @@ def build_site() -> None:
         ep_slug = bundle["slug"]
         ep_out_dir = DOCS_DIR / "episodes" / ep_slug
         ep_out_dir.mkdir(parents=True, exist_ok=True)
-        ep_html = _render_episode_page(bundle, bundles, root_prefix="../../", is_home=False)
+        ep_html = _render_episode_page(
+            bundle,
+            bundles,
+            root_prefix="../../",
+            is_home=False,
+            editorial_plan=editorial_plan,
+            site_base_url=site_base_url,
+            weekly_banners=weekly_banners,
+        )
         (ep_out_dir / "index.html").write_text(ep_html, encoding="utf-8")
+
+        share_out_dir = DOCS_DIR / "share" / ep_slug
+        share_out_dir.mkdir(parents=True, exist_ok=True)
+        share_html = render_share_redirect_page(
+            bundle,
+            site_base_url=site_base_url,
+            editorial_plan=editorial_plan,
+            program_title=program_title,
+            weekly_banners=weekly_banners,
+        )
+        (share_out_dir / "index.html").write_text(share_html, encoding="utf-8")
 
     if tech_bundle:
         generate_script_md(tech_bundle)
@@ -2579,7 +3049,15 @@ def build_site() -> None:
     today_jst_str = datetime.now(JST).date().isoformat()
 
     (DOCS_DIR / "index.html").write_text(
-        _render_episode_page(latest, bundles, root_prefix="", is_home=True),
+        _render_episode_page(
+            latest,
+            bundles,
+            root_prefix="",
+            is_home=True,
+            editorial_plan=editorial_plan,
+            site_base_url=site_base_url,
+            weekly_banners=weekly_banners,
+        ),
         encoding="utf-8",
     )
     (DOCS_DIR / "listen.html").write_text(
@@ -2588,6 +3066,9 @@ def build_site() -> None:
             characters=characters,
             themes=themes,
             safe_json_fn=_safe_json_for_html,
+            editorial_plan=editorial_plan,
+            site_base_url=site_base_url,
+            weekly_banners=weekly_banners,
         ),
         encoding="utf-8",
     )
@@ -2611,7 +3092,14 @@ def build_site() -> None:
         ),
         encoding="utf-8",
     )
-    (DOCS_DIR / "archive.html").write_text(_render_archive_page(bundles), encoding="utf-8")
+    (DOCS_DIR / "archive.html").write_text(
+        _render_archive_page(
+            bundles,
+            editorial_plan=editorial_plan,
+            weekly_banners=weekly_banners,
+        ),
+        encoding="utf-8",
+    )
     (DOCS_DIR / "cast.html").write_text(
         _render_cast_page(characters, themes, cast_intros_cfg, intros_manifest),
         encoding="utf-8",

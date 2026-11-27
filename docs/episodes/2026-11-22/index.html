@@ -4,6 +4,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>毎朝7時！こだいら防災＆まちラジオ | 第1回 (2026-11-22)</title>
+  <meta name="description" content="防災テック・ハザードマップ・衛星・最新情報（ゲスト: 星野 創・14:37）日曜15分特集：防災テックとGISで歩く小平のまち" />
+  <link rel="canonical" href="https://takahashikatsunori.github.io/kb-radio/episodes/2026-11-22/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:site_name" content="毎朝7時！こだいら防災＆まちラジオ" />
+  <meta property="og:title" content="【11月22日（日）】日曜15分特集：防災テックとGISで歩く小平のまち｜毎朝7時！こだいら防災＆まちラジオ" />
+  <meta property="og:description" content="防災テック・ハザードマップ・衛星・最新情報（ゲスト: 星野 創・14:37）日曜15分特集：防災テックとGISで歩く小平のまち" />
+  <meta property="og:url" content="https://takahashikatsunori.github.io/kb-radio/episodes/2026-11-22/" />
+  <meta property="og:image" content="https://takahashikatsunori.github.io/kb-radio/assets/hero_cast_banner.jpg" />
+  <meta property="og:image:alt" content="小春・平蔵と7人の防災専門家ゲスト集合イラスト" />
+  <meta property="og:image:width" content="1376" />
+  <meta property="og:image:height" content="768" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="【11月22日（日）】日曜15分特集：防災テックとGISで歩く小平のまち｜毎朝7時！こだいら防災＆まちラジオ" />
+  <meta name="twitter:description" content="防災テック・ハザードマップ・衛星・最新情報（ゲスト: 星野 創・14:37）日曜15分特集：防災テックとGISで歩く小平のまち" />
+  <meta name="twitter:image" content="https://takahashikatsunori.github.io/kb-radio/assets/hero_cast_banner.jpg" />
   <style>
     :root {
       --guest-color: #4338ca;
@@ -146,6 +162,43 @@ header {
 .ep-hero {
   padding: 0.78rem 1rem;
   border-left: 4px solid var(--amber);
+}
+.ep-hero-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-height: 290px;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 0.65rem;
+  background: #dff0e6;
+}
+.ep-hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ep-hero-spot-badge,
+.archive-spot-badge {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  max-width: calc(100% - 1rem);
+  padding: 0.2rem 0.58rem;
+  border-radius: 999px;
+  background: rgba(18, 64, 40, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
 }
 .ep-meta-row {
   display: flex;
@@ -302,6 +355,126 @@ button.active-toggle {
   border-color: var(--forest);
 }
 .speed-cycle-btn {
+  display: none;
+}
+.share-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--forest-soft);
+  border-color: rgba(27, 94, 60, 0.35);
+  color: var(--forest-dark);
+}
+.share-toggle-btn[aria-expanded="true"] {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #ffffff;
+}
+.share-icon {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+}
+.share-panel {
+  margin-top: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid #d5e2d8;
+  background: #f8faf7;
+}
+.share-panel[hidden] {
+  display: none;
+}
+.share-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+.share-panel-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--forest-dark);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+button.share-panel-close {
+  min-height: 28px;
+  width: 28px;
+  padding: 0;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.share-btn {
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 36px;
+  padding: 0.36rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  transition: filter 0.15s, background 0.15s, border-color 0.15s;
+}
+.share-btn[hidden] {
+  display: none;
+}
+.share-btn-native {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #ffffff;
+}
+.share-btn-native:hover {
+  background: var(--forest-dark);
+  border-color: var(--forest-dark);
+}
+.share-btn-line {
+  background: #06c755;
+  color: #ffffff;
+}
+.share-btn-x {
+  background: #111827;
+  color: #ffffff;
+}
+.share-btn-copy {
+  background: #ffffff;
+  color: var(--forest-dark);
+  border-color: rgba(27, 94, 60, 0.35);
+}
+.share-btn-line:hover,
+.share-btn-x:hover {
+  filter: brightness(1.07);
+}
+.share-btn-copy:hover {
+  background: var(--forest-soft);
+  border-color: var(--forest);
+}
+.share-feedback {
+  margin-top: 0.38rem;
+  min-height: 1.15em;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--forest-dark);
+}
+.share-feedback:empty {
   display: none;
 }
 
@@ -557,6 +730,28 @@ button.active-toggle {
   gap: 0.45rem;
   overflow-wrap: anywhere;
 }
+.archive-thumb-wrap {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #dff0e6;
+  margin-bottom: 0.15rem;
+}
+.archive-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.archive-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 0.2rem;
+}
 .btn-link {
   display: inline-block;
   text-decoration: none;
@@ -569,6 +764,19 @@ button.active-toggle {
   text-align: center;
 }
 .btn-link:hover { background: var(--forest-dark); }
+.btn-link-secondary {
+  display: inline-block;
+  text-decoration: none;
+  background: #ffffff;
+  color: var(--forest-dark);
+  border: 1.5px solid var(--forest);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.44rem 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+}
+.btn-link-secondary:hover { background: var(--forest-soft); }
 footer {
   max-width: 1200px;
   margin: 0 auto;
@@ -660,6 +868,14 @@ footer {
     font-size: 0.95rem;
     line-height: 1.72;
   }
+  .share-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .share-btn {
+    padding: 0.36rem 0.55rem;
+    font-size: 0.76rem;
+  }
 }
 
   </style>
@@ -674,6 +890,7 @@ footer {
   <main class="container" id="main-root" data-active-tab="script">
     <section class="col-main">
       <div class="card ep-hero">
+        <div class="ep-hero-media"><img src="../../assets/hero_cast_banner.jpg" alt="小春・平蔵と7人の防災専門家ゲスト集合イラスト" loading="eager" /></div>
         <div class="ep-meta-row">
           <span class="theme-pill">日曜15分特集：防災テック・ハザードマップ・最新情報</span>
           
@@ -707,7 +924,24 @@ footer {
           <div class="btn-group">
             <button type="button" id="btn-speed-cycle" class="speed-cycle-btn">1.0x</button>
             <button type="button" id="btn-autoscroll" class="active-toggle">追従ON</button>
+            <button type="button" id="btn-share-toggle" class="share-toggle-btn" aria-expanded="false" aria-controls="share-panel">
+              <svg class="share-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              <span>シェア</span>
+            </button>
           </div>
+        </div>
+        <div class="share-panel" id="share-panel" hidden>
+          <div class="share-panel-head">
+            <span class="share-panel-title" id="share-panel-title">この回をシェア</span>
+            <button type="button" class="share-panel-close" id="btn-share-close" aria-label="シェアメニューを閉じる">×</button>
+          </div>
+          <div class="share-actions">
+            <button type="button" class="share-btn share-btn-native" id="btn-share-native" hidden>他のアプリで共有</button>
+            <a class="share-btn share-btn-line" id="btn-share-line" href="#" target="_blank" rel="noopener noreferrer">LINEで送る</a>
+            <a class="share-btn share-btn-x" id="btn-share-x" href="#" target="_blank" rel="noopener noreferrer">Xでシェア</a>
+            <button type="button" class="share-btn share-btn-copy" id="btn-share-copy">URLをコピー</button>
+          </div>
+          <div class="share-feedback" id="share-feedback" aria-live="polite"></div>
         </div>
       </div>
 
@@ -779,7 +1013,7 @@ footer {
     毎朝7時！こだいら防災＆まちラジオ（東京都小平市）／ 小春 ＆ 平蔵 ／ <a href="../../listen.html">シンプル聴取ページ</a>
   </footer>
 
-  <script type="application/json" id="episode-data">{"meta": {"title": "毎朝7時！こだいら防災＆まちラジオ", "subtitle": "第1回・2026年11月22日（日曜日）朝7時号 ― 日曜15分特集：防災テックとGISで歩く小平のまち", "episode_date": "2026-11-22", "episode_number": 1, "weekday": "sunday", "weekday_ja": "日曜日", "is_weekend": true, "theme_name": "防災テック・ハザードマップ・衛星・最新情報", "theme_badge": "日曜15分特集：防災テック・ハザードマップ・最新情報", "target_duration_sec": 900, "output_filename": "kodaira_radio_20261122.mp3", "voices": {"koharu": {"name": "小春", "reading": "こはる", "role": "メインパーソナリティ（「小平」の「小」）", "gemini_voice": "Leda", "edge_voice": "ja-JP-NanamiNeural", "edge_rate": "+4%", "edge_pitch": "+1Hz", "default_style": "bright, cheerful, lively, smiling Japanese morning radio host", "pan": -0.1, "ui": {"color": "#e11d48", "bg_soft": "#fff1f2"}}, "heizo": {"name": "平蔵", "reading": "へいぞう", "role": "パートナーキャスター（「小平」の「平」）", "gemini_voice": "Algieba", "edge_voice": "ja-JP-KeitaNeural", "edge_rate": "+2%", "edge_pitch": "-1Hz", "default_style": "warm, gentle, reassuring, friendly Japanese radio co-host", "pan": 0.1, "ui": {"color": "#2563eb", "bg_soft": "#eff6ff"}}, "guest": {"name": "星野 創", "reading": "ほしの そう", "role": "防災テック＆GISエンジニア（地理情報・衛星通信・架空ゲスト）", "gemini_voice": "Charon", "edge_voice": "ja-JP-KeitaNeural", "edge_rate": "+1%", "edge_pitch": "+0Hz", "default_style": "informative, calm, curious and enthusiastic Japanese tech specialist", "pan": 0.0, "ui": {"color": "#4338ca", "bg_soft": "#eef2ff"}}}}, "manifest_meta": {"title": "毎朝7時！こだいら防災＆まちラジオ", "subtitle": "第1回・2026年11月22日（日曜日）朝7時号 ― 日曜15分特集：防災テックとGISで歩く小平のまち", "episode_date": "2026-11-22", "episode_number": 1, "output_filename": "kodaira_radio_20261122.mp3", "tts_engine": "gemini", "tts_model": "gemini-3.8-flash-tts", "tts_requests": 17, "total_duration_sec": 877.26, "total_duration_formatted": "14:37", "line_count": 47, "estimated": false}, "guest": {"id": "guest_hoshino", "name": "星野 創", "reading": "ほしの そう", "title": "防災テック＆GISエンジニア（地理情報・衛星通信・架空ゲスト）", "theme": "防災テック・ハザードマップ・衛星・最新情報", "voice_name": "Charon", "personality": "衛星や地図アプリ、ドローンなどの最先端テクノロジーが大好き。ちょっとオタク気質でワクワクしながら仕組みを話し、小春の素朴なツッコミに照れ笑いしながら分かりやすく言い換える。", "keywords_featured": ["GIS（地理情報システム）", "オフラインGPS地図キャッシュ", "Jアラート衛星＆地上二重ルート", "災害時ドローンマッピング＆低軌道衛星通信"]}, "cast_href": "../../cast.html#guest_hoshino", "has_audio": true, "audio_src": "../../audio/kodaira_radio_20261122.mp3", "weather": {"ok": true, "source": "Open-Meteo (小平市座標)", "fetched_at_jst": "2026-11-22T07:00:00+09:00", "current": {"temperature_c": 4.2, "humidity_pct": 51, "weather": "晴れ時々曇り", "wind_speed_kmh": 3.2}, "daily": [{"date": "2026-11-22", "weather": "晴れ時々曇り", "temp_max_c": 12.9, "temp_min_c": 3.6, "precip_prob_max": 4}, {"date": "2026-11-23", "weather": "おおむね晴れ", "temp_max_c": 13.1, "temp_min_c": 3.0, "precip_prob_max": 0}, {"date": "2026-11-24", "weather": "小雨", "temp_max_c": 17.9, "temp_min_c": 5.5, "precip_prob_max": 100}]}, "links": [{"category": "小平市公式", "title": "東京都小平市 公式ホームページ", "url": "https://www.city.kodaira.tokyo.jp/", "note": "小平市のニュース・イベント・防災緊急情報の公式トップ"}, {"category": "防災マップ", "title": "小平市防災マップ（避難場所・給水拠点・備え）", "url": "https://www.city.kodaira.tokyo.jp/kurashi/012/012389.html", "note": "広域避難場所・給水拠点・カラーユニバーサルデザイン地図の案内"}, {"category": "ハザードマップ", "title": "小平市ハザードマップ（浸水予想・土砂災害警戒）", "url": "https://www.city.kodaira.tokyo.jp/kurashi/012/012467.html", "note": "水害リスクやマイ・タイムライン作成に使える市公式ハザードマップ"}, {"category": "防災補助制度", "title": "小平市 感震ブレーカー購入費補助金について", "url": "https://www.city.kodaira.tokyo.jp/kurashi/116/116518.html", "note": "一括遮断型上限2万円・簡易型等上限7千円（予算・申請条件を事前確認）"}, {"category": "備蓄チェック", "title": "東京備蓄ナビ（東京都）", "url": "https://www.bichiku.metro.tokyo.lg.jp/", "note": "家族人数や住まいに合わせた必要な備蓄量をかんたんシミュレーション"}, {"category": "東京都防災", "title": "東京都防災ホームページ", "url": "https://www.bousai.metro.tokyo.lg.jp/", "note": "在宅避難キャンペーン・東京アプリ連携や東京都防災アプリの公式情報"}, {"category": "気象・地震", "title": "気象庁ホームページ", "url": "https://www.jma.go.jp/jma/index.html", "note": "キキクル・天気予報・地震・津波の一次発表"}], "references": [{"category": "電話で放送確認", "title": "小平市 防災行政無線テレホンサービス", "detail": "Jアラートや屋外スピーカー放送を電話で確認（通話料自己負担）", "contact": "042-341-0793"}, {"category": "11/28締切・市民講座", "title": "こだいらのオリジナル防災マップをつくろう", "detail": "12/12・19（土）10時〜正午＠中央公民館／講師：小野修平氏／定員30人抽選", "contact": "中央公民館 042-341-0861（月曜休）"}, {"category": "11/28開催イベント", "title": "ドッグラン＆犬のしつけ方・防災相談会", "detail": "11/28（土）10時〜15時（雨天中止）＠子どもキャンプ場。狂犬病済票・混合ワクチン証明要持参", "contact": "相談会は小平市内在住者対象・ドッグラン申込不要"}], "learned_notes": {"learned_points": ["GIS（地理情報システム）とカラーユニバーサルデザインでハザードマップや小平市防災マップアプリの仕組みがぐっと見やすくなっていること", "Jアラートは衛星と地上回線の二重ルートで届き、窓を閉めて聞き逃しても小平市防災行政無線テレホンサービス（042-341-0793）で確認できること", "防災アプリやDXは便利な一方、問合せ情報漏えいのようなセキュリティ事例も踏まえて公式の一次情報を落ち着いて確認することが大切なこと"], "kodaira_discovery": "小川駅西口の「小川パレット」と「アトラスタワー小平小川」が11月に本格始動し、図書館や出張所だけでなく5階共用空間での帰宅困難者受け入れや防災センターなど、暮らしと防災が一体化していること。"}, "segments": [{"id": "opening", "title": "オープニング＆今朝の小平お天気・地震チェック", "bgm": "bgm_warm", "intro_jingle": "opening_jingle", "outro_jingle": null, "start_sec": 0.0, "speech_start_sec": 5.0, "end_sec": 142.775, "duration_sec": 142.775, "lines": [{"index": 0, "global_index": 0, "speaker": "koharu", "speaker_name": "小春", "text": "小平のみなさん、おはようございます！毎朝7時、あなたの朝に笑顔と安心をお届けする「こだいら防災＆まちラジオ」、小平の「小」をとって小春です！", "start_sec": 5.0, "end_sec": 17.088, "duration_sec": 12.088}, {"index": 1, "global_index": 1, "speaker": "heizo", "speaker_name": "平蔵", "text": "おはようございます、小平の「平」をとって平蔵です。さあ小春さん、今日2026年11月22日・日曜日から、毎日の放送がパワーアップしましたね！", "start_sec": 17.088, "end_sec": 29.176, "duration_sec": 12.088}, {"index": 2, "global_index": 2, "speaker": "koharu", "speaker_name": "小春", "text": "そうなんです！平日朝7時はサクッと10分、そして土曜と日曜の朝7時はたっぷり15分の特集版で、小平がもっと好きになる話題と防災をお届けしますよ。私、防災はまだまだ初心者なんですけど、平蔵さんよろしくお願いします！", "start_sec": 29.176, "end_sec": 47.48, "duration_sec": 18.304}, {"index": 3, "global_index": 3, "speaker": "heizo", "speaker_name": "平蔵", "text": "こちらこそ！小春さんと一緒に笑いながら、毎日の「防災ノート」を少しずつ増やしていきましょう。さて、まずは今朝の小平のお天気からですね。", "start_sec": 47.48, "end_sec": 59.05, "duration_sec": 11.57}, {"index": 4, "global_index": 4, "speaker": "koharu", "speaker_name": "小春", "text": "今朝、カーテンを開けたら空気がキリッと冷たくてびっくりしました！布団から出たくなかったです〜。", "start_sec": 59.35, "end_sec": 67.608, "duration_sec": 8.258}, {"index": 5, "global_index": 5, "speaker": "heizo", "speaker_name": "平蔵", "text": "ははは、分かります。今朝の小平は晴れ時々曇りで、最低気温が3.6度前後、東京都心でも今季初の5度未満となる4.9度を観測する冷え込みでした。日中は13度前後まで上がる見込みなので、朝晩と日中の寒暖差に気をつけたいですね。", "start_sec": 67.608, "end_sec": 86.935, "duration_sec": 19.327}, {"index": 6, "global_index": 6, "speaker": "koharu", "speaker_name": "小春", "text": "玉川上水やグリーンロードの木々もきれいに色づいていて、お散歩が最高に気持ちいい季節ですよね！今週のお天気はどうですか？", "start_sec": 86.935, "end_sec": 97.301, "duration_sec": 10.366}, {"index": 7, "global_index": 7, "speaker": "heizo", "speaker_name": "平蔵", "text": "明日・月曜日の23日もおおむね晴れで最高13度、最低3度と冷え込みますが、あさって火曜日の24日は小雨の予報が出ています。お洗濯やお出かけは今日と明日がねらい目ですよ。", "start_sec": 97.301, "end_sec": 112.06, "duration_sec": 14.759}, {"index": 8, "global_index": 8, "speaker": "koharu", "speaker_name": "小春", "text": "あと平蔵さん、今朝未明に地震の速報も見かけましたよね？", "start_sec": 112.38, "end_sec": 116.8, "duration_sec": 4.42}, {"index": 9, "global_index": 9, "speaker": "heizo", "speaker_name": "平蔵", "text": "はい。今日22日午前2時30分ごろ、房総半島南方沖を震源とするマグニチュード4.6の地震があり、東京都の御蔵島村で震度2、新島村で震度1を観測しました。昨日の夜にも同じく震度2、さらに今朝9時前にも茨城県南部で小さな揺れがありました。津波の心配はありませんでしたが、関東周辺はやはりこまめに備えておきたいですね。", "start_sec": 116.8, "end_sec": 142.335, "duration_sec": 25.535}]}, {"id": "kodaira_life", "title": "小平が好きになる！今日のまち・暮らしトピック", "bgm": "bgm_news", "intro_jingle": "stinger", "outro_jingle": null, "start_sec": 142.775, "speech_start_sec": 144.975, "end_sec": 316.615, "duration_sec": 173.84, "lines": [{"index": 0, "global_index": 10, "speaker": "koharu", "speaker_name": "小春", "text": "ここからは、知れば知るほど小平市がもっと好きになる「まち＆暮らしトピック」！今日は私も気になっていた小川駅西口の大ニュースからですよね！", "start_sec": 144.975, "end_sec": 156.64, "duration_sec": 11.665}, {"index": 1, "global_index": 11, "speaker": "heizo", "speaker_name": "平蔵", "text": "そうです！西武国分寺線と拝島線が交わる小川駅の西口に、この11月、複合施設「小川パレット」と住宅棟「アトラスタワー小平小川」が本格始動しました。", "start_sec": 156.64, "end_sec": 168.991, "duration_sec": 12.351}, {"index": 2, "global_index": 12, "speaker": "koharu", "speaker_name": "小春", "text": "小川パレットって名前がかわいいですよね！図書館や公民館、市民活動支援センターに、市の西部出張所やお店・クリニックまでギュッと詰まっているんですよね？本を借りたついでにお買い物できるなんて最高！", "start_sec": 168.991, "end_sec": 185.459, "duration_sec": 16.468}, {"index": 3, "global_index": 13, "speaker": "heizo", "speaker_name": "平蔵", "text": "しかも小平市初の市街地再開発事業なだけあって、実は「防災の工夫」もすごいんです。小川パレットには防災センターが置かれ、アトラスタワー小平小川には5階メインラウンジの一部などを災害時の帰宅困難者の受け入れ空間として想定する仕組みが組み込まれているんですよ。", "start_sec": 185.459, "end_sec": 207.245, "duration_sec": 21.786}, {"index": 4, "global_index": 14, "speaker": "koharu", "speaker_name": "小春", "text": "ええっ！普段はみんなの憩いの場や図書館なのに、いざという時は電車が止まった人を受け入れてくれる街の基地になるんですね。なんか小平って、暮らしの優しさが街づくりに出てるなぁ。", "start_sec": 207.585, "end_sec": 223.31, "duration_sec": 15.725}, {"index": 5, "global_index": 15, "speaker": "heizo", "speaker_name": "平蔵", "text": "本当にそうですね。それに「小平らしさ」といえば、丸ポストやグリーンロードの緑だけでなく、来週土曜・11月28日に開かれる2つのイベントも要チェックですよ。", "start_sec": 223.31, "end_sec": 237.389, "duration_sec": 14.079}, {"index": 6, "global_index": 16, "speaker": "koharu", "speaker_name": "小春", "text": "あ！1つは「子どもキャンプ場」の移動式ドッグランですよね！ワンちゃんたちが元気に走る姿、想像するだけでニコニコしちゃいます。", "start_sec": 237.389, "end_sec": 248.725, "duration_sec": 11.336}, {"index": 7, "global_index": 17, "speaker": "heizo", "speaker_name": "平蔵", "text": "11月28日・土曜日午前10時から午後3時までで雨天中止。中・大型犬用と小型犬用があり、事前申込なしで市内外誰でも使えます。さらに小平市民向けには、防災士の佐々木邦夫さんによる「犬のしつけ方及び防災相談会」も同時開催。狂犬病予防注射済票プレートと1年以内の混合ワクチン接種証明書を忘れずに、公共交通機関も利用して足を運んでみてください。", "start_sec": 249.025, "end_sec": 281.91, "duration_sec": 32.885}, {"index": 8, "global_index": 18, "speaker": "koharu", "speaker_name": "小春", "text": "そしてもう1つ、11月28日が「申込み締切」なのが中央公民館の防災講座ですよね？", "start_sec": 281.91, "end_sec": 289.739, "duration_sec": 7.829}, {"index": 9, "global_index": 19, "speaker": "heizo", "speaker_name": "平蔵", "text": "はい。12月12日と19日の土曜日に開催される「こだいらのオリジナル防災マップをつくろう」全2回、定員30人抽選で、申込フォームか中央公民館の電話042-341-0861、月曜休館です。さあ、まさに「防災マップ」のお話が出たところで、日曜特集のゲストをお迎えしましょう！", "start_sec": 289.739, "end_sec": 316.165, "duration_sec": 26.426}]}, {"id": "guest_talk", "title": "日曜15分特集：防災テック＆GISハザードマップ（ゲスト：星野 創さん）", "bgm": "bgm_feature", "intro_jingle": "guest_jingle", "outro_jingle": null, "start_sec": 316.615, "speech_start_sec": 319.115, "end_sec": 661.055, "duration_sec": 344.44, "lines": [{"index": 0, "global_index": 20, "speaker": "koharu", "speaker_name": "小春", "text": "日曜日のテーマは「防災テック・ハザードマップ・衛星・最新情報」！本日の専門家は、防災テック＆GISエンジニアの星野創さんです。星野さん、おはようございます！", "start_sec": 319.115, "end_sec": 332.44, "duration_sec": 13.325}, {"index": 1, "global_index": 21, "speaker": "guest", "speaker_name": "星野 創", "text": "おはようございます、星野創です。小平市の朝のラジオ、しかも記念すべき新体制の第1回にお呼びいただいてすごくワクワクしています！小春さん、平蔵さん、よろしくお願いします！", "start_sec": 332.44, "end_sec": 346.791, "duration_sec": 14.351}, {"index": 2, "global_index": 22, "speaker": "koharu", "speaker_name": "小春", "text": "わあ、爽やかなお声！でも星野さん、私さっそく「ジーアイエス」って何かの呪文かと思っちゃいました！おいしく食べられるものですか？", "start_sec": 346.791, "end_sec": 357.553, "duration_sec": 10.762}, {"index": 3, "global_index": 23, "speaker": "guest", "speaker_name": "星野 創", "text": "ははは、残念ながら食べられません！GISは「地理情報システム」といって、地図の上にいろんなデータを「透明なシート」みたいに何枚も重ねて見られる技術なんです。たとえば小平市の地図の上に、「雨水がたまりやすい場所」「広域避難場所」「給水拠点」をピタッと重ねるのがハザードマップの正体なんですよ。", "start_sec": 357.553, "end_sec": 382.325, "duration_sec": 24.772}, {"index": 4, "global_index": 24, "speaker": "heizo", "speaker_name": "平蔵", "text": "透明なシートを重ねるイメージ、とても分かりやすいですね！小平市の紙の防災マップもカラーユニバーサルデザインで見やすくなっていますが、今どきは「小平市防災マップアプリ」みたいにスマホのGISも大活躍ですよね。", "start_sec": 382.665, "end_sec": 397.678, "duration_sec": 15.013}, {"index": 5, "global_index": 25, "speaker": "guest", "speaker_name": "星野 創", "text": "そうなんです、平蔵さん！とくに注目してほしい技術が「オフラインGPS地図キャッシュ」です。ふだんの地図アプリはネットが切れると真っ白になりがちですが、小平市防災マップアプリや東京都防災アプリのように事前に地図データをスマホに保存しておけば、災害で携帯基地局が止まっても、人工衛星のGPS電波だけで現在地から一番近い避難所を探せるんです！", "start_sec": 397.678, "end_sec": 422.165, "duration_sec": 24.487}, {"index": 6, "global_index": 26, "speaker": "koharu", "speaker_name": "小春", "text": "圏外でも衛星とスマホがつながって道を教えてくれるんですか？すごい！私、方向音痴で花小金井から小金井公園に行く時もたまに迷うので、オフライン地図は絶対入れておきます！", "start_sec": 422.505, "end_sec": 438.996, "duration_sec": 16.491}, {"index": 7, "global_index": 27, "speaker": "guest", "speaker_name": "星野 創", "text": "あはは、小金井公園も小平の大切な広域避難場所の1つですからね！ちなみに小平市の広域避難場所といえば、小金井公園・小平霊園・中央公園・小金井カントリー倶楽部・けやき公園付近一帯に加えて、上水南町4丁目付近の「情報通信研究機構・東京サレジオ学園・東京学芸大学一帯」がありますよね。実はこの情報通信研究機構、略してNICTは、日本の衛星通信や防災センサー研究の最先端が集まるすごい研究機関なんですよ！", "start_sec": 438.996, "end_sec": 478.615, "duration_sec": 39.619}, {"index": 8, "global_index": 28, "speaker": "heizo", "speaker_name": "平蔵", "text": "おっ、小平の街の中に日本を代表する通信研究の拠点があるとは！星野さん、そういう「宇宙や衛星を使った防災技術」には、ほかにどんな特殊機材や仕組みがあるんでしょう？", "start_sec": 478.975, "end_sec": 492.12, "duration_sec": 13.145}, {"index": 9, "global_index": 29, "speaker": "guest", "speaker_name": "星野 創", "text": "はい、大きく3つあります！1つ目が「Jアラートの二重化ルート」。今月11月11日にも全国一斉の試験放送がありましたが、国のシステムから地上回線だけでなく通信衛星を経由して小平市役所などの受信機へ瞬時に届き、屋外スピーカーや緊急速報メールを鳴らします。2つ目が、災害で山道や道路が通れなくなった時に上空から被害を撮影して正確な地図を作る「災害時ドローンマッピング（オルソ画像生成）」。そして3つ目が、スーツケースほどの大きさでどこでも高速ネットをつなぐ「可搬型低軌道衛星通信」、スターリンクなどのアンテナ機材です！", "start_sec": 492.12, "end_sec": 534.185, "duration_sec": 42.065}, {"index": 10, "global_index": 30, "speaker": "koharu", "speaker_name": "小春", "text": "うわあ、スーツケースサイズの衛星アンテナにドローン！なんだかSF映画みたいでかっこいいですね！でも星野さん、11日のJアラート試験の時、私ちょうどお家で窓を閉めて掃除機をかけてたら、屋外の防災スピーカーがほとんど聞こえなくて焦っちゃったんです。", "start_sec": 534.545, "end_sec": 553.939, "duration_sec": 19.394}, {"index": 11, "global_index": 31, "speaker": "heizo", "speaker_name": "平蔵", "text": "まさに小平市民あるあるですね！そういう時は、小平市の「防災行政無線テレホンサービス」、電話番号「042-341-0793」にかけると自動音声で放送内容を聞き直せます。小平市の防災・防犯緊急メールマガジンや公式LINEも合わせて登録しておくと、まさに情報ルートを何重にも持てますね。", "start_sec": 553.939, "end_sec": 576.194, "duration_sec": 22.255}, {"index": 12, "global_index": 32, "speaker": "koharu", "speaker_name": "小春", "text": "あと星野さん、もう1つ気になった最新ニュースがあって！おととい11月20日に発表された「東京都防災アプリ」の個人情報漏えいのニュース、ちょっと怖かったんですけど、どう受け止めればいいでしょう？", "start_sec": 576.194, "end_sec": 591.455, "duration_sec": 15.261}, {"index": 13, "global_index": 33, "speaker": "guest", "speaker_name": "星野 創", "text": "とても大切な視点です、小春さん。今回の件は、アプリを提供している外部事業者・株式会社ドーンが、アプリ内の「問合せフォーム」用に運用していた共有メールボックスシステムに不正アクセスがあり、過去に問い合わせをした方の一部情報、メールや氏名など189件が漏えいしたという発表でした。大事なのは「アプリを入れた全員ではない」「事業者から対象者へ個別連絡が進んでいる」という事実を冷静に知ること。もし問い合わせ履歴がある方は不審なメールのリンクを開かないよう注意しつつ、防災アプリ自体の機能は慌てて消さずに公式情報を確認しながら賢く使い続けるのが防災DX時代のリテラシーですね。", "start_sec": 591.755, "end_sec": 639.518, "duration_sec": 47.763}, {"index": 14, "global_index": 34, "speaker": "koharu", "speaker_name": "小春", "text": "なるほど！「正しく怖がって、上手に使う」なんですね。星野さんのお話のおかげで、難しいテクノロジーが一気に身近になりました！ありがとうございました！", "start_sec": 639.518, "end_sec": 651.795, "duration_sec": 12.277}, {"index": 15, "global_index": 35, "speaker": "guest", "speaker_name": "星野 創", "text": "こちらこそ、小春さんの質問がすごく鋭くて楽しかったです！また日曜の朝にぜひお邪魔しますね！", "start_sec": 652.075, "end_sec": 660.615, "duration_sec": 8.54}]}, {"id": "daily_bousai", "title": "今日のくらし防災ニュース（備蓄＆冬の火災対策）", "bgm": "bgm_news", "intro_jingle": "stinger", "outro_jingle": null, "start_sec": 661.055, "speech_start_sec": 663.255, "end_sec": 784.01, "duration_sec": 122.955, "lines": [{"index": 0, "global_index": 36, "speaker": "heizo", "speaker_name": "平蔵", "text": "ここからは「今日のくらし防災ニュース」。家庭で今日すぐできる備えを2つおさらいしましょう。1つ目は11月2日に発足した国の「防災庁」と、11月19日「備蓄の日」のお話です。", "start_sec": 663.255, "end_sec": 679.707, "duration_sec": 16.452}, {"index": 1, "global_index": 37, "speaker": "koharu", "speaker_name": "小春", "text": "私、備蓄って「最低3日分、できれば1週間分」って最近覚えましたよ！お水は1人1日3リットルですよね？", "start_sec": 679.707, "end_sec": 689.272, "duration_sec": 9.565}, {"index": 2, "global_index": 38, "speaker": "heizo", "speaker_name": "平蔵", "text": "おおっ、小春さんバッチリ！初代防災大臣の細野豪志氏の緊急要請でも水・食料・携帯トイレの備蓄が呼びかけられています。東京都の「東京アプリ」では12月18日まで日常備蓄アンケートを実施中で、「東京備蓄ナビ」なら家族に合う必要量がすぐ分かりますよ。", "start_sec": 689.272, "end_sec": 712.42, "duration_sec": 23.148}, {"index": 3, "global_index": 39, "speaker": "koharu", "speaker_name": "小春", "text": "2つ目は冬本番に向けた火災とモバイルバッテリーの処分ルールですよね？", "start_sec": 712.42, "end_sec": 718.925, "duration_sec": 6.505}, {"index": 4, "global_index": 40, "speaker": "heizo", "speaker_name": "平蔵", "text": "はい。小平市内でもごみ収集車や小平・村山・大和衛生組合の処理施設で、リチウムイオン電池の圧迫による火災事故が起きています。モバイルバッテリーは「燃やさないごみ」「可燃ごみ」「粗大ごみ」に絶対出さず、使い切って金属端子をテープで絶縁し、小平市役所・リサイクルセンター・東西市民センター・中央図書館・コジマ×ビックカメラ小平店・ヤマダ電機西友花小金井店などの回収ボックスへ。膨張・破損したものは回収ボックスに入れず購入店やメーカーへ相談してください。", "start_sec": 719.205, "end_sec": 763.233, "duration_sec": 44.028}, {"index": 5, "global_index": 41, "speaker": "koharu", "speaker_name": "小春", "text": "それと通電火災を防ぐ「感震ブレーカー購入費補助金」もありますよね！一括遮断型で上限2万円、簡易型等でも上限7千円。予算や申請条件は変更されることがあるので、買う前に小平市公式HPで最新情報をチェックですね！", "start_sec": 763.233, "end_sec": 783.57, "duration_sec": 20.337}]}, {"id": "ending", "title": "小春＆平蔵の防災ノート＆明日の予告", "bgm": "bgm_warm", "intro_jingle": "stinger", "outro_jingle": "outro_jingle", "start_sec": 784.01, "speech_start_sec": 786.21, "end_sec": 876.765, "duration_sec": 92.755, "lines": [{"index": 0, "global_index": 42, "speaker": "heizo", "speaker_name": "平蔵", "text": "さあ、エンディングは今日の「小春＆平蔵の防災ノート」まとめです。今日の学びを小春さん、ノートに書き込みましょう！", "start_sec": 786.21, "end_sec": 797.865, "duration_sec": 11.655}, {"index": 1, "global_index": 43, "speaker": "koharu", "speaker_name": "小春", "text": "はい！1つ目、GISは地図の透明シート重ね、小平市防災マップアプリはオフラインGPSで圏外でも使える！2つ目、Jアラート聞き逃し対策はテレホンサービス「042-341-0793」登録！3つ目、防災DXは便利だからこそ公式の一次情報を落ち着いて確認！あと、小川パレットで本を借りてみたいなっていう小平発見も書きました！", "start_sec": 797.865, "end_sec": 830.75, "duration_sec": 32.885}, {"index": 2, "global_index": 44, "speaker": "heizo", "speaker_name": "平蔵", "text": "完璧なノートですね！放送でご紹介した小平市防災マップやハザードマップ、東京備蓄ナビなどのリンクは、番組のWebページからいつでもワンクリックで開けますのでご活用ください。そして明日・月曜朝7時からは平日10分版！テーマは「地震・建築・地盤」、ゲストに岩城剛博士をお迎えして、小平が乗る武蔵野台地の秘密に迫ります。", "start_sec": 831.09, "end_sec": 857.015, "duration_sec": 25.925}, {"index": 3, "global_index": 45, "speaker": "koharu", "speaker_name": "小春", "text": "明日も楽しみ！お相手は、いつもご機嫌な小春と、", "start_sec": 857.015, "end_sec": 860.837, "duration_sec": 3.822}, {"index": 4, "global_index": 46, "speaker": "heizo", "speaker_name": "平蔵", "text": "優しい平蔵でした！小平のみなさん、笑顔あふれる素敵な日曜日をお過ごしください。いってらっしゃい！", "start_sec": 860.837, "end_sec": 868.815, "duration_sec": 7.978}]}], "recent_episodes": [{"date": "2026-11-27", "weekday_ja": "金曜日", "theme": "食・備蓄・ライフライン", "guest_name": "出雲 健太", "href": "../../episodes/2026-11-27/index.html", "has_audio": true}, {"date": "2026-11-26", "weekday_ja": "木曜日", "theme": "災害医療・応急手当・こころのケア", "guest_name": "白川 優子", "href": "../../episodes/2026-11-26/index.html", "has_audio": true}, {"date": "2026-11-25", "weekday_ja": "水曜日", "theme": "火災・電気・特殊消防機材", "guest_name": "火ノ原 鉄平", "href": "../../episodes/2026-11-25/index.html", "has_audio": true}, {"date": "2026-11-24", "weekday_ja": "火曜日", "theme": "気象・水害・都市河川", "guest_name": "雨宮 栞", "href": "../../episodes/2026-11-24/index.html", "has_audio": true}, {"date": "2026-11-23", "weekday_ja": "月曜日", "theme": "地震・建築・地盤", "guest_name": "岩城 剛", "href": "../../episodes/2026-11-23/index.html", "has_audio": true}, {"date": "2026-11-22", "weekday_ja": "日曜日", "theme": "スピンオフ特集：小川パレット徹底ガイド", "guest_name": "", "href": "../../episodes/2026-11-22-spinoff-ogawa-palette/index.html", "has_audio": true}, {"date": "2026-11-22", "weekday_ja": "日曜日", "theme": "防災テック・ハザードマップ・衛星・最新情報", "guest_name": "星野 創", "href": "../../episodes/2026-11-22/index.html", "has_audio": true}]}</script>
+  <script type="application/json" id="episode-data">{"slug": "2026-11-22", "site_base_url": "https://takahashikatsunori.github.io/kb-radio/", "share_rel_path": "../../episodes/2026-11-22/", "share_site_rel_path": "episodes/2026-11-22/", "share_date_label": "11月22日（日）", "share_headline": "日曜15分特集：防災テックとGISで歩く小平のまち", "is_spinoff": false, "meta": {"title": "毎朝7時！こだいら防災＆まちラジオ", "subtitle": "第1回・2026年11月22日（日曜日）朝7時号 ― 日曜15分特集：防災テックとGISで歩く小平のまち", "episode_date": "2026-11-22", "episode_number": 1, "weekday": "sunday", "weekday_ja": "日曜日", "is_weekend": true, "theme_name": "防災テック・ハザードマップ・衛星・最新情報", "theme_badge": "日曜15分特集：防災テック・ハザードマップ・最新情報", "target_duration_sec": 900, "output_filename": "kodaira_radio_20261122.mp3", "voices": {"koharu": {"name": "小春", "reading": "こはる", "role": "メインパーソナリティ（「小平」の「小」）", "gemini_voice": "Leda", "edge_voice": "ja-JP-NanamiNeural", "edge_rate": "+4%", "edge_pitch": "+1Hz", "default_style": "bright, cheerful, lively, smiling Japanese morning radio host", "pan": -0.1, "ui": {"color": "#e11d48", "bg_soft": "#fff1f2"}}, "heizo": {"name": "平蔵", "reading": "へいぞう", "role": "パートナーキャスター（「小平」の「平」）", "gemini_voice": "Algieba", "edge_voice": "ja-JP-KeitaNeural", "edge_rate": "+2%", "edge_pitch": "-1Hz", "default_style": "warm, gentle, reassuring, friendly Japanese radio co-host", "pan": 0.1, "ui": {"color": "#2563eb", "bg_soft": "#eff6ff"}}, "guest": {"name": "星野 創", "reading": "ほしの そう", "role": "防災テック＆GISエンジニア（地理情報・衛星通信・架空ゲスト）", "gemini_voice": "Charon", "edge_voice": "ja-JP-KeitaNeural", "edge_rate": "+1%", "edge_pitch": "+0Hz", "default_style": "informative, calm, curious and enthusiastic Japanese tech specialist", "pan": 0.0, "ui": {"color": "#4338ca", "bg_soft": "#eef2ff"}}}}, "manifest_meta": {"title": "毎朝7時！こだいら防災＆まちラジオ", "subtitle": "第1回・2026年11月22日（日曜日）朝7時号 ― 日曜15分特集：防災テックとGISで歩く小平のまち", "episode_date": "2026-11-22", "episode_number": 1, "output_filename": "kodaira_radio_20261122.mp3", "tts_engine": "gemini", "tts_model": "gemini-3.8-flash-tts", "tts_requests": 17, "total_duration_sec": 877.26, "total_duration_formatted": "14:37", "line_count": 47, "estimated": false}, "guest": {"id": "guest_hoshino", "name": "星野 創", "reading": "ほしの そう", "title": "防災テック＆GISエンジニア（地理情報・衛星通信・架空ゲスト）", "theme": "防災テック・ハザードマップ・衛星・最新情報", "voice_name": "Charon", "personality": "衛星や地図アプリ、ドローンなどの最先端テクノロジーが大好き。ちょっとオタク気質でワクワクしながら仕組みを話し、小春の素朴なツッコミに照れ笑いしながら分かりやすく言い換える。", "keywords_featured": ["GIS（地理情報システム）", "オフラインGPS地図キャッシュ", "Jアラート衛星＆地上二重ルート", "災害時ドローンマッピング＆低軌道衛星通信"]}, "cast_href": "../../cast.html#guest_hoshino", "has_audio": true, "audio_src": "../../audio/kodaira_radio_20261122.mp3", "weather": {"ok": true, "source": "Open-Meteo (小平市座標)", "fetched_at_jst": "2026-11-22T07:00:00+09:00", "current": {"temperature_c": 4.2, "humidity_pct": 51, "weather": "晴れ時々曇り", "wind_speed_kmh": 3.2}, "daily": [{"date": "2026-11-22", "weather": "晴れ時々曇り", "temp_max_c": 12.9, "temp_min_c": 3.6, "precip_prob_max": 4}, {"date": "2026-11-23", "weather": "おおむね晴れ", "temp_max_c": 13.1, "temp_min_c": 3.0, "precip_prob_max": 0}, {"date": "2026-11-24", "weather": "小雨", "temp_max_c": 17.9, "temp_min_c": 5.5, "precip_prob_max": 100}]}, "links": [{"category": "小平市公式", "title": "東京都小平市 公式ホームページ", "url": "https://www.city.kodaira.tokyo.jp/", "note": "小平市のニュース・イベント・防災緊急情報の公式トップ"}, {"category": "防災マップ", "title": "小平市防災マップ（避難場所・給水拠点・備え）", "url": "https://www.city.kodaira.tokyo.jp/kurashi/012/012389.html", "note": "広域避難場所・給水拠点・カラーユニバーサルデザイン地図の案内"}, {"category": "ハザードマップ", "title": "小平市ハザードマップ（浸水予想・土砂災害警戒）", "url": "https://www.city.kodaira.tokyo.jp/kurashi/012/012467.html", "note": "水害リスクやマイ・タイムライン作成に使える市公式ハザードマップ"}, {"category": "防災補助制度", "title": "小平市 感震ブレーカー購入費補助金について", "url": "https://www.city.kodaira.tokyo.jp/kurashi/116/116518.html", "note": "一括遮断型上限2万円・簡易型等上限7千円（予算・申請条件を事前確認）"}, {"category": "備蓄チェック", "title": "東京備蓄ナビ（東京都）", "url": "https://www.bichiku.metro.tokyo.lg.jp/", "note": "家族人数や住まいに合わせた必要な備蓄量をかんたんシミュレーション"}, {"category": "東京都防災", "title": "東京都防災ホームページ", "url": "https://www.bousai.metro.tokyo.lg.jp/", "note": "在宅避難キャンペーン・東京アプリ連携や東京都防災アプリの公式情報"}, {"category": "気象・地震", "title": "気象庁ホームページ", "url": "https://www.jma.go.jp/jma/index.html", "note": "キキクル・天気予報・地震・津波の一次発表"}], "references": [{"category": "電話で放送確認", "title": "小平市 防災行政無線テレホンサービス", "detail": "Jアラートや屋外スピーカー放送を電話で確認（通話料自己負担）", "contact": "042-341-0793"}, {"category": "11/28締切・市民講座", "title": "こだいらのオリジナル防災マップをつくろう", "detail": "12/12・19（土）10時〜正午＠中央公民館／講師：小野修平氏／定員30人抽選", "contact": "中央公民館 042-341-0861（月曜休）"}, {"category": "11/28開催イベント", "title": "ドッグラン＆犬のしつけ方・防災相談会", "detail": "11/28（土）10時〜15時（雨天中止）＠子どもキャンプ場。狂犬病済票・混合ワクチン証明要持参", "contact": "相談会は小平市内在住者対象・ドッグラン申込不要"}], "learned_notes": {"learned_points": ["GIS（地理情報システム）とカラーユニバーサルデザインでハザードマップや小平市防災マップアプリの仕組みがぐっと見やすくなっていること", "Jアラートは衛星と地上回線の二重ルートで届き、窓を閉めて聞き逃しても小平市防災行政無線テレホンサービス（042-341-0793）で確認できること", "防災アプリやDXは便利な一方、問合せ情報漏えいのようなセキュリティ事例も踏まえて公式の一次情報を落ち着いて確認することが大切なこと"], "kodaira_discovery": "小川駅西口の「小川パレット」と「アトラスタワー小平小川」が11月に本格始動し、図書館や出張所だけでなく5階共用空間での帰宅困難者受け入れや防災センターなど、暮らしと防災が一体化していること。"}, "segments": [{"id": "opening", "title": "オープニング＆今朝の小平お天気・地震チェック", "bgm": "bgm_warm", "intro_jingle": "opening_jingle", "outro_jingle": null, "start_sec": 0.0, "speech_start_sec": 5.0, "end_sec": 142.775, "duration_sec": 142.775, "lines": [{"index": 0, "global_index": 0, "speaker": "koharu", "speaker_name": "小春", "text": "小平のみなさん、おはようございます！毎朝7時、あなたの朝に笑顔と安心をお届けする「こだいら防災＆まちラジオ」、小平の「小」をとって小春です！", "start_sec": 5.0, "end_sec": 17.088, "duration_sec": 12.088}, {"index": 1, "global_index": 1, "speaker": "heizo", "speaker_name": "平蔵", "text": "おはようございます、小平の「平」をとって平蔵です。さあ小春さん、今日2026年11月22日・日曜日から、毎日の放送がパワーアップしましたね！", "start_sec": 17.088, "end_sec": 29.176, "duration_sec": 12.088}, {"index": 2, "global_index": 2, "speaker": "koharu", "speaker_name": "小春", "text": "そうなんです！平日朝7時はサクッと10分、そして土曜と日曜の朝7時はたっぷり15分の特集版で、小平がもっと好きになる話題と防災をお届けしますよ。私、防災はまだまだ初心者なんですけど、平蔵さんよろしくお願いします！", "start_sec": 29.176, "end_sec": 47.48, "duration_sec": 18.304}, {"index": 3, "global_index": 3, "speaker": "heizo", "speaker_name": "平蔵", "text": "こちらこそ！小春さんと一緒に笑いながら、毎日の「防災ノート」を少しずつ増やしていきましょう。さて、まずは今朝の小平のお天気からですね。", "start_sec": 47.48, "end_sec": 59.05, "duration_sec": 11.57}, {"index": 4, "global_index": 4, "speaker": "koharu", "speaker_name": "小春", "text": "今朝、カーテンを開けたら空気がキリッと冷たくてびっくりしました！布団から出たくなかったです〜。", "start_sec": 59.35, "end_sec": 67.608, "duration_sec": 8.258}, {"index": 5, "global_index": 5, "speaker": "heizo", "speaker_name": "平蔵", "text": "ははは、分かります。今朝の小平は晴れ時々曇りで、最低気温が3.6度前後、東京都心でも今季初の5度未満となる4.9度を観測する冷え込みでした。日中は13度前後まで上がる見込みなので、朝晩と日中の寒暖差に気をつけたいですね。", "start_sec": 67.608, "end_sec": 86.935, "duration_sec": 19.327}, {"index": 6, "global_index": 6, "speaker": "koharu", "speaker_name": "小春", "text": "玉川上水やグリーンロードの木々もきれいに色づいていて、お散歩が最高に気持ちいい季節ですよね！今週のお天気はどうですか？", "start_sec": 86.935, "end_sec": 97.301, "duration_sec": 10.366}, {"index": 7, "global_index": 7, "speaker": "heizo", "speaker_name": "平蔵", "text": "明日・月曜日の23日もおおむね晴れで最高13度、最低3度と冷え込みますが、あさって火曜日の24日は小雨の予報が出ています。お洗濯やお出かけは今日と明日がねらい目ですよ。", "start_sec": 97.301, "end_sec": 112.06, "duration_sec": 14.759}, {"index": 8, "global_index": 8, "speaker": "koharu", "speaker_name": "小春", "text": "あと平蔵さん、今朝未明に地震の速報も見かけましたよね？", "start_sec": 112.38, "end_sec": 116.8, "duration_sec": 4.42}, {"index": 9, "global_index": 9, "speaker": "heizo", "speaker_name": "平蔵", "text": "はい。今日22日午前2時30分ごろ、房総半島南方沖を震源とするマグニチュード4.6の地震があり、東京都の御蔵島村で震度2、新島村で震度1を観測しました。昨日の夜にも同じく震度2、さらに今朝9時前にも茨城県南部で小さな揺れがありました。津波の心配はありませんでしたが、関東周辺はやはりこまめに備えておきたいですね。", "start_sec": 116.8, "end_sec": 142.335, "duration_sec": 25.535}]}, {"id": "kodaira_life", "title": "小平が好きになる！今日のまち・暮らしトピック", "bgm": "bgm_news", "intro_jingle": "stinger", "outro_jingle": null, "start_sec": 142.775, "speech_start_sec": 144.975, "end_sec": 316.615, "duration_sec": 173.84, "lines": [{"index": 0, "global_index": 10, "speaker": "koharu", "speaker_name": "小春", "text": "ここからは、知れば知るほど小平市がもっと好きになる「まち＆暮らしトピック」！今日は私も気になっていた小川駅西口の大ニュースからですよね！", "start_sec": 144.975, "end_sec": 156.64, "duration_sec": 11.665}, {"index": 1, "global_index": 11, "speaker": "heizo", "speaker_name": "平蔵", "text": "そうです！西武国分寺線と拝島線が交わる小川駅の西口に、この11月、複合施設「小川パレット」と住宅棟「アトラスタワー小平小川」が本格始動しました。", "start_sec": 156.64, "end_sec": 168.991, "duration_sec": 12.351}, {"index": 2, "global_index": 12, "speaker": "koharu", "speaker_name": "小春", "text": "小川パレットって名前がかわいいですよね！図書館や公民館、市民活動支援センターに、市の西部出張所やお店・クリニックまでギュッと詰まっているんですよね？本を借りたついでにお買い物できるなんて最高！", "start_sec": 168.991, "end_sec": 185.459, "duration_sec": 16.468}, {"index": 3, "global_index": 13, "speaker": "heizo", "speaker_name": "平蔵", "text": "しかも小平市初の市街地再開発事業なだけあって、実は「防災の工夫」もすごいんです。小川パレットには防災センターが置かれ、アトラスタワー小平小川には5階メインラウンジの一部などを災害時の帰宅困難者の受け入れ空間として想定する仕組みが組み込まれているんですよ。", "start_sec": 185.459, "end_sec": 207.245, "duration_sec": 21.786}, {"index": 4, "global_index": 14, "speaker": "koharu", "speaker_name": "小春", "text": "ええっ！普段はみんなの憩いの場や図書館なのに、いざという時は電車が止まった人を受け入れてくれる街の基地になるんですね。なんか小平って、暮らしの優しさが街づくりに出てるなぁ。", "start_sec": 207.585, "end_sec": 223.31, "duration_sec": 15.725}, {"index": 5, "global_index": 15, "speaker": "heizo", "speaker_name": "平蔵", "text": "本当にそうですね。それに「小平らしさ」といえば、丸ポストやグリーンロードの緑だけでなく、来週土曜・11月28日に開かれる2つのイベントも要チェックですよ。", "start_sec": 223.31, "end_sec": 237.389, "duration_sec": 14.079}, {"index": 6, "global_index": 16, "speaker": "koharu", "speaker_name": "小春", "text": "あ！1つは「子どもキャンプ場」の移動式ドッグランですよね！ワンちゃんたちが元気に走る姿、想像するだけでニコニコしちゃいます。", "start_sec": 237.389, "end_sec": 248.725, "duration_sec": 11.336}, {"index": 7, "global_index": 17, "speaker": "heizo", "speaker_name": "平蔵", "text": "11月28日・土曜日午前10時から午後3時までで雨天中止。中・大型犬用と小型犬用があり、事前申込なしで市内外誰でも使えます。さらに小平市民向けには、防災士の佐々木邦夫さんによる「犬のしつけ方及び防災相談会」も同時開催。狂犬病予防注射済票プレートと1年以内の混合ワクチン接種証明書を忘れずに、公共交通機関も利用して足を運んでみてください。", "start_sec": 249.025, "end_sec": 281.91, "duration_sec": 32.885}, {"index": 8, "global_index": 18, "speaker": "koharu", "speaker_name": "小春", "text": "そしてもう1つ、11月28日が「申込み締切」なのが中央公民館の防災講座ですよね？", "start_sec": 281.91, "end_sec": 289.739, "duration_sec": 7.829}, {"index": 9, "global_index": 19, "speaker": "heizo", "speaker_name": "平蔵", "text": "はい。12月12日と19日の土曜日に開催される「こだいらのオリジナル防災マップをつくろう」全2回、定員30人抽選で、申込フォームか中央公民館の電話042-341-0861、月曜休館です。さあ、まさに「防災マップ」のお話が出たところで、日曜特集のゲストをお迎えしましょう！", "start_sec": 289.739, "end_sec": 316.165, "duration_sec": 26.426}]}, {"id": "guest_talk", "title": "日曜15分特集：防災テック＆GISハザードマップ（ゲスト：星野 創さん）", "bgm": "bgm_feature", "intro_jingle": "guest_jingle", "outro_jingle": null, "start_sec": 316.615, "speech_start_sec": 319.115, "end_sec": 661.055, "duration_sec": 344.44, "lines": [{"index": 0, "global_index": 20, "speaker": "koharu", "speaker_name": "小春", "text": "日曜日のテーマは「防災テック・ハザードマップ・衛星・最新情報」！本日の専門家は、防災テック＆GISエンジニアの星野創さんです。星野さん、おはようございます！", "start_sec": 319.115, "end_sec": 332.44, "duration_sec": 13.325}, {"index": 1, "global_index": 21, "speaker": "guest", "speaker_name": "星野 創", "text": "おはようございます、星野創です。小平市の朝のラジオ、しかも記念すべき新体制の第1回にお呼びいただいてすごくワクワクしています！小春さん、平蔵さん、よろしくお願いします！", "start_sec": 332.44, "end_sec": 346.791, "duration_sec": 14.351}, {"index": 2, "global_index": 22, "speaker": "koharu", "speaker_name": "小春", "text": "わあ、爽やかなお声！でも星野さん、私さっそく「ジーアイエス」って何かの呪文かと思っちゃいました！おいしく食べられるものですか？", "start_sec": 346.791, "end_sec": 357.553, "duration_sec": 10.762}, {"index": 3, "global_index": 23, "speaker": "guest", "speaker_name": "星野 創", "text": "ははは、残念ながら食べられません！GISは「地理情報システム」といって、地図の上にいろんなデータを「透明なシート」みたいに何枚も重ねて見られる技術なんです。たとえば小平市の地図の上に、「雨水がたまりやすい場所」「広域避難場所」「給水拠点」をピタッと重ねるのがハザードマップの正体なんですよ。", "start_sec": 357.553, "end_sec": 382.325, "duration_sec": 24.772}, {"index": 4, "global_index": 24, "speaker": "heizo", "speaker_name": "平蔵", "text": "透明なシートを重ねるイメージ、とても分かりやすいですね！小平市の紙の防災マップもカラーユニバーサルデザインで見やすくなっていますが、今どきは「小平市防災マップアプリ」みたいにスマホのGISも大活躍ですよね。", "start_sec": 382.665, "end_sec": 397.678, "duration_sec": 15.013}, {"index": 5, "global_index": 25, "speaker": "guest", "speaker_name": "星野 創", "text": "そうなんです、平蔵さん！とくに注目してほしい技術が「オフラインGPS地図キャッシュ」です。ふだんの地図アプリはネットが切れると真っ白になりがちですが、小平市防災マップアプリや東京都防災アプリのように事前に地図データをスマホに保存しておけば、災害で携帯基地局が止まっても、人工衛星のGPS電波だけで現在地から一番近い避難所を探せるんです！", "start_sec": 397.678, "end_sec": 422.165, "duration_sec": 24.487}, {"index": 6, "global_index": 26, "speaker": "koharu", "speaker_name": "小春", "text": "圏外でも衛星とスマホがつながって道を教えてくれるんですか？すごい！私、方向音痴で花小金井から小金井公園に行く時もたまに迷うので、オフライン地図は絶対入れておきます！", "start_sec": 422.505, "end_sec": 438.996, "duration_sec": 16.491}, {"index": 7, "global_index": 27, "speaker": "guest", "speaker_name": "星野 創", "text": "あはは、小金井公園も小平の大切な広域避難場所の1つですからね！ちなみに小平市の広域避難場所といえば、小金井公園・小平霊園・中央公園・小金井カントリー倶楽部・けやき公園付近一帯に加えて、上水南町4丁目付近の「情報通信研究機構・東京サレジオ学園・東京学芸大学一帯」がありますよね。実はこの情報通信研究機構、略してNICTは、日本の衛星通信や防災センサー研究の最先端が集まるすごい研究機関なんですよ！", "start_sec": 438.996, "end_sec": 478.615, "duration_sec": 39.619}, {"index": 8, "global_index": 28, "speaker": "heizo", "speaker_name": "平蔵", "text": "おっ、小平の街の中に日本を代表する通信研究の拠点があるとは！星野さん、そういう「宇宙や衛星を使った防災技術」には、ほかにどんな特殊機材や仕組みがあるんでしょう？", "start_sec": 478.975, "end_sec": 492.12, "duration_sec": 13.145}, {"index": 9, "global_index": 29, "speaker": "guest", "speaker_name": "星野 創", "text": "はい、大きく3つあります！1つ目が「Jアラートの二重化ルート」。今月11月11日にも全国一斉の試験放送がありましたが、国のシステムから地上回線だけでなく通信衛星を経由して小平市役所などの受信機へ瞬時に届き、屋外スピーカーや緊急速報メールを鳴らします。2つ目が、災害で山道や道路が通れなくなった時に上空から被害を撮影して正確な地図を作る「災害時ドローンマッピング（オルソ画像生成）」。そして3つ目が、スーツケースほどの大きさでどこでも高速ネットをつなぐ「可搬型低軌道衛星通信」、スターリンクなどのアンテナ機材です！", "start_sec": 492.12, "end_sec": 534.185, "duration_sec": 42.065}, {"index": 10, "global_index": 30, "speaker": "koharu", "speaker_name": "小春", "text": "うわあ、スーツケースサイズの衛星アンテナにドローン！なんだかSF映画みたいでかっこいいですね！でも星野さん、11日のJアラート試験の時、私ちょうどお家で窓を閉めて掃除機をかけてたら、屋外の防災スピーカーがほとんど聞こえなくて焦っちゃったんです。", "start_sec": 534.545, "end_sec": 553.939, "duration_sec": 19.394}, {"index": 11, "global_index": 31, "speaker": "heizo", "speaker_name": "平蔵", "text": "まさに小平市民あるあるですね！そういう時は、小平市の「防災行政無線テレホンサービス」、電話番号「042-341-0793」にかけると自動音声で放送内容を聞き直せます。小平市の防災・防犯緊急メールマガジンや公式LINEも合わせて登録しておくと、まさに情報ルートを何重にも持てますね。", "start_sec": 553.939, "end_sec": 576.194, "duration_sec": 22.255}, {"index": 12, "global_index": 32, "speaker": "koharu", "speaker_name": "小春", "text": "あと星野さん、もう1つ気になった最新ニュースがあって！おととい11月20日に発表された「東京都防災アプリ」の個人情報漏えいのニュース、ちょっと怖かったんですけど、どう受け止めればいいでしょう？", "start_sec": 576.194, "end_sec": 591.455, "duration_sec": 15.261}, {"index": 13, "global_index": 33, "speaker": "guest", "speaker_name": "星野 創", "text": "とても大切な視点です、小春さん。今回の件は、アプリを提供している外部事業者・株式会社ドーンが、アプリ内の「問合せフォーム」用に運用していた共有メールボックスシステムに不正アクセスがあり、過去に問い合わせをした方の一部情報、メールや氏名など189件が漏えいしたという発表でした。大事なのは「アプリを入れた全員ではない」「事業者から対象者へ個別連絡が進んでいる」という事実を冷静に知ること。もし問い合わせ履歴がある方は不審なメールのリンクを開かないよう注意しつつ、防災アプリ自体の機能は慌てて消さずに公式情報を確認しながら賢く使い続けるのが防災DX時代のリテラシーですね。", "start_sec": 591.755, "end_sec": 639.518, "duration_sec": 47.763}, {"index": 14, "global_index": 34, "speaker": "koharu", "speaker_name": "小春", "text": "なるほど！「正しく怖がって、上手に使う」なんですね。星野さんのお話のおかげで、難しいテクノロジーが一気に身近になりました！ありがとうございました！", "start_sec": 639.518, "end_sec": 651.795, "duration_sec": 12.277}, {"index": 15, "global_index": 35, "speaker": "guest", "speaker_name": "星野 創", "text": "こちらこそ、小春さんの質問がすごく鋭くて楽しかったです！また日曜の朝にぜひお邪魔しますね！", "start_sec": 652.075, "end_sec": 660.615, "duration_sec": 8.54}]}, {"id": "daily_bousai", "title": "今日のくらし防災ニュース（備蓄＆冬の火災対策）", "bgm": "bgm_news", "intro_jingle": "stinger", "outro_jingle": null, "start_sec": 661.055, "speech_start_sec": 663.255, "end_sec": 784.01, "duration_sec": 122.955, "lines": [{"index": 0, "global_index": 36, "speaker": "heizo", "speaker_name": "平蔵", "text": "ここからは「今日のくらし防災ニュース」。家庭で今日すぐできる備えを2つおさらいしましょう。1つ目は11月2日に発足した国の「防災庁」と、11月19日「備蓄の日」のお話です。", "start_sec": 663.255, "end_sec": 679.707, "duration_sec": 16.452}, {"index": 1, "global_index": 37, "speaker": "koharu", "speaker_name": "小春", "text": "私、備蓄って「最低3日分、できれば1週間分」って最近覚えましたよ！お水は1人1日3リットルですよね？", "start_sec": 679.707, "end_sec": 689.272, "duration_sec": 9.565}, {"index": 2, "global_index": 38, "speaker": "heizo", "speaker_name": "平蔵", "text": "おおっ、小春さんバッチリ！初代防災大臣の細野豪志氏の緊急要請でも水・食料・携帯トイレの備蓄が呼びかけられています。東京都の「東京アプリ」では12月18日まで日常備蓄アンケートを実施中で、「東京備蓄ナビ」なら家族に合う必要量がすぐ分かりますよ。", "start_sec": 689.272, "end_sec": 712.42, "duration_sec": 23.148}, {"index": 3, "global_index": 39, "speaker": "koharu", "speaker_name": "小春", "text": "2つ目は冬本番に向けた火災とモバイルバッテリーの処分ルールですよね？", "start_sec": 712.42, "end_sec": 718.925, "duration_sec": 6.505}, {"index": 4, "global_index": 40, "speaker": "heizo", "speaker_name": "平蔵", "text": "はい。小平市内でもごみ収集車や小平・村山・大和衛生組合の処理施設で、リチウムイオン電池の圧迫による火災事故が起きています。モバイルバッテリーは「燃やさないごみ」「可燃ごみ」「粗大ごみ」に絶対出さず、使い切って金属端子をテープで絶縁し、小平市役所・リサイクルセンター・東西市民センター・中央図書館・コジマ×ビックカメラ小平店・ヤマダ電機西友花小金井店などの回収ボックスへ。膨張・破損したものは回収ボックスに入れず購入店やメーカーへ相談してください。", "start_sec": 719.205, "end_sec": 763.233, "duration_sec": 44.028}, {"index": 5, "global_index": 41, "speaker": "koharu", "speaker_name": "小春", "text": "それと通電火災を防ぐ「感震ブレーカー購入費補助金」もありますよね！一括遮断型で上限2万円、簡易型等でも上限7千円。予算や申請条件は変更されることがあるので、買う前に小平市公式HPで最新情報をチェックですね！", "start_sec": 763.233, "end_sec": 783.57, "duration_sec": 20.337}]}, {"id": "ending", "title": "小春＆平蔵の防災ノート＆明日の予告", "bgm": "bgm_warm", "intro_jingle": "stinger", "outro_jingle": "outro_jingle", "start_sec": 784.01, "speech_start_sec": 786.21, "end_sec": 876.765, "duration_sec": 92.755, "lines": [{"index": 0, "global_index": 42, "speaker": "heizo", "speaker_name": "平蔵", "text": "さあ、エンディングは今日の「小春＆平蔵の防災ノート」まとめです。今日の学びを小春さん、ノートに書き込みましょう！", "start_sec": 786.21, "end_sec": 797.865, "duration_sec": 11.655}, {"index": 1, "global_index": 43, "speaker": "koharu", "speaker_name": "小春", "text": "はい！1つ目、GISは地図の透明シート重ね、小平市防災マップアプリはオフラインGPSで圏外でも使える！2つ目、Jアラート聞き逃し対策はテレホンサービス「042-341-0793」登録！3つ目、防災DXは便利だからこそ公式の一次情報を落ち着いて確認！あと、小川パレットで本を借りてみたいなっていう小平発見も書きました！", "start_sec": 797.865, "end_sec": 830.75, "duration_sec": 32.885}, {"index": 2, "global_index": 44, "speaker": "heizo", "speaker_name": "平蔵", "text": "完璧なノートですね！放送でご紹介した小平市防災マップやハザードマップ、東京備蓄ナビなどのリンクは、番組のWebページからいつでもワンクリックで開けますのでご活用ください。そして明日・月曜朝7時からは平日10分版！テーマは「地震・建築・地盤」、ゲストに岩城剛博士をお迎えして、小平が乗る武蔵野台地の秘密に迫ります。", "start_sec": 831.09, "end_sec": 857.015, "duration_sec": 25.925}, {"index": 3, "global_index": 45, "speaker": "koharu", "speaker_name": "小春", "text": "明日も楽しみ！お相手は、いつもご機嫌な小春と、", "start_sec": 857.015, "end_sec": 860.837, "duration_sec": 3.822}, {"index": 4, "global_index": 46, "speaker": "heizo", "speaker_name": "平蔵", "text": "優しい平蔵でした！小平のみなさん、笑顔あふれる素敵な日曜日をお過ごしください。いってらっしゃい！", "start_sec": 860.837, "end_sec": 868.815, "duration_sec": 7.978}]}], "recent_episodes": [{"date": "2026-11-27", "weekday_ja": "金曜日", "theme": "食・備蓄・ライフライン", "guest_name": "出雲 健太", "href": "../../episodes/2026-11-27/index.html", "has_audio": true}, {"date": "2026-11-26", "weekday_ja": "木曜日", "theme": "災害医療・応急手当・こころのケア", "guest_name": "白川 優子", "href": "../../episodes/2026-11-26/index.html", "has_audio": true}, {"date": "2026-11-25", "weekday_ja": "水曜日", "theme": "火災・電気・特殊消防機材", "guest_name": "火ノ原 鉄平", "href": "../../episodes/2026-11-25/index.html", "has_audio": true}, {"date": "2026-11-24", "weekday_ja": "火曜日", "theme": "気象・水害・都市河川", "guest_name": "雨宮 栞", "href": "../../episodes/2026-11-24/index.html", "has_audio": true}, {"date": "2026-11-23", "weekday_ja": "月曜日", "theme": "地震・建築・地盤", "guest_name": "岩城 剛", "href": "../../episodes/2026-11-23/index.html", "has_audio": true}, {"date": "2026-11-22", "weekday_ja": "日曜日", "theme": "スピンオフ特集：小川パレット徹底ガイド", "guest_name": "", "href": "../../episodes/2026-11-22-spinoff-ogawa-palette/index.html", "has_audio": true}, {"date": "2026-11-22", "weekday_ja": "日曜日", "theme": "防災テック・ハザードマップ・衛星・最新情報", "guest_name": "星野 創", "href": "../../episodes/2026-11-22/index.html", "has_audio": true}]}</script>
   <script>
     (function () {
       const data = JSON.parse(document.getElementById("episode-data").textContent);
@@ -1169,6 +1403,140 @@ footer {
       audio.addEventListener("ended", () => { btnPlay.textContent = "▶ 再生"; });
       audio.addEventListener("timeupdate", updateSyncUI);
       audio.addEventListener("loadedmetadata", updateSyncUI);
+
+      const btnShareToggle = document.getElementById("btn-share-toggle");
+      const sharePanel = document.getElementById("share-panel");
+      const sharePanelTitle = document.getElementById("share-panel-title");
+      const btnShareClose = document.getElementById("btn-share-close");
+      const btnShareNative = document.getElementById("btn-share-native");
+      const btnShareLine = document.getElementById("btn-share-line");
+      const btnShareX = document.getElementById("btn-share-x");
+      const btnShareCopy = document.getElementById("btn-share-copy");
+      const shareFeedback = document.getElementById("share-feedback");
+      let shareCopyTimer = null;
+
+      function buildShareInfo() {
+        const relPath = data.share_rel_path || ("episodes/" + data.slug + "/");
+        const siteRelPath = data.share_site_rel_path || ("episodes/" + data.slug + "/");
+        let shareUrl = "";
+        if (window.location.protocol === "http:" || window.location.protocol === "https:") {
+          try {
+            shareUrl = new URL(relPath, window.location.href).toString();
+          } catch (_) {}
+        }
+        if (!shareUrl) {
+          let cleanBase = data.site_base_url || "";
+          while (cleanBase.endsWith("/")) cleanBase = cleanBase.slice(0, -1);
+          let cleanRel = siteRelPath;
+          while (cleanRel.startsWith("/")) cleanRel = cleanRel.slice(1);
+          shareUrl = cleanBase ? (cleanBase + "/" + cleanRel) : siteRelPath;
+        }
+        const dateLabel = data.share_date_label || (data.meta && data.meta.episode_date) || "";
+        const prefix = data.is_spinoff ? ("特別編・" + dateLabel) : dateLabel;
+        const rawHeadline = data.share_headline || (data.meta && (data.meta.subtitle || data.meta.theme_name)) || "";
+        const shortHeadline = rawHeadline.length > 72 ? (rawHeadline.slice(0, 71) + "…") : rawHeadline;
+        const progTitle = (data.meta && data.meta.title) || "毎朝7時！こだいら防災＆まちラジオ";
+        const shareText = "【" + prefix + "】" + shortHeadline + "｜" + progTitle;
+        const shareTitle = "【" + prefix + "】" + rawHeadline;
+        return {
+          url: shareUrl,
+          text: shareText,
+          title: shareTitle,
+          label: prefix + "の回をシェア"
+        };
+      }
+
+      function copyToClipboard(text) {
+        if (window.isSecureContext && navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+          return navigator.clipboard.writeText(text);
+        }
+        return new Promise((resolve, reject) => {
+          try {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.setAttribute("readonly", "");
+            ta.style.position = "fixed";
+            ta.style.top = "-9999px";
+            ta.style.left = "-9999px";
+            document.body.appendChild(ta);
+            ta.select();
+            const ok = document.execCommand("copy");
+            document.body.removeChild(ta);
+            if (ok) resolve();
+            else reject(new Error("copy failed"));
+          } catch (err) {
+            reject(err);
+          }
+        });
+      }
+
+      function setShareFeedback(msg) {
+        if (shareFeedback) shareFeedback.textContent = msg || "";
+      }
+
+      function closeSharePanel() {
+        if (!sharePanel || !btnShareToggle) return;
+        sharePanel.hidden = true;
+        btnShareToggle.setAttribute("aria-expanded", "false");
+      }
+
+      const shareInfo = buildShareInfo();
+      if (sharePanelTitle) sharePanelTitle.textContent = shareInfo.label;
+      if (btnShareLine) {
+        btnShareLine.href = "https://social-plugins.line.me/lineit/share?url=" + encodeURIComponent(shareInfo.url) + "&text=" + encodeURIComponent(shareInfo.text);
+      }
+      if (btnShareX) {
+        btnShareX.href = "https://x.com/intent/tweet?text=" + encodeURIComponent(shareInfo.text) + "&url=" + encodeURIComponent(shareInfo.url);
+      }
+      if (btnShareNative && typeof navigator.share === "function") {
+        btnShareNative.hidden = false;
+      }
+      if (btnShareToggle && sharePanel) {
+        btnShareToggle.addEventListener("click", () => {
+          const nextHidden = !sharePanel.hidden;
+          sharePanel.hidden = nextHidden;
+          btnShareToggle.setAttribute("aria-expanded", nextHidden ? "false" : "true");
+        });
+      }
+      if (btnShareClose) {
+        btnShareClose.addEventListener("click", closeSharePanel);
+      }
+      document.addEventListener("keydown", (ev) => {
+        if (ev.key === "Escape" && sharePanel && !sharePanel.hidden) {
+          closeSharePanel();
+        }
+      });
+      if (btnShareCopy) {
+        btnShareCopy.addEventListener("click", () => {
+          copyToClipboard(shareInfo.url).then(() => {
+            btnShareCopy.textContent = "✓ コピーしました";
+            setShareFeedback("この回のURLをコピーしました");
+            if (shareCopyTimer) clearTimeout(shareCopyTimer);
+            shareCopyTimer = setTimeout(() => {
+              btnShareCopy.textContent = "URLをコピー";
+            }, 2200);
+          }).catch(() => {
+            setShareFeedback("コピーできませんでした。URL欄から直接コピーしてください");
+          });
+        });
+      }
+      if (btnShareNative) {
+        btnShareNative.addEventListener("click", () => {
+          if (typeof navigator.share !== "function") return;
+          navigator.share({
+            title: shareInfo.title,
+            text: shareInfo.text,
+            url: shareInfo.url
+          }).catch((err) => {
+            if (err && err.name === "AbortError") return;
+            copyToClipboard(shareInfo.url).then(() => {
+              setShareFeedback("共有画面を開けなかったため、URLをコピーしました");
+            }).catch(() => {
+              setShareFeedback("共有画面を開けませんでした");
+            });
+          });
+        });
+      }
     })();
   </script>
 </body>

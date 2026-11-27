@@ -8,6 +8,14 @@ import re
 from string import Template
 from typing import Any, Callable
 
+from site_share import (
+    DEFAULT_HERO_ALT,
+    DEFAULT_SITE_BASE_URL,
+    build_episode_og_meta,
+    clean_episode_headline,
+    resolve_episode_image,
+)
+
 ROOT_DIR = Path(__file__).resolve().parent.parent
 DOCS_DIR = ROOT_DIR / "docs"
 DOCS_ASSETS_DIR = DOCS_DIR / "assets"
@@ -34,17 +42,6 @@ def _resolve_avatar(cast_id: str) -> str:
         if cand.exists() and cand.stat().st_size > 256:
             return f"assets/cast/{cand.name}"
     return ""
-
-
-def _clean_headline(subtitle: str, fallback: str = "") -> str:
-    """Strip leading episode/date prefix before ' ― ' or ' — ' for clean listener display."""
-    raw = (subtitle or "").strip()
-    for sep in (" ― ", " — ", " - "):
-        if sep in raw:
-            right = raw.split(sep, 1)[1].strip()
-            if right:
-                return right
-    return raw or fallback
 
 
 def _format_date_labels(
@@ -102,6 +99,10 @@ def _build_listen_payload(
     bundles: list[dict[str, Any]],
     characters: dict[str, Any],
     themes: dict[str, Any],
+    editorial_plan: dict[str, Any] | None = None,
+    site_base_url: str = DEFAULT_SITE_BASE_URL,
+    weekly_banners: dict[str, Any] | None = None,
+    docs_dir: Path | None = None,
 ) -> dict[str, Any]:
     """Build compact episode + link payload ordered newest-first (latest regular episode at [0])."""
     ordered = list(reversed(bundles))
@@ -173,6 +174,13 @@ def _build_listen_payload(
             if lk.get("url")
         ]
 
+        ep_img = resolve_episode_image(
+            b,
+            editorial_plan=editorial_plan,
+            docs_dir=docs_dir,
+            weekly_banners=weekly_banners,
+        )
+
         episodes_out.append(
             {
                 "slug": b["slug"],
@@ -186,7 +194,7 @@ def _build_listen_payload(
                 "is_spinoff": is_spinoff,
                 "edition_tag": _edition_tag(meta),
                 "theme_name": theme_name,
-                "headline": _clean_headline(str(meta.get("subtitle") or ""), fallback=theme_name),
+                "headline": clean_episode_headline(str(meta.get("subtitle") or ""), fallback=theme_name),
                 "guest_name": str(guest.get("name") or ""),
                 "guest_title": str(guest.get("title") or ""),
                 "guest_avatar": _resolve_avatar(guest_id),
@@ -194,6 +202,12 @@ def _build_listen_payload(
                 "heizo_avatar": heizo_avatar,
                 "accent_color": accent_color,
                 "accent_bg": accent_bg,
+                "hero_image": str(ep_img.get("rel_path") or ""),
+                "hero_alt": str(ep_img.get("alt") or DEFAULT_HERO_ALT),
+                "hero_spot_name": str(ep_img.get("spot_name") or ""),
+                "hero_season_label": str(ep_img.get("season_label") or ""),
+                "hero_caption": str(ep_img.get("caption") or ""),
+                "share_rel_path": f"share/{b['slug']}/",
                 "audio_src": f"audio/{meta['output_filename']}",
                 "has_audio": bool(b["has_audio"]),
                 "duration_sec": float(mf_meta.get("total_duration_sec") or 600.0),
@@ -205,10 +219,18 @@ def _build_listen_payload(
         )
 
     program = characters.get("program") or {}
+    default_banner = _resolve_hero_banner()
+    latest_ep = episodes_out[0] if episodes_out else {}
+    latest_hero = str(latest_ep.get("hero_image") or "")
     return {
         "program_title": str(program.get("title") or "毎朝7時！こだいら防災＆まちラジオ"),
         "program_subtitle": "小春と平蔵、7人の専門家と聴く やさしい防災とまちの話題",
-        "hero_banner": _resolve_hero_banner(),
+        "site_base_url": site_base_url,
+        "default_banner": default_banner,
+        "hero_banner": latest_hero or default_banner,
+        "hero_alt": str(latest_ep.get("hero_alt") or DEFAULT_HERO_ALT),
+        "hero_spot_name": str(latest_ep.get("hero_spot_name") or ""),
+        "hero_caption": str(latest_ep.get("hero_caption") or ""),
         "episodes": episodes_out,
     }
 
@@ -273,6 +295,30 @@ body {
   object-fit: cover;
   object-position: center center;
   display: block;
+  transition: opacity 0.2s ease;
+}
+.hero-spot-badge {
+  position: absolute;
+  right: 0.65rem;
+  bottom: 0.65rem;
+  max-width: calc(100% - 1.3rem);
+  padding: 0.24rem 0.68rem;
+  border-radius: 999px;
+  background: rgba(18, 64, 40, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #ffffff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+.hero-spot-badge[hidden] {
+  display: none;
 }
 .hero-plate {
   background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest) 68%, #266b47 100%);
@@ -613,7 +659,10 @@ body {
 .speed-row {
   margin-top: 0.65rem;
   display: flex;
+  align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 .btn-speed {
   appearance: none;
@@ -632,6 +681,144 @@ body {
   border-color: var(--forest);
   color: var(--forest-dark);
   background: var(--forest-soft);
+}
+.btn-share-trigger {
+  appearance: none;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.36rem;
+  border: 1px solid rgba(27, 94, 60, 0.34);
+  background: var(--forest-soft);
+  color: var(--forest-dark);
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.3rem 0.88rem;
+  border-radius: 999px;
+  min-height: 34px;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.btn-share-trigger:hover,
+.btn-share-trigger[aria-expanded="true"] {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #ffffff;
+}
+.share-icon {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+}
+.share-panel {
+  margin-top: 0.72rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 14px;
+  border: 1px solid #d5e2d8;
+  background: #f8faf7;
+}
+.share-panel[hidden] {
+  display: none;
+}
+.share-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+.share-panel-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--forest-dark);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.share-panel-close {
+  appearance: none;
+  font-family: inherit;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.share-panel-close:hover {
+  border-color: var(--forest);
+  color: var(--forest-dark);
+}
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.share-btn {
+  appearance: none;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 40px;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  transition: filter 0.15s, background 0.15s, border-color 0.15s;
+}
+.share-btn[hidden] {
+  display: none;
+}
+.share-btn-native {
+  background: var(--forest);
+  color: #ffffff;
+}
+.share-btn-line {
+  background: #06c755;
+  color: #ffffff;
+}
+.share-btn-x {
+  background: #111827;
+  color: #ffffff;
+}
+.share-btn-copy {
+  background: #ffffff;
+  color: var(--forest-dark);
+  border-color: rgba(27, 94, 60, 0.35);
+}
+.share-btn-native:hover,
+.share-btn-line:hover,
+.share-btn-x:hover {
+  filter: brightness(1.07);
+}
+.share-btn-copy:hover {
+  background: var(--forest-soft);
+  border-color: var(--forest);
+}
+.share-feedback {
+  margin-top: 0.45rem;
+  min-height: 1.2em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--forest-dark);
+  text-align: center;
+}
+.share-feedback:empty {
+  display: none;
 }
 
 /* 3. Bottom Related Pages Section */
@@ -850,6 +1037,10 @@ body {
   .links-list {
     padding: 0.72rem 0.75rem 0.82rem;
   }
+  .share-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 """
 
@@ -860,6 +1051,7 @@ LISTEN_TEMPLATE = Template("""<!DOCTYPE html>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>毎朝7時！こだいら防災＆まちラジオ（リスナー向けプレーヤー）</title>
+  $OG_META_HTML
   <style>
     $LISTEN_CSS
   </style>
@@ -924,6 +1116,23 @@ LISTEN_TEMPLATE = Template("""<!DOCTYPE html>
         </div>
         <div class="speed-row">
           <button type="button" class="btn-speed" id="btn-speed">再生速度 1.0x</button>
+          <button type="button" class="btn-share-trigger" id="btn-share-toggle" aria-expanded="false" aria-controls="share-panel">
+            <svg class="share-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            <span>この回をシェア</span>
+          </button>
+        </div>
+        <div class="share-panel" id="share-panel" hidden>
+          <div class="share-panel-head">
+            <span class="share-panel-title" id="share-panel-title">この回をシェア</span>
+            <button type="button" class="share-panel-close" id="btn-share-close" aria-label="シェアメニューを閉じる">×</button>
+          </div>
+          <div class="share-actions">
+            <button type="button" class="share-btn share-btn-native" id="btn-share-native" hidden>他のアプリで共有</button>
+            <a class="share-btn share-btn-line" id="btn-share-line" href="#" target="_blank" rel="noopener noreferrer">LINEで送る</a>
+            <a class="share-btn share-btn-x" id="btn-share-x" href="#" target="_blank" rel="noopener noreferrer">Xでシェア</a>
+            <button type="button" class="share-btn share-btn-copy" id="btn-share-copy">URLをコピー</button>
+          </div>
+          <div class="share-feedback" id="share-feedback" aria-live="polite"></div>
         </div>
       </div>
     </section>
@@ -962,6 +1171,18 @@ LISTEN_TEMPLATE = Template("""<!DOCTYPE html>
       if (episodes.length === 0) return;
 
       const rootEl = document.documentElement;
+      const heroImg = document.getElementById("hero-img");
+      const heroSpotBadge = document.getElementById("hero-spot-badge");
+      if (heroImg) {
+        heroImg.addEventListener("error", () => {
+          const fallback = payload.default_banner || "";
+          const curAttr = heroImg.getAttribute("src") || "";
+          if (fallback && curAttr !== fallback && heroImg.dataset.fallbackTried !== fallback) {
+            heroImg.dataset.fallbackTried = fallback;
+            heroImg.setAttribute("src", fallback);
+          }
+        });
+      }
       const audio = document.getElementById("radio-audio");
       const btnPrev = document.getElementById("btn-prev-ep");
       const btnNext = document.getElementById("btn-next-ep");
@@ -984,6 +1205,15 @@ LISTEN_TEMPLATE = Template("""<!DOCTYPE html>
       const btnBack = document.getElementById("btn-back");
       const btnFwd = document.getElementById("btn-fwd");
       const btnSpeed = document.getElementById("btn-speed");
+      const btnShareToggle = document.getElementById("btn-share-toggle");
+      const sharePanel = document.getElementById("share-panel");
+      const sharePanelTitle = document.getElementById("share-panel-title");
+      const btnShareClose = document.getElementById("btn-share-close");
+      const btnShareNative = document.getElementById("btn-share-native");
+      const btnShareLine = document.getElementById("btn-share-line");
+      const btnShareX = document.getElementById("btn-share-x");
+      const btnShareCopy = document.getElementById("btn-share-copy");
+      const shareFeedback = document.getElementById("share-feedback");
 
       const linksCount = document.getElementById("links-count");
       const linksList = document.getElementById("links-list");
@@ -994,6 +1224,91 @@ LISTEN_TEMPLATE = Template("""<!DOCTYPE html>
       let speedIdx = 0;
       let currentIdx = 0;
       let isScrubbing = false;
+      let copyTimer = null;
+
+      if (btnShareNative && typeof navigator.share === "function") {
+        btnShareNative.hidden = false;
+      }
+
+      function buildShareInfo(ep) {
+        const relPath = ep.share_rel_path || ("share/" + ep.slug + "/");
+        let shareUrl = "";
+        if (window.location.protocol === "http:" || window.location.protocol === "https:") {
+          try {
+            shareUrl = new URL(relPath, window.location.href).toString();
+          } catch (_) {}
+        }
+        if (!shareUrl) {
+          let cleanBase = payload.site_base_url || "";
+          while (cleanBase.endsWith("/")) cleanBase = cleanBase.slice(0, -1);
+          let cleanRel = relPath;
+          while (cleanRel.startsWith("/")) cleanRel = cleanRel.slice(1);
+          shareUrl = cleanBase ? (cleanBase + "/" + cleanRel) : relPath;
+        }
+        const prefix = ep.is_spinoff ? ("特別編・" + ep.date_label) : ep.date_label;
+        const rawHeadline = ep.headline || ep.theme_name || "";
+        const shortHeadline = rawHeadline.length > 72 ? (rawHeadline.slice(0, 71) + "…") : rawHeadline;
+        const shareText = "【" + prefix + "】" + shortHeadline + "｜" + (payload.program_title || "毎朝7時！こだいら防災＆まちラジオ");
+        const shareTitle = "【" + prefix + "】" + rawHeadline;
+        return {
+          url: shareUrl,
+          text: shareText,
+          title: shareTitle,
+          label: prefix + "の回をシェア"
+        };
+      }
+
+      function copyToClipboard(text) {
+        if (window.isSecureContext && navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+          return navigator.clipboard.writeText(text);
+        }
+        return new Promise((resolve, reject) => {
+          try {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.setAttribute("readonly", "");
+            ta.style.position = "fixed";
+            ta.style.top = "-9999px";
+            ta.style.left = "-9999px";
+            document.body.appendChild(ta);
+            ta.select();
+            const ok = document.execCommand("copy");
+            document.body.removeChild(ta);
+            if (ok) resolve();
+            else reject(new Error("copy failed"));
+          } catch (err) {
+            reject(err);
+          }
+        });
+      }
+
+      function setShareFeedback(msg) {
+        if (shareFeedback) shareFeedback.textContent = msg || "";
+      }
+
+      function closeSharePanel() {
+        if (!sharePanel || !btnShareToggle) return;
+        sharePanel.hidden = true;
+        btnShareToggle.setAttribute("aria-expanded", "false");
+      }
+
+      function updateShareUI(ep) {
+        if (!ep) return;
+        const info = buildShareInfo(ep);
+        if (sharePanelTitle) sharePanelTitle.textContent = info.label;
+        if (btnShareLine) {
+          btnShareLine.href = "https://social-plugins.line.me/lineit/share?url=" + encodeURIComponent(info.url) + "&text=" + encodeURIComponent(info.text);
+        }
+        if (btnShareX) {
+          btnShareX.href = "https://x.com/intent/tweet?text=" + encodeURIComponent(info.text) + "&url=" + encodeURIComponent(info.url);
+        }
+        if (copyTimer) {
+          clearTimeout(copyTimer);
+          copyTimer = null;
+        }
+        if (btnShareCopy) btnShareCopy.textContent = "URLをコピー";
+        setShareFeedback("");
+      }
 
       try {
         const saved = parseFloat(localStorage.getItem(SPEED_STORAGE_KEY) || "");
@@ -1108,14 +1423,36 @@ LISTEN_TEMPLATE = Template("""<!DOCTYPE html>
         });
       }
 
+      function resolveAbsoluteAssetUrl(relPath) {
+        if (!relPath) return "";
+        try {
+          return new URL(relPath, window.location.href).toString();
+        } catch (_) {
+          let base = String(payload.site_base_url || "");
+          while (base.endsWith("/")) base = base.slice(0, -1);
+          let rel = String(relPath);
+          while (rel.startsWith("/")) rel = rel.slice(1);
+          return base ? (base + "/" + rel) : rel;
+        }
+      }
+
       function updateMediaSession(ep) {
         if (!("mediaSession" in navigator)) return;
         try {
-          navigator.mediaSession.metadata = new MediaMetadata({
+          const artRel = ep.hero_image || payload.default_banner || payload.hero_banner || "";
+          const artUrl = resolveAbsoluteAssetUrl(artRel);
+          const metaInit = {
             title: ep.headline || ep.theme_name,
             artist: payload.program_title || "こだいら防災＆まちラジオ",
             album: ep.date_label
-          });
+          };
+          if (artUrl) {
+            const artType = artRel.endsWith(".png")
+              ? "image/png"
+              : (artRel.endsWith(".webp") ? "image/webp" : "image/jpeg");
+            metaInit.artwork = [{ src: artUrl, sizes: "1376x768", type: artType }];
+          }
+          navigator.mediaSession.metadata = new MediaMetadata(metaInit);
         } catch (_) {}
       }
 
@@ -1213,6 +1550,28 @@ LISTEN_TEMPLATE = Template("""<!DOCTYPE html>
         }
 
         updateMediaSession(ep);
+        if (heroImg) {
+          const nextImg = ep.hero_image || payload.default_banner || payload.hero_banner || "";
+          if (nextImg && heroImg.getAttribute("src") !== nextImg) {
+            heroImg.dataset.fallbackTried = "";
+            heroImg.setAttribute("src", nextImg);
+          }
+          if (ep.hero_alt) {
+            heroImg.setAttribute("alt", ep.hero_alt);
+          }
+        }
+        if (heroSpotBadge) {
+          const spotText = (ep.hero_caption || ep.hero_spot_name || "").trim();
+          if (spotText) {
+            heroSpotBadge.textContent = "📍 " + spotText;
+            heroSpotBadge.hidden = false;
+          } else {
+            heroSpotBadge.textContent = "";
+            heroSpotBadge.hidden = true;
+          }
+        }
+        document.title = ep.date_label + " " + (ep.headline || ep.theme_name) + " | " + (payload.program_title || "毎朝7時！こだいら防災＆まちラジオ");
+        updateShareUI(ep);
 
         if (options.updateUrl) {
           try {
@@ -1274,6 +1633,58 @@ LISTEN_TEMPLATE = Template("""<!DOCTYPE html>
         speedIdx = (speedIdx + 1) % SPEED_RATES.length;
         applySpeed(SPEED_RATES[speedIdx]);
       });
+
+      if (btnShareToggle && sharePanel) {
+        btnShareToggle.addEventListener("click", () => {
+          const nextHidden = !sharePanel.hidden;
+          sharePanel.hidden = nextHidden;
+          btnShareToggle.setAttribute("aria-expanded", nextHidden ? "false" : "true");
+        });
+      }
+      if (btnShareClose) {
+        btnShareClose.addEventListener("click", closeSharePanel);
+      }
+      document.addEventListener("keydown", (ev) => {
+        if (ev.key === "Escape" && sharePanel && !sharePanel.hidden) {
+          closeSharePanel();
+        }
+      });
+      if (btnShareCopy) {
+        btnShareCopy.addEventListener("click", () => {
+          const ep = episodes[currentIdx];
+          if (!ep) return;
+          const info = buildShareInfo(ep);
+          copyToClipboard(info.url).then(() => {
+            btnShareCopy.textContent = "✓ コピーしました";
+            setShareFeedback("この回のURLをコピーしました");
+            if (copyTimer) clearTimeout(copyTimer);
+            copyTimer = setTimeout(() => {
+              btnShareCopy.textContent = "URLをコピー";
+            }, 2200);
+          }).catch(() => {
+            setShareFeedback("コピーできませんでした。URL欄から直接コピーしてください");
+          });
+        });
+      }
+      if (btnShareNative) {
+        btnShareNative.addEventListener("click", () => {
+          const ep = episodes[currentIdx];
+          if (!ep || typeof navigator.share !== "function") return;
+          const info = buildShareInfo(ep);
+          navigator.share({
+            title: info.title,
+            text: info.text,
+            url: info.url
+          }).catch((err) => {
+            if (err && err.name === "AbortError") return;
+            copyToClipboard(info.url).then(() => {
+              setShareFeedback("共有画面を開けなかったため、URLをコピーしました");
+            }).catch(() => {
+              setShareFeedback("共有画面を開けませんでした");
+            });
+          });
+        });
+      }
 
       scrubber.addEventListener("input", () => {
         const ep = episodes[currentIdx];
@@ -1354,22 +1765,58 @@ def render_listen_page(
     characters: dict[str, Any],
     themes: dict[str, Any],
     safe_json_fn: Callable[[Any], str],
+    editorial_plan: dict[str, Any] | None = None,
+    site_base_url: str = DEFAULT_SITE_BASE_URL,
+    weekly_banners: dict[str, Any] | None = None,
+    docs_dir: Path | None = None,
 ) -> str:
     """Render simplified listener-focused docs/listen.html page."""
-    payload = _build_listen_payload(bundles, characters, themes)
+    payload = _build_listen_payload(
+        bundles,
+        characters,
+        themes,
+        editorial_plan=editorial_plan,
+        site_base_url=site_base_url,
+        weekly_banners=weekly_banners,
+        docs_dir=docs_dir,
+    )
     hero_src = payload.get("hero_banner") or ""
+    hero_alt = str(payload.get("hero_alt") or DEFAULT_HERO_ALT)
+    spot_text = str(payload.get("hero_caption") or payload.get("hero_spot_name") or "").strip()
+    if spot_text:
+        badge_html = f'<div class="hero-spot-badge" id="hero-spot-badge">📍 {html.escape(spot_text)}</div>'
+    else:
+        badge_html = '<div class="hero-spot-badge" id="hero-spot-badge" hidden></div>'
+
     if hero_src:
         hero_img_html = (
             '<div class="hero-img-wrap">'
-            f'<img class="hero-img" src="{html.escape(hero_src)}" '
-            'alt="小春・平蔵と7人の防災専門家ゲスト集合イラスト" />'
+            f'<img class="hero-img" id="hero-img" src="{html.escape(hero_src)}" '
+            f'alt="{html.escape(hero_alt, quote=True)}" />'
+            f"{badge_html}"
             "</div>"
         )
     else:
         hero_img_html = ""
 
+    og_meta_html = (
+        build_episode_og_meta(
+            bundles[-1],
+            page_rel_url="listen.html",
+            site_base_url=site_base_url,
+            editorial_plan=editorial_plan,
+            program_title=payload["program_title"],
+            og_type="website",
+            docs_dir=docs_dir,
+            weekly_banners=weekly_banners,
+        )
+        if bundles
+        else ""
+    )
+
     return LISTEN_TEMPLATE.substitute(
         LISTEN_CSS=LISTEN_CSS,
+        OG_META_HTML=og_meta_html,
         HERO_IMAGE_HTML=hero_img_html,
         PROGRAM_TITLE=html.escape(payload["program_title"]),
         PROGRAM_SUBTITLE=html.escape(payload["program_subtitle"]),

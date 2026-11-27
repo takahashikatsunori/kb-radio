@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "default_banner": {
+    "rel_path": "assets/hero_cast_banner.jpg",
+    "spot_name": "",
+    "season_label": "スタジオ集合イラスト",
+    "alt": "小春・平蔵と7人の防災専門家ゲスト集合イラスト",
+    "caption": ""
+  },
+  "cast_reference_sheet": "docs/assets/hero_cast_banner.jpg",
+  "entries": []
+}

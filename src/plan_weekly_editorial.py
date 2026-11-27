@@ -344,13 +344,19 @@ def merge_editorial_plans(
             guides_by_date[str(g["date"])] = g
 
     new_ws = new_week_plan["week_start"]
-    weeks_by_start[new_ws] = {
+    prev_wk = weeks_by_start.get(new_ws) or {}
+    merged_week_entry = {
         "week_start": new_ws,
         "week_end": new_week_plan["week_end"],
         "generated_at": new_week_plan["generated_at"],
         "weekly_arc": new_week_plan["weekly_arc"],
         "upcoming_ideas": new_week_plan.get("upcoming_ideas", []),
     }
+    for banner_key in ("banner_image", "hero_image", "og_image"):
+        banner_val = new_week_plan.get(banner_key) or prev_wk.get(banner_key)
+        if banner_val:
+            merged_week_entry[banner_key] = banner_val
+    weeks_by_start[new_ws] = merged_week_entry
 
     sorted_guides = [guides_by_date[d] for d in sorted(guides_by_date)]
     sorted_weeks = [weeks_by_start[ws] for ws in sorted(weeks_by_start)]

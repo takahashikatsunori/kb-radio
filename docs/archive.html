@@ -143,6 +143,43 @@ header {
   padding: 0.78rem 1rem;
   border-left: 4px solid var(--amber);
 }
+.ep-hero-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-height: 290px;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 0.65rem;
+  background: #dff0e6;
+}
+.ep-hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ep-hero-spot-badge,
+.archive-spot-badge {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  max-width: calc(100% - 1rem);
+  padding: 0.2rem 0.58rem;
+  border-radius: 999px;
+  background: rgba(18, 64, 40, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
 .ep-meta-row {
   display: flex;
   flex-wrap: wrap;
@@ -298,6 +335,126 @@ button.active-toggle {
   border-color: var(--forest);
 }
 .speed-cycle-btn {
+  display: none;
+}
+.share-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--forest-soft);
+  border-color: rgba(27, 94, 60, 0.35);
+  color: var(--forest-dark);
+}
+.share-toggle-btn[aria-expanded="true"] {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #ffffff;
+}
+.share-icon {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+}
+.share-panel {
+  margin-top: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid #d5e2d8;
+  background: #f8faf7;
+}
+.share-panel[hidden] {
+  display: none;
+}
+.share-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+.share-panel-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--forest-dark);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+button.share-panel-close {
+  min-height: 28px;
+  width: 28px;
+  padding: 0;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.share-btn {
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 36px;
+  padding: 0.36rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  transition: filter 0.15s, background 0.15s, border-color 0.15s;
+}
+.share-btn[hidden] {
+  display: none;
+}
+.share-btn-native {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #ffffff;
+}
+.share-btn-native:hover {
+  background: var(--forest-dark);
+  border-color: var(--forest-dark);
+}
+.share-btn-line {
+  background: #06c755;
+  color: #ffffff;
+}
+.share-btn-x {
+  background: #111827;
+  color: #ffffff;
+}
+.share-btn-copy {
+  background: #ffffff;
+  color: var(--forest-dark);
+  border-color: rgba(27, 94, 60, 0.35);
+}
+.share-btn-line:hover,
+.share-btn-x:hover {
+  filter: brightness(1.07);
+}
+.share-btn-copy:hover {
+  background: var(--forest-soft);
+  border-color: var(--forest);
+}
+.share-feedback {
+  margin-top: 0.38rem;
+  min-height: 1.15em;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--forest-dark);
+}
+.share-feedback:empty {
   display: none;
 }
 
@@ -553,6 +710,28 @@ button.active-toggle {
   gap: 0.45rem;
   overflow-wrap: anywhere;
 }
+.archive-thumb-wrap {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #dff0e6;
+  margin-bottom: 0.15rem;
+}
+.archive-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.archive-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 0.2rem;
+}
 .btn-link {
   display: inline-block;
   text-decoration: none;
@@ -565,6 +744,19 @@ button.active-toggle {
   text-align: center;
 }
 .btn-link:hover { background: var(--forest-dark); }
+.btn-link-secondary {
+  display: inline-block;
+  text-decoration: none;
+  background: #ffffff;
+  color: var(--forest-dark);
+  border: 1.5px solid var(--forest);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.44rem 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+}
+.btn-link-secondary:hover { background: var(--forest-soft); }
 footer {
   max-width: 1200px;
   margin: 0 auto;
@@ -656,6 +848,14 @@ footer {
     font-size: 0.95rem;
     line-height: 1.72;
   }
+  .share-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .share-btn {
+    padding: 0.36rem 0.55rem;
+    font-size: 0.76rem;
+  }
 }
 
     .filter-bar {
@@ -731,7 +931,7 @@ footer {
 
   <footer>毎朝7時！こだいら防災＆まちラジオ（東京都小平市）</footer>
 
-  <script type="application/json" id="archive-data">[{"date": "2026-11-27", "episode_number": 6, "episode_label": "第6回", "is_spinoff": false, "weekday": "friday", "weekday_ja": "金曜日", "theme_name": "食・備蓄・ライフライン", "edition_label": "特別コーナー拡大版（約13分）", "is_holiday": false, "special_title": "小平市 ペット防災相談会＆オリジナル防災マップ講座 締切スペシャル", "subtitle": "第6回・2026-11-27（金曜日）朝7時号 ― ガスミュージアムの紅葉＆旬の東京ゴールド！ローリングストック・カセットボンベ7年の法則＆明日28日締切直前スペシャル", "guest_name": "出雲 健太", "guest_title": "ライフライン防災研究家（備蓄・生活インフラ担当・架空ゲスト）", "duration": "13:19", "has_audio": true, "href": "episodes/2026-11-27/index.html", "learned_points": ["日常と非常時の境目をなくす「フェーズフリー」の考え方のもと、普段の食材や小平うどんの乾麺・缶詰などを少し多めに買って古い順に食べながら補充するローリングストックを最低3日〜1週間分×人数分で回すことが安心につながること", "カセットボンベは未使用でも内部パッキンの経年劣化があるため製造後約7年以内（缶底面の8桁数字を確認）、コンロ本体は約10年が買い替え目安で、1人1週間約6本を目安に備え、2台並べ・ボンベカバーを覆う大鍋・IH上の設置・アルミホイル巻きなどの過熱NG行動を避けること", "本格寒波前は気温マイナス4℃以下を目安に露出水道管の保温とメーターボックス内元栓の位置確認をしておき、凍結時は熱湯厳禁でぬるま湯を使うこと、また断水時は小川浄水所・上水南浄水所・津田公園や小中学校貯水槽などの給水拠点へ清潔な容器を持って向かうこと"], "keywords": ["ローリングストックとフェーズフリー", "カセットコンロとボンベの適正備蓄本数・使用期限", "水道管凍結予防と応急給水拠点（小川浄水所・上水南浄水所・津田公園）"]}, {"date": "2026-11-26", "episode_number": 5, "episode_label": "第5回", "is_spinoff": false, "weekday": "thursday", "weekday_ja": "木曜日", "theme_name": "災害医療・応急手当・こころのケア", "edition_label": "特別コーナー拡大版（約13分）", "is_holiday": false, "special_title": "小平市 ペット防災相談会＆オリジナル防災マップ講座 締切スペシャル", "subtitle": "第5回・2026-11-26（木曜日）朝7時号 ― 一橋学園の朝パン＆応急診療所の最新ルール！エコノミークラス症候群予防とAED・胸骨圧迫＆28日締切スペシャル", "guest_name": "白川 優子", "guest_title": "災害看護・救護専門官（看護師・DMAT経験者・架空ゲスト）", "duration": "15:06", "has_audio": true, "href": "episodes/2026-11-26/index.html", "learned_points": ["学園東町・小平市健康センター1階の「小平市医師会応急診療所」は2026年5月11日から電話予約制を廃止し直接来所方式となり、休日昼間と365日準夜診療に対応（支払いは現金のみ・マイナ保険証やお薬手帳を持参）するとともに、災害時は超急性期の「医療救護活動拠点」も担うこと", "エコノミークラス症候群（深部静脈血栓症）は車中泊や避難所だけでなく冬の水分不足や長時間座位でも起こるため、トイレを我慢せずこまめに水分補給し、1時間に1回のかかとの上げ下ろし運動（20〜30回）や足首回し・ゆったりした服装で予防することが大切なこと", "心停止時は119番通報とAED手配を周囲に指名しつつ、成人約5cm（未就学児は胸の厚さの約1/3）の深さで1分間100〜120回（「もしもしかめよ」等のテンポ）の胸骨圧迫を絶え間なく行い、AEDは心電図を自動解析して不要時には通電しないため音声ガイダンスに従い誰でも安心して使えること"], "keywords": ["エコノミークラス症候群（深部静脈血栓症）と水分・ふくらはぎ運動", "AEDと胸骨圧迫（1分間100〜120回）", "お薬手帳・処方薬（最低1週間分）とマイナ保険証・お薬情報"]}, {"date": "2026-11-25", "episode_number": 4, "episode_label": "第4回", "is_spinoff": false, "weekday": "wednesday", "weekday_ja": "水曜日", "theme_name": "火災・電気・特殊消防機材", "edition_label": "特別コーナー拡大版（約13分）", "is_holiday": false, "special_title": "小平市 ペット防災相談会＆オリジナル防災マップ講座 締切スペシャル", "subtitle": "第4回・2026-11-25（水曜日）朝7時号 ― 小平駅南口の朝パンと道路防災！通電火災・感震ブレーカー＆28日締切スペシャル", "guest_name": "火ノ原 鉄平", "guest_title": "防火防災アドバイザー（元消防司令・架空ゲスト）", "duration": "14:58", "has_audio": true, "href": "episodes/2026-11-25/index.html", "learned_points": ["冬から春先（12月〜3月）に急増するストーブ火災の約7〜8割は火の見えない電気ストーブが原因であり、寝具や衣類を近づけない「離す・消す・干さない」の3原則が命を守ること", "阪神・淡路大震災で約61%、東日本大震災で約54%を占めた地震後の電気・通電火災には、震度5強相当以上で自動遮断する感震ブレーカーが有効であり、小平市全域で事前相談制の購入費補助金（一括遮断型上限2万円・特定機器遮断型上限7千円、2026年10月受付再開）が使えること", "東京都では全居室・台所・階段に住宅用火災警報器の設置義務があり、設置で死者数・損害額が半減・焼損床面積は約6割減となるため、煙式と台所の熱式を半年に1回点検し、設置から10年を目安に電池だけでなく本体ごと交換することが大切であること"], "keywords": ["通電火災と感震ブレーカー（分電盤型・簡易型）", "住宅用火災警報器（煙式・熱式と10年交換目安）", "電気ストーブ火災対策（離す・消す・干さない）", "延焼遮断帯としての都市計画道路"]}, {"date": "2026-11-24", "episode_number": 3, "episode_label": "第3回", "is_spinoff": false, "weekday": "tuesday", "weekday_ja": "火曜日", "theme_name": "気象・水害・都市河川", "edition_label": "特別コーナー拡大版（約13分）", "is_holiday": false, "special_title": "地下25mの大冒険！ふれあい下水道館と鷹の台パンさんぽで知る『小平の水のヒミツ』", "subtitle": "第3回・2026-11-24（火曜日）朝7時号 ― 地下25mの下水道館と鷹の台パンさんぽ！内水氾濫とXRAINのヒミツ", "guest_name": "雨宮 栞", "guest_title": "気象防災アドバイザー（元気象台予報官・架空ゲスト）", "duration": "15:46", "has_audio": true, "href": "episodes/2026-11-24/index.html", "learned_points": ["河川があふれる外水氾濫に対し、都市部で警戒したい内水氾濫は短時間の強雨で下水道や排水路の処理能力を超えてあふれる水害であり、小平市の合流式・分流式エリアの特徴や簡易水のう対策を知っておくことが大切であること", "国土交通省のXRAINは水平・垂直2種類の電波で雨粒のつぶれ具合から雨量を直接算出するため、250mメッシュ・1分間隔という高精度・高頻度で局地的な豪雨を捉えられ、気象庁キキクルと併用すると早めの判断に役立つこと", "防災庁の緊急要請でも呼びかけられている携帯トイレ（1人1日5回×1週間＝35回分）の備蓄や、新たな警戒レベル4「危険警報」を反映した令和8年度版小平市防災マップ・防災マップアプリの事前確認が安心につながること"], "keywords": ["内水氾濫と外水氾濫の違い", "XRAIN（XバンドMPレーダ雨量観測）", "気象庁キキクル（危険度分布）"]}, {"date": "2026-11-23", "episode_number": 2, "episode_label": "第2回", "is_spinoff": false, "weekday": "monday", "weekday_ja": "月曜日", "theme_name": "地震・建築・地盤", "edition_label": "祝日15分拡大版（勤労感謝の日）", "is_holiday": true, "special_title": "", "subtitle": "第2回・2026-11-23（月・祝）朝7時号 ― 勤労感謝の日15分拡大版！玉川上水の紅葉散歩と武蔵野台地の地盤＆耐震・制震・免震のヒミツ", "guest_name": "岩城 剛", "guest_title": "耐震構造・地盤工学研究家（工学博士・架空ゲスト）", "duration": "19:07", "has_audio": true, "href": "episodes/2026-11-23/index.html", "learned_points": ["小平市の大部分が載る武蔵野台地・関東ローム層は軟弱な沖積層に比べて揺れが増幅しにくく液状化リスクも低いが、谷底低地や埋没谷では1〜2Hzのキラーパルスが増幅されることもあり過信せずハザードマップや地盤確認が大切であること", "建物の地震対策は「耐震＝強さで耐える」「制震＝ダンパーで揺れを吸収する」「免震＝地面と切り離して揺れを伝えない」の3つに違いがあり、1981年以前（旧耐震）・新耐震・木造の2000年基準など自宅の築年数確認が第一歩になること", "耐震構造でも室内の家具転倒を防ぐため、重い物を下に置く重心配置と、壁の下地へのL字金具固定や突っ張り棒・耐震マットの併用を休日に点検しておくと安心なこと"], "keywords": ["武蔵野台地・関東ローム層の揺れ特性", "耐震・制震・免震の違い", "旧耐震基準（1981年以前）と2000年基準", "家具のL字金具・突っ張り棒・耐震マットと重心配置"]}, {"date": "2026-11-22", "episode_number": 0, "episode_label": "スピンオフ特別編", "is_spinoff": true, "weekday": "sunday", "weekday_ja": "日曜日", "theme_name": "スピンオフ特集：小川パレット徹底ガイド", "edition_label": "スピンオフ特別企画（約10分）", "is_holiday": false, "special_title": "", "subtitle": "スピンオフ特別企画 ― 行ってみたくなる！「小川パレット」まるわかりガイド", "guest_name": "", "guest_title": "", "duration": "10:09", "has_audio": true, "href": "episodes/2026-11-22-spinoff-ogawa-palette/index.html", "learned_points": ["市民投票（1,187票中527票）で選ばれた「小川パレット」は、絵の具のパレットのように多様な人が集う小川駅西口徒歩1分の複合拠点", "4階はカフェ・児童書・防音スタジオ・西部出張所など賑わいフロア、5階は一般書架・1時間100円の個人スペース・和室や調理室など学びのフロア（4階から西武線が見えるスポットも！）", "4階マガジンカフェ「BLUE & BERRY」は蓋つきドリンクで本や雑誌が読め、ムサビ生コラボ珈琲や地元グルメも楽しめる（金〜日は夜21時まで）", "駐輪場は最初の1時間無料・駐車場はパレット利用割引なし／有料スペース予約は他施設と別に小川パレットでの新規登録が必要"], "keywords": ["小川パレット（4F・5F）", "BLUE & BERRY カフェ", "1時間100円 個人スペース", "鏡張り防音スタジオ", "トレインビュー＆駐輪1時間無料"]}, {"date": "2026-11-22", "episode_number": 1, "episode_label": "第1回", "is_spinoff": false, "weekday": "sunday", "weekday_ja": "日曜日", "theme_name": "防災テック・ハザードマップ・衛星・最新情報", "edition_label": "", "is_holiday": false, "special_title": "", "subtitle": "第1回・2026年11月22日（日曜日）朝7時号 ― 日曜15分特集：防災テックとGISで歩く小平のまち", "guest_name": "星野 創", "guest_title": "防災テック＆GISエンジニア（地理情報・衛星通信・架空ゲスト）", "duration": "14:37", "has_audio": true, "href": "episodes/2026-11-22/index.html", "learned_points": ["GIS（地理情報システム）とカラーユニバーサルデザインでハザードマップや小平市防災マップアプリの仕組みがぐっと見やすくなっていること", "Jアラートは衛星と地上回線の二重ルートで届き、窓を閉めて聞き逃しても小平市防災行政無線テレホンサービス（042-341-0793）で確認できること", "防災アプリやDXは便利な一方、問合せ情報漏えいのようなセキュリティ事例も踏まえて公式の一次情報を落ち着いて確認することが大切なこと"], "keywords": ["GIS（地理情報システム）", "オフラインGPS地図キャッシュ", "Jアラート衛星＆地上二重ルート", "災害時ドローンマッピング＆低軌道衛星通信"]}]</script>
+  <script type="application/json" id="archive-data">[{"slug": "2026-11-27", "date": "2026-11-27", "episode_number": 6, "episode_label": "第6回", "is_spinoff": false, "weekday": "friday", "weekday_ja": "金曜日", "theme_name": "食・備蓄・ライフライン", "edition_label": "特別コーナー拡大版（約13分）", "is_holiday": false, "special_title": "小平市 ペット防災相談会＆オリジナル防災マップ講座 締切スペシャル", "subtitle": "第6回・2026-11-27（金曜日）朝7時号 ― ガスミュージアムの紅葉＆旬の東京ゴールド！ローリングストック・カセットボンベ7年の法則＆明日28日締切直前スペシャル", "guest_name": "出雲 健太", "guest_title": "ライフライン防災研究家（備蓄・生活インフラ担当・架空ゲスト）", "duration": "13:19", "has_audio": true, "hero_image": "assets/hero_cast_banner.jpg", "hero_alt": "小春・平蔵と7人の防災専門家ゲスト集合イラスト", "hero_spot_name": "", "hero_caption": "", "href": "episodes/2026-11-27/index.html", "listen_href": "listen.html?ep=2026-11-27", "learned_points": ["日常と非常時の境目をなくす「フェーズフリー」の考え方のもと、普段の食材や小平うどんの乾麺・缶詰などを少し多めに買って古い順に食べながら補充するローリングストックを最低3日〜1週間分×人数分で回すことが安心につながること", "カセットボンベは未使用でも内部パッキンの経年劣化があるため製造後約7年以内（缶底面の8桁数字を確認）、コンロ本体は約10年が買い替え目安で、1人1週間約6本を目安に備え、2台並べ・ボンベカバーを覆う大鍋・IH上の設置・アルミホイル巻きなどの過熱NG行動を避けること", "本格寒波前は気温マイナス4℃以下を目安に露出水道管の保温とメーターボックス内元栓の位置確認をしておき、凍結時は熱湯厳禁でぬるま湯を使うこと、また断水時は小川浄水所・上水南浄水所・津田公園や小中学校貯水槽などの給水拠点へ清潔な容器を持って向かうこと"], "keywords": ["ローリングストックとフェーズフリー", "カセットコンロとボンベの適正備蓄本数・使用期限", "水道管凍結予防と応急給水拠点（小川浄水所・上水南浄水所・津田公園）"]}, {"slug": "2026-11-26", "date": "2026-11-26", "episode_number": 5, "episode_label": "第5回", "is_spinoff": false, "weekday": "thursday", "weekday_ja": "木曜日", "theme_name": "災害医療・応急手当・こころのケア", "edition_label": "特別コーナー拡大版（約13分）", "is_holiday": false, "special_title": "小平市 ペット防災相談会＆オリジナル防災マップ講座 締切スペシャル", "subtitle": "第5回・2026-11-26（木曜日）朝7時号 ― 一橋学園の朝パン＆応急診療所の最新ルール！エコノミークラス症候群予防とAED・胸骨圧迫＆28日締切スペシャル", "guest_name": "白川 優子", "guest_title": "災害看護・救護専門官（看護師・DMAT経験者・架空ゲスト）", "duration": "15:06", "has_audio": true, "hero_image": "assets/hero_cast_banner.jpg", "hero_alt": "小春・平蔵と7人の防災専門家ゲスト集合イラスト", "hero_spot_name": "", "hero_caption": "", "href": "episodes/2026-11-26/index.html", "listen_href": "listen.html?ep=2026-11-26", "learned_points": ["学園東町・小平市健康センター1階の「小平市医師会応急診療所」は2026年5月11日から電話予約制を廃止し直接来所方式となり、休日昼間と365日準夜診療に対応（支払いは現金のみ・マイナ保険証やお薬手帳を持参）するとともに、災害時は超急性期の「医療救護活動拠点」も担うこと", "エコノミークラス症候群（深部静脈血栓症）は車中泊や避難所だけでなく冬の水分不足や長時間座位でも起こるため、トイレを我慢せずこまめに水分補給し、1時間に1回のかかとの上げ下ろし運動（20〜30回）や足首回し・ゆったりした服装で予防することが大切なこと", "心停止時は119番通報とAED手配を周囲に指名しつつ、成人約5cm（未就学児は胸の厚さの約1/3）の深さで1分間100〜120回（「もしもしかめよ」等のテンポ）の胸骨圧迫を絶え間なく行い、AEDは心電図を自動解析して不要時には通電しないため音声ガイダンスに従い誰でも安心して使えること"], "keywords": ["エコノミークラス症候群（深部静脈血栓症）と水分・ふくらはぎ運動", "AEDと胸骨圧迫（1分間100〜120回）", "お薬手帳・処方薬（最低1週間分）とマイナ保険証・お薬情報"]}, {"slug": "2026-11-25", "date": "2026-11-25", "episode_number": 4, "episode_label": "第4回", "is_spinoff": false, "weekday": "wednesday", "weekday_ja": "水曜日", "theme_name": "火災・電気・特殊消防機材", "edition_label": "特別コーナー拡大版（約13分）", "is_holiday": false, "special_title": "小平市 ペット防災相談会＆オリジナル防災マップ講座 締切スペシャル", "subtitle": "第4回・2026-11-25（水曜日）朝7時号 ― 小平駅南口の朝パンと道路防災！通電火災・感震ブレーカー＆28日締切スペシャル", "guest_name": "火ノ原 鉄平", "guest_title": "防火防災アドバイザー（元消防司令・架空ゲスト）", "duration": "14:58", "has_audio": true, "hero_image": "assets/hero_cast_banner.jpg", "hero_alt": "小春・平蔵と7人の防災専門家ゲスト集合イラスト", "hero_spot_name": "", "hero_caption": "", "href": "episodes/2026-11-25/index.html", "listen_href": "listen.html?ep=2026-11-25", "learned_points": ["冬から春先（12月〜3月）に急増するストーブ火災の約7〜8割は火の見えない電気ストーブが原因であり、寝具や衣類を近づけない「離す・消す・干さない」の3原則が命を守ること", "阪神・淡路大震災で約61%、東日本大震災で約54%を占めた地震後の電気・通電火災には、震度5強相当以上で自動遮断する感震ブレーカーが有効であり、小平市全域で事前相談制の購入費補助金（一括遮断型上限2万円・特定機器遮断型上限7千円、2026年10月受付再開）が使えること", "東京都では全居室・台所・階段に住宅用火災警報器の設置義務があり、設置で死者数・損害額が半減・焼損床面積は約6割減となるため、煙式と台所の熱式を半年に1回点検し、設置から10年を目安に電池だけでなく本体ごと交換することが大切であること"], "keywords": ["通電火災と感震ブレーカー（分電盤型・簡易型）", "住宅用火災警報器（煙式・熱式と10年交換目安）", "電気ストーブ火災対策（離す・消す・干さない）", "延焼遮断帯としての都市計画道路"]}, {"slug": "2026-11-24", "date": "2026-11-24", "episode_number": 3, "episode_label": "第3回", "is_spinoff": false, "weekday": "tuesday", "weekday_ja": "火曜日", "theme_name": "気象・水害・都市河川", "edition_label": "特別コーナー拡大版（約13分）", "is_holiday": false, "special_title": "地下25mの大冒険！ふれあい下水道館と鷹の台パンさんぽで知る『小平の水のヒミツ』", "subtitle": "第3回・2026-11-24（火曜日）朝7時号 ― 地下25mの下水道館と鷹の台パンさんぽ！内水氾濫とXRAINのヒミツ", "guest_name": "雨宮 栞", "guest_title": "気象防災アドバイザー（元気象台予報官・架空ゲスト）", "duration": "15:46", "has_audio": true, "hero_image": "assets/hero_cast_banner.jpg", "hero_alt": "小春・平蔵と7人の防災専門家ゲスト集合イラスト", "hero_spot_name": "", "hero_caption": "", "href": "episodes/2026-11-24/index.html", "listen_href": "listen.html?ep=2026-11-24", "learned_points": ["河川があふれる外水氾濫に対し、都市部で警戒したい内水氾濫は短時間の強雨で下水道や排水路の処理能力を超えてあふれる水害であり、小平市の合流式・分流式エリアの特徴や簡易水のう対策を知っておくことが大切であること", "国土交通省のXRAINは水平・垂直2種類の電波で雨粒のつぶれ具合から雨量を直接算出するため、250mメッシュ・1分間隔という高精度・高頻度で局地的な豪雨を捉えられ、気象庁キキクルと併用すると早めの判断に役立つこと", "防災庁の緊急要請でも呼びかけられている携帯トイレ（1人1日5回×1週間＝35回分）の備蓄や、新たな警戒レベル4「危険警報」を反映した令和8年度版小平市防災マップ・防災マップアプリの事前確認が安心につながること"], "keywords": ["内水氾濫と外水氾濫の違い", "XRAIN（XバンドMPレーダ雨量観測）", "気象庁キキクル（危険度分布）"]}, {"slug": "2026-11-23", "date": "2026-11-23", "episode_number": 2, "episode_label": "第2回", "is_spinoff": false, "weekday": "monday", "weekday_ja": "月曜日", "theme_name": "地震・建築・地盤", "edition_label": "祝日15分拡大版（勤労感謝の日）", "is_holiday": true, "special_title": "", "subtitle": "第2回・2026-11-23（月・祝）朝7時号 ― 勤労感謝の日15分拡大版！玉川上水の紅葉散歩と武蔵野台地の地盤＆耐震・制震・免震のヒミツ", "guest_name": "岩城 剛", "guest_title": "耐震構造・地盤工学研究家（工学博士・架空ゲスト）", "duration": "19:07", "has_audio": true, "hero_image": "assets/hero_cast_banner.jpg", "hero_alt": "小春・平蔵と7人の防災専門家ゲスト集合イラスト", "hero_spot_name": "", "hero_caption": "", "href": "episodes/2026-11-23/index.html", "listen_href": "listen.html?ep=2026-11-23", "learned_points": ["小平市の大部分が載る武蔵野台地・関東ローム層は軟弱な沖積層に比べて揺れが増幅しにくく液状化リスクも低いが、谷底低地や埋没谷では1〜2Hzのキラーパルスが増幅されることもあり過信せずハザードマップや地盤確認が大切であること", "建物の地震対策は「耐震＝強さで耐える」「制震＝ダンパーで揺れを吸収する」「免震＝地面と切り離して揺れを伝えない」の3つに違いがあり、1981年以前（旧耐震）・新耐震・木造の2000年基準など自宅の築年数確認が第一歩になること", "耐震構造でも室内の家具転倒を防ぐため、重い物を下に置く重心配置と、壁の下地へのL字金具固定や突っ張り棒・耐震マットの併用を休日に点検しておくと安心なこと"], "keywords": ["武蔵野台地・関東ローム層の揺れ特性", "耐震・制震・免震の違い", "旧耐震基準（1981年以前）と2000年基準", "家具のL字金具・突っ張り棒・耐震マットと重心配置"]}, {"slug": "2026-11-22-spinoff-ogawa-palette", "date": "2026-11-22", "episode_number": 0, "episode_label": "スピンオフ特別編", "is_spinoff": true, "weekday": "sunday", "weekday_ja": "日曜日", "theme_name": "スピンオフ特集：小川パレット徹底ガイド", "edition_label": "スピンオフ特別企画（約10分）", "is_holiday": false, "special_title": "", "subtitle": "スピンオフ特別企画 ― 行ってみたくなる！「小川パレット」まるわかりガイド", "guest_name": "", "guest_title": "", "duration": "10:09", "has_audio": true, "hero_image": "assets/hero_cast_banner.jpg", "hero_alt": "小春・平蔵と7人の防災専門家ゲスト集合イラスト", "hero_spot_name": "", "hero_caption": "", "href": "episodes/2026-11-22-spinoff-ogawa-palette/index.html", "listen_href": "listen.html?ep=2026-11-22-spinoff-ogawa-palette", "learned_points": ["市民投票（1,187票中527票）で選ばれた「小川パレット」は、絵の具のパレットのように多様な人が集う小川駅西口徒歩1分の複合拠点", "4階はカフェ・児童書・防音スタジオ・西部出張所など賑わいフロア、5階は一般書架・1時間100円の個人スペース・和室や調理室など学びのフロア（4階から西武線が見えるスポットも！）", "4階マガジンカフェ「BLUE & BERRY」は蓋つきドリンクで本や雑誌が読め、ムサビ生コラボ珈琲や地元グルメも楽しめる（金〜日は夜21時まで）", "駐輪場は最初の1時間無料・駐車場はパレット利用割引なし／有料スペース予約は他施設と別に小川パレットでの新規登録が必要"], "keywords": ["小川パレット（4F・5F）", "BLUE & BERRY カフェ", "1時間100円 個人スペース", "鏡張り防音スタジオ", "トレインビュー＆駐輪1時間無料"]}, {"slug": "2026-11-22", "date": "2026-11-22", "episode_number": 1, "episode_label": "第1回", "is_spinoff": false, "weekday": "sunday", "weekday_ja": "日曜日", "theme_name": "防災テック・ハザードマップ・衛星・最新情報", "edition_label": "", "is_holiday": false, "special_title": "", "subtitle": "第1回・2026年11月22日（日曜日）朝7時号 ― 日曜15分特集：防災テックとGISで歩く小平のまち", "guest_name": "星野 創", "guest_title": "防災テック＆GISエンジニア（地理情報・衛星通信・架空ゲスト）", "duration": "14:37", "has_audio": true, "hero_image": "assets/hero_cast_banner.jpg", "hero_alt": "小春・平蔵と7人の防災専門家ゲスト集合イラスト", "hero_spot_name": "", "hero_caption": "", "href": "episodes/2026-11-22/index.html", "listen_href": "listen.html?ep=2026-11-22", "learned_points": ["GIS（地理情報システム）とカラーユニバーサルデザインでハザードマップや小平市防災マップアプリの仕組みがぐっと見やすくなっていること", "Jアラートは衛星と地上回線の二重ルートで届き、窓を閉めて聞き逃しても小平市防災行政無線テレホンサービス（042-341-0793）で確認できること", "防災アプリやDXは便利な一方、問合せ情報漏えいのようなセキュリティ事例も踏まえて公式の一次情報を落ち着いて確認することが大切なこと"], "keywords": ["GIS（地理情報システム）", "オフラインGPS地図キャッシュ", "Jアラート衛星＆地上二重ルート", "災害時ドローンマッピング＆低軌道衛星通信"]}]</script>
   <script>
     (function () {
       const items = JSON.parse(document.getElementById("archive-data").textContent);
@@ -762,6 +962,24 @@ footer {
         filtered.forEach((it) => {
           const card = document.createElement("article");
           card.className = "archive-card";
+          if (it.hero_image) {
+            const thumbWrap = document.createElement("div");
+            thumbWrap.className = "archive-thumb-wrap";
+            const img = document.createElement("img");
+            img.className = "archive-thumb";
+            img.src = it.hero_image;
+            img.alt = it.hero_alt || it.theme_name;
+            img.loading = "lazy";
+            thumbWrap.appendChild(img);
+            const spotText = (it.hero_caption || it.hero_spot_name || "").trim();
+            if (spotText) {
+              const badge = document.createElement("span");
+              badge.className = "archive-spot-badge";
+              badge.textContent = "📍 " + spotText;
+              thumbWrap.appendChild(badge);
+            }
+            card.appendChild(thumbWrap);
+          }
           const tag = document.createElement("span");
           tag.className = "pill-tag";
           tag.textContent = it.episode_label + " ・ " + it.date + "（" + it.weekday_ja + "）";
@@ -784,14 +1002,22 @@ footer {
           const g = document.createElement("div");
           g.style.fontSize = "0.82rem";
           g.textContent = (it.guest_name ? ("ゲスト: " + it.guest_name) : "小春＆平蔵スペシャル") + " ／ " + it.duration + (it.has_audio ? "（音声あり）" : "（台本）");
+          const actions = document.createElement("div");
+          actions.className = "archive-actions";
           const btn = document.createElement("a");
           btn.className = "btn-link";
           btn.href = it.href;
           btn.textContent = "この回を聴く・台本を読む →";
+          const btnListen = document.createElement("a");
+          btnListen.className = "btn-link-secondary";
+          btnListen.href = it.listen_href || ("listen.html?ep=" + encodeURIComponent(it.slug || it.date));
+          btnListen.textContent = "リスナー版で聴く";
+          actions.appendChild(btn);
+          actions.appendChild(btnListen);
           card.appendChild(h3);
           card.appendChild(sub);
           card.appendChild(g);
-          card.appendChild(btn);
+          card.appendChild(actions);
           grid.appendChild(card);
         });
       }
