@@ -16,6 +16,15 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
+from kodaira_spots import (
+    SPOT_COOLDOWN_DAYS,
+    compute_spot_usage,
+    format_spot_candidates_block,
+    format_spot_cooldown_block,
+    load_kodaira_spots,
+    match_spots_in_text,
+    select_balanced_spot_candidates,
+)
 from live_feeds import collect_live_briefing
 from schedule_calendar import (
     CHARS_PER_MINUTE,
@@ -223,12 +232,15 @@ def build_dedup_context(
     target_date_str: str,
     day_plan: dict[str, Any],
     topic_history_entries: list[dict[str, Any]],
+    editorial_plan: dict[str, Any] | None = None,
+    spots_cfg: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Build local topic dedup (RECENT_LOCAL_DEDUP_DAYS) & 90-day per-expert keyword history context."""
+    """Build local topic dedup, 90-day spot catalog cooldown, & 90-day per-expert keyword history context."""
     target_dt = datetime.strptime(target_date_str, "%Y-%m-%d").date()
     day_key = day_plan["day_key"]
     guest = day_plan["day_cfg"]["guest"]
     guest_id = guest["id"]
+    spots_data = spots_cfg if spots_cfg is not None else load_kodaira_spots()
 
     recent_local_lines: list[str] = []
     recent_topic_count = 0
@@ -284,6 +296,18 @@ def build_dedup_context(
     ]
     all_bank_covered = len(fresh_keywords) == 0
 
+    usage_map = compute_spot_usage(
+        spots_data,
+        topic_history_entries,
+        editorial_plan=editorial_plan,
+        reference_date=target_dt,
+        exclude_date_range=(target_date_str, target_date_str),
+    )
+    cooldown_count = sum(1 for u in usage_map.values() if u.get("in_cooldown"))
+    spot_cooldown_text = format_spot_cooldown_block(spots_data, usage_map, target_dt)
+    fresh_spots = select_balanced_spot_candidates(spots_data, usage_map, target_dt, count=8)
+    spot_candidates_text = format_spot_candidates_block(spots_data, fresh_spots)
+
     return {
         "recent_local_count": recent_topic_count,
         "recent_local_text": (
@@ -291,6 +315,9 @@ def build_dedup_context(
             if recent_local_lines
             else f"（直近{RECENT_LOCAL_DEDUP_DAYS}日間の過去放送記録なし）"
         ),
+        "spot_cooldown_count": cooldown_count,
+        "spot_cooldown_text": spot_cooldown_text,
+        "spot_candidates_text": spot_candidates_text,
         "expert_covered_keywords": covered_keywords,
         "expert_history_text": (
             "\n".join(expert_lines)
@@ -400,9 +427,16 @@ def build_research_prompt(
 
 {editorial_block}
 
-【重複禁止①：直近{RECENT_LOCAL_DEDUP_DAYS}日間に放送済みの小平トピック・エリア】
+【重複禁止①：直近{RECENT_LOCAL_DEDUP_DAYS}日間の小平トピック ＆ 90日クールダウン対象スポット】
 {dedup['recent_local_text']}
-※上記とまったく同じ場所・話題を約1か月間（{RECENT_LOCAL_DEDUP_DAYS}日間）は繰り返さないでください（開催当日リマインドや明確な続報がある場合を除く）。小平市内の別エリア・新しい話題を優先して調べてください。
+
+■ クールダウン中スポット（原則{SPOT_COOLDOWN_DAYS}日間は再登場禁止）:
+{dedup.get('spot_cooldown_text', '（なし）')}
+※同じ場所・話題を短期間で繰り返さないでください（開催当日のリマインド・大規模リニューアル・耳より大型イベント等の明確な続報がある場合を除く）。小平市内の別エリア・別ジャンルを優先してください。
+
+【参考：未紹介・季節適合スポット候補（鮮度優先で柔軟に活用）】
+{dedup.get('spot_candidates_text', '（なし）')}
+※上記ネタ帳に加え、当日の最新地域ニュース・天候・旬の話題があれば臨機応変に取り入れてください。
 
 【重複禁止②：この専門家（{guest['name']}）が過去3か月（90日）間に解説済みの専門用語・テーマ】
 既出キーワード: {covered_kws_str}
@@ -416,7 +450,7 @@ def build_research_prompt(
 {quakes_json}
 
 Google検索を使って、以下4点を最新の公式情報・地域ニュースから調査し、日本語で簡潔なブリーフィングを作成してください。
-1. 【小平市のローカル話題・季節トピック】{target_date}前後の小平市内のイベント、市民ニュース、まちづくり、名所（玉川上水・狭山・境緑道・小川パレット・丸ポスト・図書館・公民館・地元商店街や旬の農産物等）など、直近{RECENT_LOCAL_DEDUP_DAYS}日と重複しない「聴くと小平市が好きになる話題」を2〜3個。
+1. 【小平市のローカル話題・季節トピック】{target_date}前後の小平市内のイベント、公共機関・公民館・図書館・駅・スポーツ・植物園・美術館・温浴/足湯・工場・商業・カフェ/パン/小平うどん・書店/雑貨/ペット・公園/水辺・桜/紅葉・大学/専門学校・モニュメント/社寺・直売所・レジャーなど、直近と重複せず開館・営業中の「地元民も納得の小平ネタ」を2〜3個。
 2. 【東京都・小平市の防災・行政お知らせ】最近の市報・公式HP・防災訓練・補助金・ごみ出し注意・防災アプリ等の最新情報。
 3. 【全国の最新防災・気象トピック】直近1週間の地震・気象・防災庁や国の防災関連ニュース。
 4. 【本日の専門テーマ掘り下げ資料】「{day_cfg['theme_name']}」に関して過去90日と被らない専門用語・技術・機材・制度で小平市民の暮らしに役立つ正確な豆知識。
@@ -507,8 +541,10 @@ def build_script_prompt(
 - **平蔵（`heizo`）・専門家ゲスト（`guest`）の厳格信頼性**: 専門知識・数値（耐震基準年、応急手当の回数・手順、備蓄基準量、警戒レベル、法律・行政制度など）や小平市の施設・イベント日時・電話番号は **一切推測や誇張・脚色をせず、確認できた正確な事実のみ** を語ること。
 
 ## 3. 重複禁止ルール（厳守）
-- **直近{RECENT_LOCAL_DEDUP_DAYS}日間の小平ローカル話題（同じネタ・場所の繰り返し禁止）**:
+- **直近{RECENT_LOCAL_DEDUP_DAYS}日間の小平ローカル話題 ＆ {SPOT_COOLDOWN_DAYS}日クールダウン対象スポット（同じネタ・場所の繰り返し禁止）**:
 {dedup['recent_local_text']}
+  クールダウン中スポット（大規模リニューアル・開催当日大型イベント時を除き主役にしないこと）:
+{dedup.get('spot_cooldown_text', '（なし）')}
 - **この専門家（{guest['name']}）が過去3か月（90日）間に解説済みの専門用語・テーマ（同ネタ禁止）**:
   既出: {covered_kws_str}
 {dedup['expert_history_text']}
@@ -1200,6 +1236,16 @@ def _update_topic_history(episode: dict[str, Any]) -> None:
     entries: list[dict[str, Any]] = [
         e for e in data.get("entries", []) if isinstance(e, dict) and e.get("date") != ep_date
     ]
+    spots_cfg = load_kodaira_spots()
+    spot_text = "\n".join(
+        [
+            str(meta.get("subtitle") or ""),
+            *(str(t) for t in (meta.get("kodaira_topics") or [])),
+            *(str(a) for a in (meta.get("kodaira_areas") or [])),
+            str(sp_title or ""),
+        ]
+    )
+    matched_spot_ids = match_spots_in_text(spot_text, spots_cfg)
     entries.append(
         {
             "date": ep_date,
@@ -1212,6 +1258,7 @@ def _update_topic_history(episode: dict[str, Any]) -> None:
             "subtitle": meta.get("subtitle", ""),
             "kodaira_topics": meta.get("kodaira_topics") or [],
             "kodaira_areas": meta.get("kodaira_areas") or [],
+            "spot_ids": matched_spot_ids,
             "keywords_featured": guest.get("keywords_featured") or [],
             "special_feature_title": sp_title,
         }
@@ -1316,8 +1363,13 @@ def main() -> None:
         program_schedule=program_schedule,
     )
     ep_num = _next_episode_number(target_date)
+    spots_cfg = load_kodaira_spots()
     dedup_ctx = build_dedup_context(
-        target_date, day_plan, topic_history_data.get("entries", [])
+        target_date,
+        day_plan,
+        topic_history_data.get("entries", []),
+        editorial_plan=editorial_plan,
+        spots_cfg=spots_cfg,
     )
 
     print(
@@ -1372,6 +1424,7 @@ def main() -> None:
         print(f"Program Sched   : {ps_desc}")
         print(f"Editorial Guide : {eg_desc}")
         print(f"Dedup {RECENT_LOCAL_DEDUP_DAYS}d Local : {dedup_ctx['recent_local_count']} recent topic(s)")
+        print(f"Dedup {SPOT_COOLDOWN_DAYS}d Spots : {dedup_ctx.get('spot_cooldown_count', 0)} spot(s) in cooldown")
         print(f"Dedup 90d Expert: {len(dedup_ctx['expert_covered_keywords'])} covered keyword(s) | Fresh candidates: {len(dedup_ctx['fresh_keywords'])}")
         print(f"Tomorrow Preview: {tomorrow_preview['preview_hint']}")
         print(f"Has special_feat: {'special_feature' in sample_script_prompt}")

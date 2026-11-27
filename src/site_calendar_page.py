@@ -7,11 +7,109 @@ from string import Template
 from typing import Any
 
 from generate_episode import _is_keyword_covered
+from kodaira_spots import compute_spot_usage, load_kodaira_spots
 from schedule_calendar import resolve_day_plan
 
 
 def _parse_date(d_str: str) -> date:
     return datetime.strptime(d_str, "%Y-%m-%d").date()
+
+
+def _build_spot_catalog_payload(
+    kodaira_spots: dict[str, Any] | None,
+    topic_history: dict[str, Any] | None,
+    editorial_plan: dict[str, Any] | None,
+    program_schedule: dict[str, Any] | None,
+    today_jst_str: str,
+) -> dict[str, Any]:
+    """Assemble spot catalog summary, category counts, and per-spot aired/planned status."""
+    spots_cfg = kodaira_spots if kodaira_spots is not None else load_kodaira_spots()
+    topic_entries = (topic_history or {}).get("entries") or []
+    usage_map = compute_spot_usage(
+        spots_cfg,
+        topic_entries,
+        editorial_plan=editorial_plan,
+        program_schedule=program_schedule,
+        reference_date=today_jst_str,
+    )
+
+    cats = spots_cfg.get("categories") or []
+    cat_meta = {
+        str(c["id"]): {
+            "id": str(c["id"]),
+            "label": str(c.get("label") or c["id"]),
+            "icon": str(c.get("icon") or "📍"),
+            "count": 0,
+        }
+        for c in cats
+        if isinstance(c, dict) and c.get("id")
+    }
+
+    spots_out: list[dict[str, Any]] = []
+    unfeatured_count = 0
+    planned_count = 0
+    aired_count = 0
+
+    for sp in spots_cfg.get("spots") or []:
+        if not isinstance(sp, dict) or not sp.get("id"):
+            continue
+        sid = str(sp["id"])
+        cid = str(sp.get("category") or "")
+        sec_cats = [str(x) for x in (sp.get("secondary_categories") or []) if x]
+        for cat_key in dict.fromkeys([cid, *sec_cats]):
+            if cat_key in cat_meta:
+                cat_meta[cat_key]["count"] += 1
+
+        u = usage_map.get(sid) or {}
+        aired_dates = list(u.get("aired_dates") or [])
+        planned_dates = list(u.get("planned_dates") or [])
+        hint_dates = list(u.get("hint_dates") or [])
+
+        if aired_dates:
+            catalog_status = "aired"
+            aired_count += 1
+        elif planned_dates or hint_dates:
+            catalog_status = "planned"
+            planned_count += 1
+        else:
+            catalog_status = "unfeatured"
+            unfeatured_count += 1
+
+        cm = cat_meta.get(cid) or {"label": cid, "icon": "📍"}
+        spots_out.append(
+            {
+                "id": sid,
+                "name": str(sp.get("name") or ""),
+                "category": cid,
+                "category_label": cm["label"],
+                "category_icon": cm["icon"],
+                "secondary_categories": list(sp.get("secondary_categories") or []),
+                "area": str(sp.get("area") or ""),
+                "station": str(sp.get("station") or ""),
+                "address_hint": str(sp.get("address_hint") or ""),
+                "summary": str(sp.get("summary") or ""),
+                "best_seasons": list(sp.get("best_seasons") or ["all"]),
+                "disaster_angles": list(sp.get("disaster_angles") or []),
+                "verify_note": str(sp.get("verify_note") or ""),
+                "user_request_priority": bool(sp.get("user_request_priority")),
+                "aired_dates": aired_dates,
+                "planned_dates": planned_dates,
+                "hint_dates": hint_dates,
+                "catalog_status": catalog_status,
+            }
+        )
+
+    return {
+        "counts": {
+            "total": len(spots_out),
+            "categories": len(cat_meta),
+            "unfeatured": unfeatured_count,
+            "planned": planned_count,
+            "aired": aired_count,
+        },
+        "categories": [c for c in cat_meta.values() if c["count"] > 0],
+        "spots": spots_out,
+    }
 
 
 def _build_calendar_payload(
@@ -22,6 +120,7 @@ def _build_calendar_payload(
     program_schedule: dict[str, Any] | None,
     topic_history: dict[str, Any] | None,
     today_jst_str: str,
+    kodaira_spots: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Assemble unified past + future broadcast calendar dataset."""
     bundles_by_date: dict[str, list[dict[str, Any]]] = {}
@@ -292,6 +391,13 @@ def _build_calendar_payload(
         )
 
     months = sorted({d["month"] for d in days_out})
+    spot_catalog = _build_spot_catalog_payload(
+        kodaira_spots=kodaira_spots,
+        topic_history=topic_history,
+        editorial_plan=editorial_plan,
+        program_schedule=program_schedule,
+        today_jst_str=today_jst_str,
+    )
     return {
         "today_jst": today_jst_str,
         "horizon_end": max_date_str,
@@ -300,6 +406,7 @@ def _build_calendar_payload(
         "upcoming_ideas": (editorial_plan or {}).get("upcoming_ideas", []),
         "days": days_out,
         "specialists": specialists_out,
+        "spot_catalog": spot_catalog,
         "counts": {
             "total_days": len(days_out),
             "aired_days": sum(1 for d in days_out if d["status"] == "aired"),
@@ -666,6 +773,138 @@ CALENDAR_CSS = """
   margin-right: 0.35rem;
 }
 
+/* Spot catalog showcase (#spot-catalog) */
+.spot-jump-row {
+  margin-top: 0.58rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.spot-jump-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 0.38rem 0.78rem;
+  border-radius: 999px;
+  background: var(--forest);
+  color: #fff;
+}
+.spot-jump-btn:hover {
+  background: var(--forest-dark);
+}
+.spot-jump-btn.is-secondary {
+  background: #fff;
+  color: var(--forest-dark);
+  border: 1px solid var(--border);
+}
+.spot-jump-btn.is-secondary:hover {
+  background: var(--forest-soft);
+}
+.spot-toolbar {
+  padding: 0.85rem 0.95rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.58rem;
+  border-bottom: 1px solid var(--border);
+}
+.spot-summary-note {
+  font-size: 0.83rem;
+  line-height: 1.62;
+  color: var(--ink);
+  background: #f8faf8;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+}
+.spot-grid {
+  padding: 0.85rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.78rem;
+}
+.spot-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.78rem 0.88rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.spot-card.is-unfeatured {
+  border-left: 4px solid var(--forest);
+}
+.spot-card.is-planned {
+  border-left: 4px solid #2563eb;
+  background: #fcfdff;
+}
+.spot-card.is-aired {
+  border-left: 4px solid #94a3b8;
+  background: #fafaf9;
+}
+.spot-card-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+.spot-cat-chip {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.14rem 0.5rem;
+  border-radius: 999px;
+  background: var(--forest-soft);
+  color: var(--forest-dark);
+}
+.spot-status-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.spot-status-badge.unfeatured { background: #dcfce7; color: #166534; }
+.spot-status-badge.planned { background: #dbeafe; color: #1d4ed8; }
+.spot-status-badge.aired { background: #e2e8f0; color: #334155; }
+.spot-name {
+  margin: 0;
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.4;
+}
+.spot-meta {
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.spot-summary {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.spot-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.1rem;
+}
+.spot-angle-tag {
+  font-size: 0.71rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 6px;
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
 @media (max-width: 760px) {
   .cal-dow-head { display: none; }
   .cal-grid-empty { display: none; }
@@ -677,7 +916,8 @@ CALENDAR_CSS = """
     min-height: 76px;
   }
   .cal-cell-dow-inline { display: inline; }
-  .spec-grid {
+  .spec-grid,
+  .spot-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 }
@@ -705,9 +945,13 @@ $CALENDAR_CSS
     <div class="card cal-banner">
       <div class="cal-stats" id="cal-stats"></div>
       <div class="cal-guide-box">
-        <strong>💡 専門家テーマの変更リクエスト・ネタの追加はいつでも大歓迎です！</strong><br />
-        このカレンダーは、過去の放送実績と <strong>$HORIZON_END までの専門家解説テーマ事前予定</strong> をまとめた編成表です（編集元：<code>config/program_schedule.json</code>）。
-        「この日にこのテーマを扱ってほしい」「最近思いついたこの小平ネタを入れてほしい」と随時リクエストいただければ、該当日の予定を更新し、前後の重複を避けながら今後の放送予定全体を見直します。
+        <strong>💡 専門家テーマの変更リクエスト・小平ネタの追加はいつでも大歓迎です！</strong><br />
+        このカレンダーは、過去の放送実績と <strong>$HORIZON_END までの専門家解説テーマ＆小平スポット予定</strong> をまとめた編成表です（編集元：<code>config/program_schedule.json</code>・<code>config/kodaira_spots.json</code>）。
+        一度登場したスポットは<strong>原則90日間（約3か月）再登場させない重複防止ルール</strong>を適用し（大規模リニューアルや開催当日の大型イベントは例外）、最終ネタは週次検討や当日の最新ニュースに応じて鮮度高く選びます。
+        <div class="spot-jump-row">
+          <a href="#spot-catalog" class="spot-jump-btn">📍 小平スポット題材ネタ帳を見る（全$SPOT_TOTAL件・16ジャンル）↓</a>
+          <a href="kodaira_spots_catalog.md" class="spot-jump-btn is-secondary">📄 ネタ帳Markdown資料を見る →</a>
+        </div>
       </div>
     </div>
 
@@ -752,6 +996,32 @@ $CALENDAR_CSS
         <span class="hint">過去90日重複防止ルール連動</span>
       </div>
       <div class="spec-grid" id="spec-grid"></div>
+    </div>
+
+    <div class="card" id="spot-catalog">
+      <div class="section-head">
+        <h2>小平市スポット題材ネタ帳（16ジャンル・全$SPOT_TOTAL件）</h2>
+        <span class="hint">原則90日重複禁止 ／ 追加リクエスト歓迎</span>
+      </div>
+      <div class="spot-toolbar">
+        <div class="cal-stats" id="spot-stats"></div>
+        <div class="spot-summary-note">
+          地元民でも納得の「小平の魅力」を公共機関・公民館・駅・スポーツ・美術館/植物園・温浴・工場/企業・商業・カフェ/パン/うどん・本屋/雑貨/ペット・公園/水辺・桜/紅葉・大学/専門学校・モニュメント/社寺・直売所・レジャーの<strong>16ジャンル</strong>から調査・整理しています。
+          <strong>直近90日以内の再登場を避けつつ、大規模リニューアルや当日イベント・最新ニュースは鮮度を優先して臨機応変に採用</strong>します。「このお店やスポットも載せて！」という追加リクエストもぜひお寄せください。
+        </div>
+        <input type="search" id="spot-search" class="cal-search" placeholder="スポット名・エリア・駅・防災つながりを検索（例：植物園、本屋、うどん、ペット、花小金井…）" />
+        <div class="cal-filter-row" id="spot-status-filters">
+          <span class="cal-filter-label">登場状況:</span>
+          <button type="button" class="cal-pill-btn active" data-spot-status="all">すべて</button>
+          <button type="button" class="cal-pill-btn" data-spot-status="unfeatured">未紹介（待機中）</button>
+          <button type="button" class="cal-pill-btn" data-spot-status="planned">予定あり</button>
+          <button type="button" class="cal-pill-btn" data-spot-status="aired">紹介済み</button>
+        </div>
+        <div class="cal-filter-row" id="spot-category-filters">
+          <span class="cal-filter-label">ジャンル:</span>
+        </div>
+      </div>
+      <div class="spot-grid" id="spot-grid"></div>
     </div>
   </main>
 
@@ -1221,6 +1491,162 @@ $CALENDAR_CSS
 
       renderAll();
       renderSpecialists();
+
+      // Spot catalog rendering & interactive filtering
+      const spotCatalog = data.spot_catalog || { counts: { total: 0, categories: 0, unfeatured: 0, planned: 0, aired: 0 }, categories: [], spots: [] };
+      const spotStatsEl = document.getElementById("spot-stats");
+      const spotSearchEl = document.getElementById("spot-search");
+      const spotStatusBtns = Array.from(document.querySelectorAll("#spot-status-filters button"));
+      const spotCatFiltersEl = document.getElementById("spot-category-filters");
+      const spotGridEl = document.getElementById("spot-grid");
+
+      let selectedSpotStatus = "all";
+      let selectedSpotCat = "all";
+
+      function addSpotStatPill(cls, text) {
+        if (!spotStatsEl) return;
+        const span = document.createElement("span");
+        span.className = "cal-stat-pill " + cls;
+        span.textContent = text;
+        spotStatsEl.appendChild(span);
+      }
+
+      const sc = spotCatalog.counts || {};
+      addSpotStatPill("is-aired", "未紹介ストック: " + (sc.unfeatured || 0) + "件");
+      addSpotStatPill("is-planned", "近日予定あり: " + (sc.planned || 0) + "件");
+      addSpotStatPill("", "紹介済み: " + (sc.aired || 0) + "件");
+      addSpotStatPill("is-special", "全" + (sc.total || 0) + "スポット / " + (sc.categories || 0) + "ジャンル");
+
+      if (spotCatFiltersEl) {
+        const allCatBtn = document.createElement("button");
+        allCatBtn.type = "button";
+        allCatBtn.className = "cal-pill-btn active";
+        allCatBtn.dataset.cat = "all";
+        allCatBtn.textContent = "全ジャンル (" + (sc.total || 0) + ")";
+        spotCatFiltersEl.appendChild(allCatBtn);
+
+        (spotCatalog.categories || []).forEach((cat) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "cal-pill-btn";
+          btn.dataset.cat = cat.id;
+          btn.textContent = cat.icon + " " + cat.label + " (" + cat.count + ")";
+          spotCatFiltersEl.appendChild(btn);
+        });
+
+        const catBtns = Array.from(spotCatFiltersEl.querySelectorAll("button"));
+        catBtns.forEach((b) => {
+          b.addEventListener("click", () => {
+            selectedSpotCat = b.dataset.cat || "all";
+            catBtns.forEach((x) => x.classList.toggle("active", x === b));
+            renderSpots();
+          });
+        });
+      }
+
+      spotStatusBtns.forEach((b) => {
+        b.addEventListener("click", () => {
+          selectedSpotStatus = b.dataset.spotStatus || "all";
+          spotStatusBtns.forEach((x) => x.classList.toggle("active", x === b));
+          renderSpots();
+        });
+      });
+
+      if (spotSearchEl) {
+        spotSearchEl.addEventListener("input", renderSpots);
+      }
+
+      const SEASON_JA = { spring: "春", summer: "夏", autumn: "秋", winter: "冬", all: "通年" };
+
+      function renderSpots() {
+        if (!spotGridEl) return;
+        spotGridEl.innerHTML = "";
+        const q = (spotSearchEl ? spotSearchEl.value : "").trim().toLowerCase();
+        const filtered = (spotCatalog.spots || []).filter((sp) => {
+          if (selectedSpotStatus !== "all" && sp.catalog_status !== selectedSpotStatus) return false;
+          if (selectedSpotCat !== "all") {
+            const matchesCat = sp.category === selectedSpotCat || (sp.secondary_categories || []).includes(selectedSpotCat);
+            if (!matchesCat) return false;
+          }
+          if (!q) return true;
+          const hay = [
+            sp.name, sp.category_label, sp.area, sp.station, sp.address_hint,
+            sp.summary, sp.verify_note, ...(sp.disaster_angles || [])
+          ].join(" ").toLowerCase();
+          return hay.includes(q);
+        });
+
+        if (filtered.length === 0) {
+          const emptyP = document.createElement("p");
+          emptyP.style.padding = "0.8rem";
+          emptyP.style.color = "var(--muted)";
+          emptyP.textContent = "条件に一致するスポットが見つかりませんでした。検索語やフィルタを変更してください。";
+          spotGridEl.appendChild(emptyP);
+          return;
+        }
+
+        filtered.forEach((sp) => {
+          const card = document.createElement("article");
+          card.className = "spot-card is-" + sp.catalog_status;
+
+          const top = document.createElement("div");
+          top.className = "spot-card-top";
+
+          const catChip = document.createElement("span");
+          catChip.className = "spot-cat-chip";
+          catChip.textContent = sp.category_icon + " " + sp.category_label;
+          top.appendChild(catChip);
+
+          const stBadge = document.createElement("span");
+          if (sp.catalog_status === "aired") {
+            stBadge.className = "spot-status-badge aired";
+            const dStr = (sp.aired_dates || []).join(", ");
+            const pStr = (sp.planned_dates || []).length > 0 ? " / 予定:" + sp.planned_dates.join(",") : "";
+            stBadge.textContent = "紹介済 " + dStr + pStr;
+          } else if (sp.catalog_status === "planned") {
+            stBadge.className = "spot-status-badge planned";
+            const pd = (sp.planned_dates || []).length > 0 ? sp.planned_dates.join(", ") : "仮ヒント:" + (sp.hint_dates || []).join(", ");
+            stBadge.textContent = "予定 " + pd;
+          } else {
+            stBadge.className = "spot-status-badge unfeatured";
+            stBadge.textContent = "未紹介（待機中）";
+          }
+          top.appendChild(stBadge);
+          card.appendChild(top);
+
+          const h3 = document.createElement("h3");
+          h3.className = "spot-name";
+          h3.textContent = sp.name;
+          card.appendChild(h3);
+
+          const meta = document.createElement("div");
+          meta.className = "spot-meta";
+          const sTxt = (sp.best_seasons || ["all"]).map((k) => SEASON_JA[k] || k).join("・");
+          meta.textContent = "📍 " + sp.area + "（" + sp.station + "）｜ 季節: " + sTxt;
+          card.appendChild(meta);
+
+          const p = document.createElement("p");
+          p.className = "spot-summary";
+          p.textContent = sp.summary;
+          card.appendChild(p);
+
+          if ((sp.disaster_angles || []).length > 0) {
+            const tags = document.createElement("div");
+            tags.className = "spot-tags";
+            sp.disaster_angles.forEach((ag) => {
+              const t = document.createElement("span");
+              t.className = "spot-angle-tag";
+              t.textContent = "💡 " + ag;
+              tags.appendChild(t);
+            });
+            card.appendChild(tags);
+          }
+
+          spotGridEl.appendChild(card);
+        });
+      }
+
+      renderSpots();
     })();
   </script>
 </body>
@@ -1239,6 +1665,7 @@ def render_calendar_page(
     common_css: str,
     nav_html: str,
     safe_json_fn: Any,
+    kodaira_spots: dict[str, Any] | None = None,
 ) -> str:
     """Render docs/calendar.html using build_site.py common styling and navigation."""
     payload = _build_calendar_payload(
@@ -1249,11 +1676,13 @@ def render_calendar_page(
         program_schedule=program_schedule,
         topic_history=topic_history,
         today_jst_str=today_jst_str,
+        kodaira_spots=kodaira_spots,
     )
     return CALENDAR_HTML_TEMPLATE.substitute(
         COMMON_CSS=common_css,
         CALENDAR_CSS=CALENDAR_CSS,
         NAV_HTML=nav_html,
         HORIZON_END=payload["horizon_end"],
+        SPOT_TOTAL=str(payload["spot_catalog"]["counts"]["total"]),
         PAYLOAD_JSON=safe_json_fn(payload),
     )

@@ -36,6 +36,16 @@ from generate_episode import (
     build_dedup_context,
 )
 from live_feeds import collect_live_briefing
+from kodaira_spots import (
+    SPOT_COOLDOWN_DAYS,
+    audit_plan_spot_overlaps,
+    compute_spot_usage,
+    format_spot_candidates_block,
+    format_spot_cooldown_block,
+    load_kodaira_spots,
+    match_spots_in_text,
+    select_balanced_spot_candidates,
+)
 from plan_weekly_editorial import (
     EDITORIAL_PLAN_PATH,
     _build_week_skeleton,
@@ -196,7 +206,13 @@ def _build_local_daily_prompt_md(
 ### ① 直近{RECENT_LOCAL_DEDUP_DAYS}日間の小平ローカル話題
 {dedup_ctx['recent_local_text']}
 
-### ② {guest['name']} 過去{EXPERT_HISTORY_DAYS}日間の既出キーワード
+### ①-B 小平スポット90日クールダウン対象（原則{SPOT_COOLDOWN_DAYS}日間は再登場NG／大型リニューアル・当日大イベントのみ例外）
+{dedup_ctx.get('spot_cooldown_text', '（なし）')}
+
+### ② 未紹介・季節適合スポット候補（当日の鮮度・最新ニュースに応じて臨機応変に差し替え可）
+{dedup_ctx.get('spot_candidates_text', '（なし）')}
+
+### ③ {guest['name']} 過去{EXPERT_HISTORY_DAYS}日間の既出キーワード
 既出: {', '.join(dedup_ctx['expert_covered_keywords']) or 'なし'}
 {dedup_ctx['expert_history_text']}
 
@@ -423,7 +439,14 @@ def cmd_prepare_daily(args: argparse.Namespace) -> None:
         program_schedule=program_schedule,
     )
     ep_num = _next_episode_number(target_date)
-    dedup_ctx = build_dedup_context(target_date, day_plan, topic_history_data.get("entries", []))
+    spots_cfg = load_kodaira_spots()
+    dedup_ctx = build_dedup_context(
+        target_date,
+        day_plan,
+        topic_history_data.get("entries", []),
+        editorial_plan=editorial_plan,
+        spots_cfg=spots_cfg,
+    )
     live_bundle = collect_live_briefing()
     live_quake_special = _detect_live_quake_special(live_bundle["earthquakes"])
     effective_plan, special_meta = _apply_breaking_extension(day_plan, live_quake_special)
@@ -503,6 +526,33 @@ def cmd_finalize_daily(args: argparse.Namespace) -> None:
         )
         for w in check_info["warnings"]:
             print(f"WARNING: {w}")
+
+        spots_cfg = load_kodaira_spots()
+        draft_spot_ids = match_spots_in_text(
+            "\n".join(
+                [
+                    str(raw_draft.get("subtitle") or ""),
+                    *(str(t) for t in (raw_draft.get("kodaira_topics") or [])),
+                    *(str(a) for a in (raw_draft.get("kodaira_areas") or [])),
+                ]
+            ),
+            spots_cfg,
+        )
+        topic_entries = _load_optional_json(DATA_DIR / "topic_history.json", {"entries": []}).get("entries", [])
+        usage_map = compute_spot_usage(
+            spots_cfg,
+            topic_entries,
+            editorial_plan=_load_optional_json(EDITORIAL_PLAN_PATH, None),
+            reference_date=target_date,
+            exclude_date_range=(target_date, target_date),
+        )
+        for sid in draft_spot_ids:
+            u = usage_map.get(sid) or {}
+            if u.get("in_cooldown"):
+                print(
+                    f"WARNING: SPOT_OVERLAP {sid} appeared on {u.get('cooldown_trigger_dates')} "
+                    f"(verify major renewal/event exception or freshness)."
+                )
 
         episode = _assemble_and_validate_episode(
             raw_generated=raw_draft,
@@ -756,7 +806,7 @@ def _build_weekly_banner_guide_md(
 ## Photo-Anchored 5-Rule 3-Pattern Banner Protocol（必ず全5ルールを実行）
 
 ### Rule 1: 実在スポット3か所の調査と選定（A・B・C）
-- 今週のテーマと季節に合う **東京都小平市内の実在スポットを3パターン（A・B・C）** 選ぶ（駅・公園・神社・博物館・商店街・緑道・農業スポット等をバランスよく）。
+- 今週のテーマと季節に合う **東京都小平市内の実在スポットを3パターン（A・B・C）** 選ぶ（`config/kodaira_spots.json` の16ジャンルを参照し、駅・公園・社寺・博物館/植物園・工場/企業・商店会・カフェ・緑道・農業スポット等をバランスよく、直近バナーと非重複に選定）。
 - `search_web` で各スポットの **{start_str}〜{end_str} 期間中の実際の開館・開園状況、建造物の実寸サイズ感、周辺景観** を必ず裏取りする（例：休館中・工事中の施設ににぎわう観客を描かない、高さ約2.8mの丸ポストを小柄な高さに縮めない等）。
 
 ### Rule 2: 実写写真（Wide + Detail）の取得と目視確認
@@ -1395,6 +1445,22 @@ def cmd_prepare_weekly(args: argparse.Namespace) -> None:
     program_schedule = _load_optional_json(CONFIG_DIR / "program_schedule.json", None)
     topic_history_data = _load_optional_json(DATA_DIR / "topic_history.json", {"entries": []})
     topic_entries = topic_history_data.get("entries", [])
+    spots_cfg = load_kodaira_spots()
+    usage_map = compute_spot_usage(
+        spots_cfg,
+        topic_entries,
+        editorial_plan=existing_plan,
+        reference_date=start_dt,
+        exclude_date_range=(start_str, end_dt.isoformat()),
+    )
+    recommended_fresh_spots = select_balanced_spot_candidates(
+        spots_cfg,
+        usage_map,
+        start_dt,
+        count=20,
+    )
+    spot_cooldown_text = format_spot_cooldown_block(spots_cfg, usage_map, start_dt)
+    spot_candidates_text = format_spot_candidates_block(spots_cfg, recommended_fresh_spots)
 
     skeleton = _build_week_skeleton(
         start_dt,
@@ -1404,7 +1470,7 @@ def cmd_prepare_weekly(args: argparse.Namespace) -> None:
         topic_entries,
         program_schedule=program_schedule,
     )
-    recent_history = _format_recent_history(start_dt, topic_entries)
+    recent_history = _format_recent_history(start_dt, topic_entries, existing_plan=existing_plan)
 
     briefing_path = CACHE_DIR / f"local_weekly_briefing_{start_str}.json"
     draft_path = CACHE_DIR / f"local_weekly_draft_{start_str}.json"
@@ -1414,11 +1480,36 @@ def cmd_prepare_weekly(args: argparse.Namespace) -> None:
         "lookahead_end": (start_dt + timedelta(days=13)).isoformat(),
         "skeleton": skeleton,
         "recent_history_text": recent_history,
+        "spot_cooldown_text": spot_cooldown_text,
+        "spot_candidates_text": spot_candidates_text,
+        "recommended_fresh_spots": [
+            {
+                "id": s["id"],
+                "name": s["name"],
+                "category": s["category"],
+                "category_label": s.get("category_label", ""),
+                "area": s.get("area", ""),
+                "station": s.get("station", ""),
+                "summary": s.get("summary", ""),
+                "best_seasons": s.get("best_seasons", []),
+                "disaster_angles": s.get("disaster_angles", []),
+                "user_request_priority": bool(s.get("user_request_priority")),
+            }
+            for s in recommended_fresh_spots
+        ],
+        "spot_dedup_policy": {
+            "cooldown_days": SPOT_COOLDOWN_DAYS,
+            "allow_exception_for_major_renewal_or_timely_event": True,
+            "preserve_freshness": True,
+            "note": "原則90日クールダウンを守り16ジャンルから多様に選ぶ。大規模リニューアル・新装開店・開催当日の大型イベントは例外可。鮮度を優先し最新ローカルニュースが出たら柔軟に差し替え可。",
+        },
         "season_context": _describe_season_context(start_dt, end_dt),
         "rules": {
             "must_cover_all_7_dates": [r["date"] for r in skeleton],
             "respect_preplanned_expert_topics": True,
             "respect_schedule_locked_and_special_request": True,
+            "avoid_90d_cooldown_spots_unless_major_event": True,
+            "diverse_areas_and_categories_across_week": True,
             "editorial_special_must_be_null_when_has_existing_special": True,
             "editorial_special_cap_per_week": "1 to 2 days",
             "verify_current_year_dates_only": start_dt.year,
@@ -1488,17 +1579,28 @@ def cmd_finalize_weekly(args: argparse.Namespace) -> None:
     if not ideas:
         raise ValueError("Weekly draft missing non-empty upcoming_ideas")
 
+    spots_cfg = load_kodaira_spots()
     new_week_plan = _normalize_editorial_plan(
         raw_plan,
         skeleton,
         research_model="antigravity-local",
         planner_model="antigravity-local",
+        spots_cfg=spots_cfg,
     )
     merged_plan = merge_editorial_plans(existing_plan, new_week_plan, now_jst)
 
     EDITORIAL_PLAN_PATH.parent.mkdir(parents=True, exist_ok=True)
     EDITORIAL_PLAN_PATH.write_text(json.dumps(merged_plan, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Saved {EDITORIAL_PLAN_PATH} (week_start={start_str})")
+
+    topic_entries = _load_optional_json(DATA_DIR / "topic_history.json", {"entries": []}).get("entries", [])
+    overlaps = audit_plan_spot_overlaps(spots_cfg, topic_entries, merged_plan)
+    for ov in overlaps:
+        print(
+            f"WARNING: SPOT_OVERLAP {ov['spot_name']} ({ov['spot_id']}): "
+            f"{ov['date_a']} [{ov['source_a']}] -> {ov['date_b']} [{ov['source_b']}] "
+            f"(gap={ov['gap_days']}d < cooldown={ov['cooldown_days']}d)"
+        )
 
     default_banner_meta = WEEKLY_BANNER_CACHE_DIR / start_str / "banner_meta.json"
     banner_meta_path = (

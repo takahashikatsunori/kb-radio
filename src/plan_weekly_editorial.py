@@ -20,11 +20,20 @@ from generate_episode import (
     DEFAULT_RESEARCH_MODEL,
     DEFAULT_SCRIPT_MODEL,
     JST,
-    RECENT_LOCAL_DEDUP_DAYS,
     _format_usage,
     _load_json,
     _parse_json_response,
     build_dedup_context,
+)
+from kodaira_spots import (
+    SPOT_COOLDOWN_DAYS,
+    audit_plan_spot_overlaps,
+    compute_spot_usage,
+    format_spot_candidates_block,
+    format_spot_cooldown_block,
+    load_kodaira_spots,
+    match_spots_in_text,
+    select_balanced_spot_candidates,
 )
 from schedule_calendar import resolve_day_plan
 
@@ -101,9 +110,11 @@ def _build_week_skeleton(
 def _format_recent_history(
     start_dt: date,
     topic_history_entries: list[dict[str, Any]],
+    existing_plan: dict[str, Any] | None = None,
 ) -> str:
-    """Format recent broadcast topics/areas ({RECENT_LOCAL_DEDUP_DAYS}-day window) to help avoid repetition."""
+    """Format recent aired & already-planned broadcast topics/areas (90-day window) to avoid repetition."""
     lines: list[str] = []
+    seen_dates: set[str] = set()
     sorted_entries = sorted(
         (e for e in topic_history_entries if isinstance(e, dict) and e.get("date")),
         key=lambda e: e["date"],
@@ -114,37 +125,77 @@ def _format_recent_history(
             e_dt = datetime.strptime(e["date"], "%Y-%m-%d").date()
         except ValueError:
             continue
-        if 0 <= (start_dt - e_dt).days <= RECENT_LOCAL_DEDUP_DAYS + 7:
+        if 0 <= (start_dt - e_dt).days <= SPOT_COOLDOWN_DAYS:
+            seen_dates.add(str(e["date"]))
             areas = ", ".join(e.get("kodaira_areas") or [])
             topics = "; ".join(e.get("kodaira_topics") or [])
             kws = ", ".join(e.get("keywords_featured") or [])
             lines.append(
-                f"- {e['date']}（{e.get('weekday', '')}・{e.get('guest_name', '')}）: "
+                f"- {e['date']} [放送済]（{e.get('weekday', '')}・{e.get('guest_name', '')}）: "
                 f"エリア=[{areas}] / 話題=[{topics}] / 専門用語=[{kws}]"
             )
-    return "\n".join(lines) if lines else "（直近の放送記録なし）"
+
+    if isinstance(existing_plan, dict):
+        prior_guides = sorted(
+            (
+                g
+                for g in (existing_plan.get("daily_guides") or [])
+                if isinstance(g, dict) and g.get("date")
+            ),
+            key=lambda g: str(g["date"]),
+            reverse=True,
+        )
+        for g in prior_guides:
+            d_str = str(g["date"])
+            if d_str in seen_dates:
+                continue
+            try:
+                g_dt = datetime.strptime(d_str, "%Y-%m-%d").date()
+            except ValueError:
+                continue
+            if 0 < (start_dt - g_dt).days <= SPOT_COOLDOWN_DAYS:
+                lines.append(
+                    f"- {d_str} [直前週予定]（{g.get('weekday_ja', '')}・{g.get('guest_name', '')}）: "
+                    f"エリア=[{g.get('focus_area', '')}] / 話題=[{g.get('kodaira_angle', '')}]"
+                )
+
+    return "\n".join(lines) if lines else "（直近の放送・編成記録なし）"
 
 
 def build_editorial_research_prompt(
     start_dt: date,
     end_dt: date,
     recent_history_text: str,
+    spot_cooldown_text: str = "",
+    spot_candidates_text: str = "",
 ) -> str:
-    """Build Phase 1 prompt for researching upcoming Kodaira events and seasonal life topics."""
+    """Build Phase 1 prompt for researching upcoming Kodaira events and diverse seasonal life topics."""
     lookahead_end = (start_dt + timedelta(days=13)).isoformat()
+    cooldown_section = (
+        f"\n【重複禁止①：90日クールダウン中の紹介済み／直近予定スポット（原則再登場NG）】\n{spot_cooldown_text}\n"
+        "※上記スポットは原則約3か月（90日）間は再登場させないでください（ただし大規模リニューアル・新装開店・開催当日の耳より大型イベントがある場合のみ例外）。\n"
+        if spot_cooldown_text
+        else ""
+    )
+    candidates_section = (
+        f"\n【小平市スポット題材ネタ帳：未紹介・季節適合候補（ジャンル分散の参考プール）】\n{spot_candidates_text}\n"
+        "※ネタ帳に縛られすぎず、新鮮な最新ニュース・季節の行事・開花/紅葉状況等があれば臨機応変に優先してください。\n"
+        if spot_candidates_text
+        else ""
+    )
     return f"""あなたは東京都小平市の朝7時番組「こだいら防災＆まちラジオ」の編集長付きリサーチャーです。
 対象編成週: {start_dt.isoformat()} 〜 {end_dt.isoformat()}
 先行リサーチ期間: {start_dt.isoformat()} 〜 {lookahead_end}（向こう2週間）
 
-【直近で放送済みの話題・エリア（重複回避の参考）】
+【直近90日間に放送済み・予定済みの話題・エリア（重複回避）】
 {recent_history_text}
+{cooldown_section}{candidates_section}
+Google検索を使い、この季節の東京都小平市に関する実在の最新情報・多彩な地域の魅力を調査してください。
+1. 【小平市の行事・イベント・公共機関・コミュニティ拠点】向こう2週間に小平市内（市役所・消防署・警察署・郵便局・公民館・地域センター・図書館・文化会館・各駅周辺など）で予定されている公開イベント・展示・講座・地域マーケットや新規/リニューアル情報。
+2. 【多彩なジャンルの地元愛されスポット＆食・自然】直近90日と被らない新ネタを中心に、植物園・美術館/博物館・温浴/足湯・工場/企業/研究機関・商店街/ショッピング施設・カフェ/パン屋/小平うどん・書店/雑貨/ペット・大小の公園や水辺・桜/紅葉・大学/専門学校・モニュメント/社寺・農産物直売所・レジャー施設など幅広い分野から旬の地元情報を調査してください。
+3. 【防災・生活の季節トピック】その季節に東京・小平の暮らしで今チェックしておきたい備え（暖房器具・火災予防、凍結・寒波や台風/豪雨への備え、大掃除・耐震・通電点検、季節の体調管理・救急確認など）。
 
-Google検索を使い、この季節の東京都小平市に関する実在の最新情報・地域の魅力を調査してください。
-1. 【小平市の行事・イベント・公民館/図書館/地域企画】向こう2週間に小平市内（花小金井、小平駅周辺、一橋学園、鷹の台、新小平、小川、鈴木町、大沼町など）で予定されている公開イベント・展示・講座・地域マーケット等。
-2. 【季節の自然・食・まち歩きネタ】この時期の小平で楽しめる紅葉や散策コース（玉川上水、狭山・境緑道、野火止用水、平櫛田中彫刻美術館周辺、ふれあい下水道館、ガスミュージアム等）、旬の地元農産物（冬野菜、キウイ・柿、ブルーベリー加工品、小平うどん・地元パン屋等）。
-3. 【防災・生活の季節トピック】初冬〜年末に向けて東京・小平の暮らしで今チェックしておきたい備え（暖房器具・火災予防、凍結や寒波への備え、大掃除ついでの耐震・通電点検、年末年始の救急・防災確認など）。
-
-※【開催年の厳密確認】イベント日程を挙げる際は必ず {start_dt.year}年（令和{start_dt.year - 2018}年）の開催であることを確認してください。前年（{start_dt.year - 1}年以前）の開催日・曜日を今年の日程と混同して記載することは厳禁です。開催年が確認できない単発イベントは候補から外してください。
+※【開催年・事実・営業状況の厳密確認】イベント日程を挙げる際は必ず {start_dt.year}年（令和{start_dt.year - 2018}年）の開催であること、また店舗・施設が現在営業・開館中であることを確認し、前年以前の日程や閉店・長期休館中施設を誤って記載しないでください。開催年・事実が確認できない単発イベントは候補から外してください。
 ※確認できた事実・場所名・日付のみ挙げ、推測で架空のイベント日時を作らないでください。"""
 
 
@@ -154,11 +205,24 @@ def build_editorial_plan_prompt(
     skeleton: list[dict[str, Any]],
     recent_history_text: str,
     research_briefing: str,
+    spot_cooldown_text: str = "",
+    spot_candidates_text: str = "",
 ) -> str:
     """Build Phase 2 prompt for Gemini 4 Neon Chief Editor to structure 7-day weekly plan JSON."""
     skeleton_json = json.dumps(skeleton, ensure_ascii=False, indent=2)
+    cooldown_section = (
+        f"\n### ② クールダウン中スポット一覧（原則90日間は再登場禁止）\n{spot_cooldown_text}\n"
+        "※ただし「大規模リニューアルオープン」「耳よりの当日大型イベント」など明確なニュース価値がある場合のみ例外として採用可。\n"
+        if spot_cooldown_text
+        else ""
+    )
+    candidates_section = (
+        f"\n## 4.5 小平市スポット題材ネタ帳（未紹介・バランス候補プール）\n{spot_candidates_text}\n"
+        if spot_candidates_text
+        else ""
+    )
     return f"""あなたは「毎朝7時！こだいら防災＆まちラジオ」の編集長（チーフプロデューサー）です。
-小平市民が「小平っていいな」「この町をもっと知りたい、歩きたい！」と毎朝ワクワクしながら、自然に防災力も高まる来週7日間の週間編成プランを作成してください。
+小平市民が「小平っていいな」「地元にこんな素敵な場所があったんだ！」と毎朝ワクワクしながら、自然に防災力も高まる来週7日間の週間編成プランを作成してください。
 
 ## 1. 編成対象期間
 {start_dt.isoformat()} 〜 {end_dt.isoformat()}（7日間）
@@ -167,17 +231,18 @@ def build_editorial_plan_prompt(
 ※ `has_existing_special: true` の日はすでに年間記念日/イベントのカウントダウン特集が組まれているため、その日の `editorial_special` は必ず `null` にしてください。
 {skeleton_json}
 
-## 3. 直近の放送履歴（重複禁止）
+## 3. 直近の放送・予定履歴（重複禁止）
 {recent_history_text}
-
+{cooldown_section}
 ## 4. 最新リサーチ結果（小平の季節・イベント・まちネタ）
 {research_briefing}
-
+{candidates_section}
 ## 5. 編集長としての編成ルール（重要）
 1. **週間テーマ軸 (`weekly_arc`)**: 今週1週間を通じたワクワクする番組の縦糸・特集コンセプトを1つ設定してください。
-2. **7日間の地理・ジャンルの多様性 ＆ 事前編成カレンダー (`program_schedule`) の尊重**:
-   - 月〜日で同じ駅・施設ばかりに偏らないよう、`focus_area`（小川／花小金井／一橋学園／鷹の台／小平駅南・北口／津田・野火止／鈴木・大沼など）を毎日変えてください。
-   - `kodaira_angle` にはリスナーが小平をもっと好きになる具体的なまち・暮らしの切り口（直近履歴と非重複）を記載してください。`preplanned_kodaira_hint` がある日は方向性の参考にしてください。
+2. **7日間の地理・ジャンルの多様性 ＆ 重複禁止・鮮度重視**:
+   - 月〜日で同じ駅・エリアばかりに偏らないよう、`focus_area`（小川／花小金井／一橋学園／鷹の台／小平駅南・北口／中島・栄町／鈴木・大沼・天神町など）を毎日変えてください。
+   - **ジャンル重複・スポット重複の排除**: クールダウン中スポットの使い回しは厳禁とし、公共機関・公民館/図書館・駅・スポーツ・美術館/植物園・温浴/足湯・企業/工場・商業・カフェ/パン/うどん・本/雑貨/ペット・公園/水辺・花/紅葉・大学/専門学校・モニュメント/社寺・直売所・レジャーの多彩なジャンルを日替わりで組み合わせてください（連続した日に同じジャンルが重ならないように）。
+   - **鮮度の確保**: ネタ帳の候補を活かしつつ、今週ならではの最新オープン・季節の花や旬の味・地域イベントなど鮮度の高い話題が見つかった場合は柔軟に優先採用してください。`preplanned_kodaira_hint` がある日は方向性の参考にしてください（同一・既出スポットなら未紹介ネタへ差し替えて構いません。ただし `schedule_locked: true` と `special_request` は最優先遵守）。
    - **`preplanned_expert_topics` が指定されている日は、必ずそのテーマを `expert_angle` の主軸として採用してください**（空欄の日のみ `expert_fresh_candidates` を活用）。
    - **`schedule_locked: true` または `special_request` がある日は、そのリクエスト内容を最優先で `kodaira_angle` や `expert_angle`（必要に応じて `editorial_special`）に忠実に反映し、勝手に別テーマへ変更しないでください**。
 3. **編集長ワクワク特集コーナー (`editorial_special`)**:
@@ -185,7 +250,7 @@ def build_editorial_plan_prompt(
    - 単なる災害恐怖ではなく、「小平のまち歩き・季節の楽しみ・地域文化」と「暮らしの安心・防災」が楽しくつながる企画にしてください。
    - 前日のエンディングで自然に予告できる、魅力的なタイトルにしてください。
 4. **先のワクワク予告 (`upcoming_ideas`)**: 向こう2〜3週間先に育てたい特集企画アイデアを2〜3個挙げてください。
-5. **事実厳守・開催年の徹底確認**: 検索結果にないイベント開催日時を創作しないでください。単発イベントや企画展を書く場合は **必ず {start_dt.year}年（令和{start_dt.year - 2018}年）の開催日・期間がリサーチ結果で裏付けられたものだけ** を採用し、前年以前の日程を流用しないこと（確認できないものは常設施設や季節散歩の企画にする）。
+5. **事実厳守・開催年の徹底確認**: 検索結果にないイベント開催日時を創作しないでください。単発イベントや企画展を書く場合は **必ず {start_dt.year}年（令和{start_dt.year - 2018}年）の開催日・期間がリサーチ結果で裏付けられたものだけ** を採用し、前年以前の日程や閉店・改装休館中店舗を流用しないこと（確認できないものは営業中の常設施設や季節散歩の企画にする）。
 
 ## 6. 出力JSONスキーマ（厳密にこのJSON構造のみ出力）
 {{
@@ -221,8 +286,10 @@ def _normalize_editorial_plan(
     skeleton: list[dict[str, Any]],
     research_model: str,
     planner_model: str,
+    spots_cfg: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Validate dates, avoid stacking specials on countdown days, and cap editorial specials."""
+    """Validate dates, avoid stacking specials on countdown days, cap specials, and tag spot_ids."""
+    spots_data = spots_cfg or load_kodaira_spots()
     raw_guides = {
         str(g.get("date")): g
         for g in (raw_plan.get("daily_guides") or [])
@@ -254,29 +321,48 @@ def _normalize_editorial_plan(
             special_count += 1
 
         hints = [str(h).strip() for h in (rg.get("search_hints") or []) if str(h).strip()]
+        focus_area = str(rg.get("focus_area") or "小平市内エリア散策").strip()
+        kodaira_angle = str(
+            rg.get("kodaira_angle") or f"{row['theme_name']}と小平の季節の暮らし"
+        ).strip()
+        expert_angle = str(
+            rg.get("expert_angle")
+            or (
+                f"{row['guest_name']}さんとともに事前編成テーマ（{'／'.join(row['preplanned_expert_topics'])}）を小平向けに解説。{row['preplanned_expert_note']}".strip()
+                if row.get("preplanned_expert_topics")
+                else (
+                    f"未解説キーワード（{', '.join(row['expert_fresh_candidates'][:2])}）を小平向けに解説"
+                    if row["expert_fresh_candidates"]
+                    else f"{row['theme_name']}の実践知識"
+                )
+            )
+        ).strip()
+
+        spot_text = "\n".join(
+            [
+                focus_area,
+                kodaira_angle,
+                " ".join(hints),
+                cleaned_sp["title"] if cleaned_sp else "",
+            ]
+        )
+        matched_ids = match_spots_in_text(spot_text, spots_data)
+        for exp_sid in rg.get("spot_ids") or []:
+            sid_clean = str(exp_sid or "").strip()
+            if sid_clean and sid_clean not in matched_ids:
+                matched_ids.append(sid_clean)
+
         normalized_guides.append(
             {
                 "date": d_str,
                 "weekday_ja": row["weekday_ja"],
                 "theme_name": row["theme_name"],
                 "guest_name": row["guest_name"],
-                "focus_area": str(rg.get("focus_area") or "小平市内エリア散策").strip(),
-                "kodaira_angle": str(
-                    rg.get("kodaira_angle") or f"{row['theme_name']}と小平の季節の暮らし"
-                ).strip(),
+                "focus_area": focus_area,
+                "kodaira_angle": kodaira_angle,
+                "spot_ids": matched_ids,
                 "search_hints": hints[:4],
-                "expert_angle": str(
-                    rg.get("expert_angle")
-                    or (
-                        f"{row['guest_name']}さんとともに事前編成テーマ（{'／'.join(row['preplanned_expert_topics'])}）を小平向けに解説。{row['preplanned_expert_note']}".strip()
-                        if row.get("preplanned_expert_topics")
-                        else (
-                            f"未解説キーワード（{', '.join(row['expert_fresh_candidates'][:2])}）を小平向けに解説"
-                            if row["expert_fresh_candidates"]
-                            else f"{row['theme_name']}の実践知識"
-                        )
-                    )
-                ).strip(),
+                "expert_angle": expert_angle,
                 "editorial_special": cleaned_sp,
             }
         )
@@ -438,6 +524,22 @@ def main() -> None:
         else {"entries": []}
     )
     topic_entries = topic_history_data.get("entries", [])
+    spots_cfg = load_kodaira_spots()
+    usage_map = compute_spot_usage(
+        spots_cfg,
+        topic_entries,
+        editorial_plan=existing_plan,
+        reference_date=start_dt,
+        exclude_date_range=(start_dt.isoformat(), end_dt.isoformat()),
+    )
+    fresh_candidates = select_balanced_spot_candidates(
+        spots_cfg,
+        usage_map,
+        start_dt,
+        count=20,
+    )
+    spot_cooldown_text = format_spot_cooldown_block(spots_cfg, usage_map, start_dt)
+    spot_candidates_text = format_spot_candidates_block(spots_cfg, fresh_candidates)
 
     skeleton = _build_week_skeleton(
         start_dt,
@@ -447,12 +549,23 @@ def main() -> None:
         topic_entries,
         program_schedule=program_schedule,
     )
-    recent_text = _format_recent_history(start_dt, topic_entries)
-    research_prompt = build_editorial_research_prompt(start_dt, end_dt, recent_text)
+    recent_text = _format_recent_history(start_dt, topic_entries, existing_plan=existing_plan)
+    research_prompt = build_editorial_research_prompt(
+        start_dt,
+        end_dt,
+        recent_text,
+        spot_cooldown_text=spot_cooldown_text,
+        spot_candidates_text=spot_candidates_text,
+    )
 
     if args.dry_run:
+        cooldown_count = sum(1 for u in usage_map.values() if u.get("in_cooldown"))
         print(f"=== DRY RUN WEEKLY EDITORIAL PLAN ({start_dt} ~ {end_dt}) ===")
         print(f"Models: research={research_model} | planner={planner_model}")
+        print(
+            f"Spot Catalog: total={len(spots_cfg.get('spots', []))} | "
+            f"cooldown_90d={cooldown_count} | fresh_candidates={len(fresh_candidates)}"
+        )
         for r in skeleton:
             sched_str = " / ".join(r["preplanned_expert_topics"]) or "Auto"
             lock_str = " [LOCKED]" if r["schedule_locked"] else ""
@@ -490,6 +603,8 @@ def main() -> None:
         skeleton=skeleton,
         recent_history_text=recent_text,
         research_briefing=research_brief,
+        spot_cooldown_text=spot_cooldown_text,
+        spot_candidates_text=spot_candidates_text,
     )
     print(f"Phase 2: Drafting weekly editorial plan via {planner_model}...")
     p_resp = client.models.generate_content(
@@ -499,13 +614,27 @@ def main() -> None:
     )
     print(f"Phase 2 usage   : {_format_usage(p_resp)}")
     raw_plan = _parse_json_response(getattr(p_resp, "text", "") or "")
-    new_week_plan = _normalize_editorial_plan(raw_plan, skeleton, research_model, planner_model)
+    new_week_plan = _normalize_editorial_plan(
+        raw_plan,
+        skeleton,
+        research_model,
+        planner_model,
+        spots_cfg=spots_cfg,
+    )
     merged_plan = merge_editorial_plans(existing_plan, new_week_plan, now_jst)
 
     EDITORIAL_PLAN_PATH.parent.mkdir(parents=True, exist_ok=True)
     EDITORIAL_PLAN_PATH.write_text(
         json.dumps(merged_plan, ensure_ascii=False, indent=2), encoding="utf-8"
     )
+    overlaps = audit_plan_spot_overlaps(spots_cfg, topic_entries, merged_plan)
+    if overlaps:
+        print(f"WARNING: Detected {len(overlaps)} 90-day spot overlap(s) across editorial timeline:")
+        for ov in overlaps:
+            print(
+                f"  - {ov['spot_name']}: {ov['date_a']} ({ov['source_a']}) -> "
+                f"{ov['date_b']} ({ov['source_b']}) [gap={ov['gap_days']}d < {ov['cooldown_days']}d]"
+            )
     print(
         f"Saved weekly editorial plan: {EDITORIAL_PLAN_PATH} "
         f"(total {len(merged_plan['daily_guides'])} days across {len(merged_plan['weeks'])} week(s))"

@@ -9,6 +9,11 @@ import re
 from pathlib import Path
 from typing import Any
 
+from kodaira_spots import (
+    compute_spot_usage,
+    load_kodaira_spots,
+    render_spots_catalog_markdown,
+)
 from site_calendar_page import render_calendar_page
 from site_listen_page import render_listen_page
 from site_notebook_page import render_notebook_page
@@ -3016,6 +3021,7 @@ def build_site() -> None:
         if (DATA_DIR / "topic_history.json").exists()
         else {"entries": []}
     )
+    kodaira_spots = load_kodaira_spots(CONFIG_DIR / "kodaira_spots.json")
     tech_bundle = (
         _load_episode_bundle(TECH_TALK_DIR)
         if (TECH_TALK_DIR / "episode.json").exists()
@@ -3111,7 +3117,19 @@ def build_site() -> None:
                 subhead="過去の放送実績と今後の専門家解説テーマ予定（リクエスト随時受付）",
             ),
             safe_json_fn=_safe_json_for_html,
+            kodaira_spots=kodaira_spots,
         ),
+        encoding="utf-8",
+    )
+    spot_usage = compute_spot_usage(
+        kodaira_spots,
+        topic_history.get("entries", []),
+        editorial_plan=editorial_plan,
+        program_schedule=program_schedule,
+        reference_date=today_jst_str,
+    )
+    (DOCS_DIR / "kodaira_spots_catalog.md").write_text(
+        render_spots_catalog_markdown(kodaira_spots, spot_usage, today_jst_str),
         encoding="utf-8",
     )
     (DOCS_DIR / "archive.html").write_text(
