@@ -1414,6 +1414,8 @@ footer {
       const btnShareCopy = document.getElementById("btn-share-copy");
       const shareFeedback = document.getElementById("share-feedback");
       let shareCopyTimer = null;
+      const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || "")
+        || (navigator.platform === "MacIntel" && (navigator.maxTouchPoints || 0) > 1);
 
       function buildShareInfo() {
         const relPath = data.share_rel_path || ("episodes/" + data.slug + "/");
@@ -1483,7 +1485,15 @@ footer {
       const shareInfo = buildShareInfo();
       if (sharePanelTitle) sharePanelTitle.textContent = shareInfo.label;
       if (btnShareLine) {
-        btnShareLine.href = "https://social-plugins.line.me/lineit/share?url=" + encodeURIComponent(shareInfo.url) + "&text=" + encodeURIComponent(shareInfo.text);
+        if (isMobileDevice) {
+          btnShareLine.href = "https://line.me/R/share?text=" + encodeURIComponent(shareInfo.text + "\n" + shareInfo.url);
+          btnShareLine.removeAttribute("target");
+          btnShareLine.removeAttribute("rel");
+        } else {
+          btnShareLine.href = "https://social-plugins.line.me/lineit/share?url=" + encodeURIComponent(shareInfo.url) + "&text=" + encodeURIComponent(shareInfo.text);
+          btnShareLine.setAttribute("target", "_blank");
+          btnShareLine.setAttribute("rel", "noopener noreferrer");
+        }
       }
       if (btnShareX) {
         btnShareX.href = "https://x.com/intent/tweet?text=" + encodeURIComponent(shareInfo.text) + "&url=" + encodeURIComponent(shareInfo.url);
@@ -1493,6 +1503,18 @@ footer {
       }
       if (btnShareToggle && sharePanel) {
         btnShareToggle.addEventListener("click", () => {
+          if (isMobileDevice && typeof navigator.share === "function") {
+            navigator.share({
+              title: shareInfo.title,
+              text: shareInfo.text,
+              url: shareInfo.url
+            }).catch((err) => {
+              if (err && err.name === "AbortError") return;
+              sharePanel.hidden = false;
+              btnShareToggle.setAttribute("aria-expanded", "true");
+            });
+            return;
+          }
           const nextHidden = !sharePanel.hidden;
           sharePanel.hidden = nextHidden;
           btnShareToggle.setAttribute("aria-expanded", nextHidden ? "false" : "true");

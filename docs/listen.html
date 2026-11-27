@@ -1000,6 +1000,8 @@ body {
       let currentIdx = 0;
       let isScrubbing = false;
       let copyTimer = null;
+      const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || "")
+        || (navigator.platform === "MacIntel" && (navigator.maxTouchPoints || 0) > 1);
 
       if (btnShareNative && typeof navigator.share === "function") {
         btnShareNative.hidden = false;
@@ -1067,13 +1069,24 @@ body {
         btnShareToggle.setAttribute("aria-expanded", "false");
       }
 
+      function configureLineShareLink(el, info) {
+        if (!el || !info) return;
+        if (isMobileDevice) {
+          el.href = "https://line.me/R/share?text=" + encodeURIComponent(info.text + "\n" + info.url);
+          el.removeAttribute("target");
+          el.removeAttribute("rel");
+        } else {
+          el.href = "https://social-plugins.line.me/lineit/share?url=" + encodeURIComponent(info.url) + "&text=" + encodeURIComponent(info.text);
+          el.setAttribute("target", "_blank");
+          el.setAttribute("rel", "noopener noreferrer");
+        }
+      }
+
       function updateShareUI(ep) {
         if (!ep) return;
         const info = buildShareInfo(ep);
         if (sharePanelTitle) sharePanelTitle.textContent = info.label;
-        if (btnShareLine) {
-          btnShareLine.href = "https://social-plugins.line.me/lineit/share?url=" + encodeURIComponent(info.url) + "&text=" + encodeURIComponent(info.text);
-        }
+        configureLineShareLink(btnShareLine, info);
         if (btnShareX) {
           btnShareX.href = "https://x.com/intent/tweet?text=" + encodeURIComponent(info.text) + "&url=" + encodeURIComponent(info.url);
         }
@@ -1411,6 +1424,21 @@ body {
 
       if (btnShareToggle && sharePanel) {
         btnShareToggle.addEventListener("click", () => {
+          if (isMobileDevice && typeof navigator.share === "function") {
+            const ep = episodes[currentIdx];
+            if (!ep) return;
+            const info = buildShareInfo(ep);
+            navigator.share({
+              title: info.title,
+              text: info.text,
+              url: info.url
+            }).catch((err) => {
+              if (err && err.name === "AbortError") return;
+              sharePanel.hidden = false;
+              btnShareToggle.setAttribute("aria-expanded", "true");
+            });
+            return;
+          }
           const nextHidden = !sharePanel.hidden;
           sharePanel.hidden = nextHidden;
           btnShareToggle.setAttribute("aria-expanded", nextHidden ? "false" : "true");
