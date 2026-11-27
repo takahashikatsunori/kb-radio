@@ -1,9 +1,6 @@
-name: Weekly Chief Editor Plan (Sun 12:17 JST Failsafe)
+name: Weekly Chief Editor Plan (Manual Only)
 
 on:
-  schedule:
-    # 03:17 UTC Sunday = 12:17 JST Sunday (failsafe backup if local desktop Antigravity Sun 11:30 JST run did not push; no-op if already planned)
-    - cron: '17 3 * * 0'
   workflow_dispatch:
     inputs:
       start_date:

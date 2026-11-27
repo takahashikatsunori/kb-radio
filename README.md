@@ -23,7 +23,7 @@
 - **ハイブリッドAI制作パイプライン ＆ 週1回編集長AI**
   - Phase A 調査（**`gemini-4-hydrogen` + Google検索**）→ Phase B 台本執筆（**`gemini-4-neon`**）→ Phase C ファクトチェック＆自動校閲（**`gemini-4-hydrogen` + Google検索**）→ 音声合成（**`gemini-3.8-flash-tts`**）が連携し、正確性と自然な掛け合いを両立しています。
   - [data/topic_history.json](data/topic_history.json) により直近28日間の小平トピック重複と各専門家ゲスト過去3か月（90日）の専門用語重複を自動防止します。
-  - [config/program_schedule.json](config/program_schedule.json) で先々の専門家解説テーマやリクエストを事前管理でき、毎週日曜12:17（JST）の編集長AI（[weekly-editorial.yml](.github/workflows/weekly-editorial.yml)）が向こう2週間の小平イベントを調べて週間編成（[data/editorial_plan.json](data/editorial_plan.json)）とカレンダーを更新します。
+  - [config/program_schedule.json](config/program_schedule.json) で先々の専門家解説テーマやリクエストを事前管理でき、編集長AI（[plan_weekly_editorial.py](src/plan_weekly_editorial.py) ／ 手動実行用 [weekly-editorial.yml](.github/workflows/weekly-editorial.yml)）が向こう2週間の小平イベントを調べて週間編成（[data/editorial_plan.json](data/editorial_plan.json)）とカレンダーを更新します。
 - **Gemini 3.8 Flash TTS による豊かな感情表現**
   - `<laugh>`・`<chuckle>`・`<giggle>`・`<short pause>` 等のインラインタグと `speech_metadata.style` 演技指示、2話者マルチスピーカー合成により、笑い・うなずき・自然な間合いを再現します。
 - **ローカルPC ＆ GitHub Pages 両対応ポータル（`docs/`）**
@@ -71,5 +71,5 @@
    GitHub リポジトリの **Settings → Secrets and variables → Actions → New repository secret** から、Name に `GEMINI_API_KEY`、Secret にご自身の API キーを登録します。
 3. **GitHub Pages を GitHub Actions モードに設定**  
    **Settings → Pages → Build and deployment → Source** で **`GitHub Actions`** を選択します。
-4. **動作確認（手動トリガー）**  
-   **Actions → Daily Kodaira Bousai Radio (07:00 JST) → Run workflow** を開いて、`date` に `2026-11-23`（または空欄で当日）を指定して実行すると、MP3合成・サイト更新・GitHub Pages公開が走り、以降は毎日 **日本時間 朝05:17（メイン）／ 06:13（冪等バックアップ）** で7時前に自動公開されます。
+4. **手動実行（必要な場合のみ）**  
+   `daily-radio.yml`・`weekly-editorial.yml` の定時 `cron` 自動実行は停止しており、手動トリガー（`workflow_dispatch`）専用です。**Actions → Daily Kodaira Bousai Radio (Manual Only) → Run workflow** から日付を指定して手動実行できます。通常はローカル環境で生成して `docs/` をプッシュすると、[deploy-pages.yml](.github/workflows/deploy-pages.yml) により GitHub Pages へ自動公開されます。

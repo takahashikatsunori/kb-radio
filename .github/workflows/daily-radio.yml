@@ -1,9 +1,6 @@
-name: Daily Kodaira Bousai Radio (07:00 JST)
+name: Daily Kodaira Bousai Radio (Manual Only)
 
 on:
-  schedule:
-    # 21:13 UTC = 06:13 JST (failsafe backup if local desktop Antigravity 05:15 JST run did not push; no-op / $0 if already built)
-    - cron: '13 21 * * *'
   workflow_dispatch:
     inputs:
       date:
