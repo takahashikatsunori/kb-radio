@@ -29,9 +29,11 @@ from kodaira_spots import (
     SPOT_COOLDOWN_DAYS,
     audit_plan_spot_overlaps,
     compute_spot_usage,
+    find_longitudinal_special_candidates,
     format_spot_candidates_block,
     format_spot_cooldown_block,
     load_kodaira_spots,
+    load_spot_reports,
     match_spots_in_text,
     select_balanced_spot_candidates,
 )
@@ -207,6 +209,7 @@ def build_editorial_plan_prompt(
     research_briefing: str,
     spot_cooldown_text: str = "",
     spot_candidates_text: str = "",
+    longitudinal_specials: list[dict[str, Any]] | None = None,
 ) -> str:
     """Build Phase 2 prompt for Gemini 4 Neon Chief Editor to structure 7-day weekly plan JSON."""
     skeleton_json = json.dumps(skeleton, ensure_ascii=False, indent=2)
@@ -219,6 +222,22 @@ def build_editorial_plan_prompt(
     candidates_section = (
         f"\n## 4.5 小平市スポット題材ネタ帳（未紹介・バランス候補プール）\n{spot_candidates_text}\n"
         if spot_candidates_text
+        else ""
+    )
+    specials_lines: list[str] = []
+    for sp in (longitudinal_specials or [])[:6]:
+        flag = "特集化OK" if sp.get("ready") else f"蓄積{sp.get('entry_count', 0)}件"
+        line = f"- **[{flag}] {sp.get('spot_name', '')}**（{sp.get('category_label', '')}）"
+        if sp.get("theme_idea"):
+            line += f": 特集案『{sp['theme_idea']}』"
+        if sp.get("latest_headline"):
+            line += f" ／ 最新一次メモ: {sp['latest_headline']}"
+        specials_lines.append(line)
+    specials_section = (
+        "\n## 4.6 取材手帳から育った深掘り・長期特集候補（一次ソース確認済）\n"
+        + "\n".join(specials_lines)
+        + "\n※クールダウンと重複しない範囲で、拡大特集コーナー (`editorial_special`) や今後の企画アイデア (`upcoming_ideas`) に積極活用してください。\n"
+        if specials_lines
         else ""
     )
     return f"""あなたは「毎朝7時！こだいら防災＆まちラジオ」の編集長（チーフプロデューサー）です。
@@ -236,7 +255,7 @@ def build_editorial_plan_prompt(
 {cooldown_section}
 ## 4. 最新リサーチ結果（小平の季節・イベント・まちネタ）
 {research_briefing}
-{candidates_section}
+{candidates_section}{specials_section}
 ## 5. 編集長としての編成ルール（重要）
 1. **週間テーマ軸 (`weekly_arc`)**: 今週1週間を通じたワクワクする番組の縦糸・特集コンセプトを1つ設定してください。
 2. **7日間の地理・ジャンルの多様性 ＆ 重複禁止・鮮度重視**:
@@ -525,6 +544,7 @@ def main() -> None:
     )
     topic_entries = topic_history_data.get("entries", [])
     spots_cfg = load_kodaira_spots()
+    reports_map = load_spot_reports()
     usage_map = compute_spot_usage(
         spots_cfg,
         topic_entries,
@@ -539,7 +559,16 @@ def main() -> None:
         count=20,
     )
     spot_cooldown_text = format_spot_cooldown_block(spots_cfg, usage_map, start_dt)
-    spot_candidates_text = format_spot_candidates_block(spots_cfg, fresh_candidates)
+    spot_candidates_text = format_spot_candidates_block(
+        spots_cfg,
+        fresh_candidates,
+        reports_map=reports_map,
+    )
+    longitudinal_specials = find_longitudinal_special_candidates(
+        spots_cfg,
+        reports_map,
+        min_entries=2,
+    )
 
     skeleton = _build_week_skeleton(
         start_dt,
@@ -560,11 +589,17 @@ def main() -> None:
 
     if args.dry_run:
         cooldown_count = sum(1 for u in usage_map.values() if u.get("in_cooldown"))
+        dossier_spots = sum(1 for r in reports_map.values() if r.get("entries"))
+        dossier_entries = sum(len(r.get("entries") or []) for r in reports_map.values())
         print(f"=== DRY RUN WEEKLY EDITORIAL PLAN ({start_dt} ~ {end_dt}) ===")
         print(f"Models: research={research_model} | planner={planner_model}")
         print(
-            f"Spot Catalog: total={len(spots_cfg.get('spots', []))} | "
+            f"Spot Catalog: total={len(spots_cfg.get('spots', []))} ({len(spots_cfg.get('categories', []))} genres) | "
             f"cooldown_90d={cooldown_count} | fresh_candidates={len(fresh_candidates)}"
+        )
+        print(
+            f"Spot Dossiers: spots={dossier_spots} | entries={dossier_entries} | "
+            f"special_candidates={len(longitudinal_specials)}"
         )
         for r in skeleton:
             sched_str = " / ".join(r["preplanned_expert_topics"]) or "Auto"
@@ -605,6 +640,7 @@ def main() -> None:
         research_briefing=research_brief,
         spot_cooldown_text=spot_cooldown_text,
         spot_candidates_text=spot_candidates_text,
+        longitudinal_specials=longitudinal_specials,
     )
     print(f"Phase 2: Drafting weekly editorial plan via {planner_model}...")
     p_resp = client.models.generate_content(

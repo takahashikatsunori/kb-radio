@@ -1,0 +1,55 @@
+{
+  "spot_id": "terme_ogawa",
+  "spot_name": "小平天然温泉 テルメ小川",
+  "category": "sento_spa",
+  "last_researched_at": "2026-11-28",
+  "operating_status": "open",
+  "operating_status_note": "通常営業中（10:00〜23:00・最終受付22:15／第2水曜定休・祝日の場合第3水曜）",
+  "official_urls": [
+    "http://www.terme-ogawa.com/"
+  ],
+  "curated_highlights": [
+    "公式サイトで2026年11月現在も通常営業継続および冬季限定メニュー展開中を確認",
+    "地下から湧き出す天然温泉（ナトリウム-塩化物・炭酸水素塩泉）と露天風呂・サウナ（小平市小川町1-2494）"
+  ],
+  "story_angles": [
+    "冬場の入浴時ヒートショック対策と脱衣所の温度管理",
+    "停電・断水時の入浴支援や地域の暮らしにおける温浴施設の役割"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "小平の温浴・足湯めぐりと冬の健康防災特集",
+    "reason": "おふろの王様（12/9リニューアル）やこもれびの足湯と組み合わせた冬の健康企画に発展可能"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_verified",
+      "operating_status": "open",
+      "headline": "公式サイトで通常営業継続を確認（冬季限定メニュー展開中・第2水曜定休）",
+      "discoveries": [
+        "公式ホームページ（http://www.terme-ogawa.com/）がHTTP 200で正常公開されており、2026年11月更新の冬季限定メニュー案内とともに通常営業（10:00〜23:00・最終受付22:15）を一次確認。",
+        "定休日は毎月第2水曜日（祝日の場合は第3水曜日・2026年11月は11月11日休館）。",
+        "東京都条例に基づく混浴制限により未就学児（6歳以下）までとなる点も公式サイトで明記。",
+        "所在地は東京都小平市小川町1-2494。"
+      ],
+      "seasonal_note": "2026年11月以降、冬季限定のお食事メニューを展開中。",
+      "disaster_tie_in": "冬季の浴室・脱衣所での急激な温度差によるヒートショック防止や入浴中の地震発生時の行動を確認できる。",
+      "excluded_unverified_claims": [
+        "一部非公式個人ブログ等の閉館・閉店と誤認し得る記述は、公式ホームページのHTTP 200応答および2026年11月更新の通常営業告知により反証・除外済み。"
+      ],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "公式HP（http://www.terme-ogawa.com/）直接取得・一次確認",
+        "notes": "2026-11-28に直接アクセスしてHTTP 200応答、<2026年11月>冬季メニュー告知、営業時間・定休日を確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "小平天然温泉 テルメ小川 公式ホームページ",
+          "url": "http://www.terme-ogawa.com/"
+        }
+      ]
+    }
+  ]
+}

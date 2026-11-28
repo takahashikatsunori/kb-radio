@@ -1,0 +1,57 @@
+{
+  "spot_id": "shimamura_blueberry_farm",
+  "spot_name": "島村ブルーベリー園（日本商業栽培発祥の歴史農園）",
+  "category": "orchard_farm",
+  "last_researched_at": "2026-11-28",
+  "operating_status": "seasonal",
+  "operating_status_note": "夏期季節営業（所在地：小平市花小金井南町1-10-13／日本商業ブルーベリー栽培発祥の地）",
+  "official_urls": [
+    "https://www.jatm.or.jp/",
+    "https://www.city.kodaira.tokyo.jp/"
+  ],
+  "curated_highlights": [
+    "1968年（昭和43年）からの東京農工大学との共同栽培試験を経て日本の商業的ブルーベリー栽培発祥の地となった農園",
+    "小平の都市農地・果樹栽培の歴史を体感できる象徴的スポット"
+  ],
+  "story_angles": [
+    "小平が『日本のブルーベリー発祥の地』と呼ばれる理由と1968年の農工大との歴史",
+    "都市農地が果たす防災オープンスペース機能とローカル食料生産の重要性"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "日本の商業ブルーベリー栽培発祥の地・小平の果樹園と都市農業の防災力",
+    "reason": "初夏の開園シーズンや他果樹園（キウイ・梨・いちご）の取材が溜まれば大型シーズン特集へ発展可能。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_verified",
+      "operating_status": "seasonal",
+      "headline": "1968年（昭和43年）の東京農工大との栽培試験から始まった日本の商業ブルーベリー発祥史を一次確認",
+      "discoveries": [
+        "所在地は東京都小平市花小金井南町1-10-13。",
+        "1968年（昭和43年）の東京農工大学との共同栽培試験を受け継ぎ、日本の商業的ブルーベリー栽培発祥の地として知られる。",
+        "小平駅南口のモニュメント『日本ブルーベリー栽培発祥の地モニュメント』と区別し、実際の栽培史を伝える果樹園・農園スポットとして登録。"
+      ],
+      "seasonal_note": "摘み取りシーズンは夏だが、秋〜冬も小平の特産ブランド・歴史ストーリーとして紹介できる。",
+      "disaster_tie_in": "生産緑地・都市農地が地震時の延焼遮断帯や一次的な空き地空間、地産地消の支えとして働く側面を解説できる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "小平市公式・JA東京むさし一次情報照合",
+        "notes": "所在地（花小金井南町1-10-13）・昭和43年（1968年）栽培試験経緯・商業栽培発祥の地としての位置付けを確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "JA東京むさし 公式ホームページ",
+          "url": "https://www.jatm.or.jp/"
+        },
+        {
+          "title": "小平市 公式ホームページ",
+          "url": "https://www.city.kodaira.tokyo.jp/"
+        }
+      ]
+    }
+  ]
+}

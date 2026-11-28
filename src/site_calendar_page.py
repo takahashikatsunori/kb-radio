@@ -7,7 +7,7 @@ from string import Template
 from typing import Any
 
 from generate_episode import _is_keyword_covered
-from kodaira_spots import compute_spot_usage, load_kodaira_spots
+from kodaira_spots import compute_spot_usage, load_kodaira_spots, load_spot_reports
 from schedule_calendar import resolve_day_plan
 
 
@@ -21,9 +21,11 @@ def _build_spot_catalog_payload(
     editorial_plan: dict[str, Any] | None,
     program_schedule: dict[str, Any] | None,
     today_jst_str: str,
+    spot_reports: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """Assemble spot catalog summary, category counts, and per-spot aired/planned status."""
+    """Assemble spot catalog summary, category counts, and per-spot aired/planned/dossier status."""
     spots_cfg = kodaira_spots if kodaira_spots is not None else load_kodaira_spots()
+    reports_map = spot_reports if spot_reports is not None else load_spot_reports()
     topic_entries = (topic_history or {}).get("entries") or []
     usage_map = compute_spot_usage(
         spots_cfg,
@@ -49,6 +51,8 @@ def _build_spot_catalog_payload(
     unfeatured_count = 0
     planned_count = 0
     aired_count = 0
+    reported_spots_count = 0
+    report_entries_count = 0
 
     for sp in spots_cfg.get("spots") or []:
         if not isinstance(sp, dict) or not sp.get("id"):
@@ -75,6 +79,45 @@ def _build_spot_catalog_payload(
             catalog_status = "unfeatured"
             unfeatured_count += 1
 
+        dossier = reports_map.get(sid)
+        entries = (
+            [e for e in (dossier.get("entries") or []) if isinstance(e, dict)]
+            if isinstance(dossier, dict)
+            else []
+        )
+        report_summary: dict[str, Any] | None = None
+        if entries:
+            reported_spots_count += 1
+            report_entries_count += len(entries)
+            latest = entries[-1]
+            fc = latest.get("fact_check") if isinstance(latest.get("fact_check"), dict) else {}
+            sfp = (
+                dossier.get("special_feature_potential")
+                if isinstance(dossier.get("special_feature_potential"), dict)
+                else {}
+            )
+            srcs = [
+                {
+                    "title": str(src.get("title") or "一次ソース").strip(),
+                    "url": str(src.get("url") or "").strip(),
+                }
+                for src in (latest.get("primary_sources") or [])
+                if isinstance(src, dict)
+                and str(src.get("url") or "").strip().startswith(("http://", "https://"))
+            ]
+            report_summary = {
+                "operating_status": str(dossier.get("operating_status") or "open"),
+                "operating_status_note": str(dossier.get("operating_status_note") or "").strip(),
+                "last_researched_at": str(dossier.get("last_researched_at") or "").strip(),
+                "entry_count": len(entries),
+                "latest_headline": str(latest.get("headline") or "").strip(),
+                "latest_checked_at": str(fc.get("checked_at") or dossier.get("last_researched_at") or "").strip(),
+                "discoveries": [str(x).strip() for x in (latest.get("discoveries") or []) if str(x).strip()][:4],
+                "primary_sources": srcs,
+                "special_theme": str(sfp.get("theme_idea") or "").strip(),
+                "special_ready": bool(sfp.get("ready")),
+            }
+
         cm = cat_meta.get(cid) or {"label": cid, "icon": "📍"}
         spots_out.append(
             {
@@ -96,6 +139,7 @@ def _build_spot_catalog_payload(
                 "planned_dates": planned_dates,
                 "hint_dates": hint_dates,
                 "catalog_status": catalog_status,
+                "report": report_summary,
             }
         )
 
@@ -106,6 +150,8 @@ def _build_spot_catalog_payload(
             "unfeatured": unfeatured_count,
             "planned": planned_count,
             "aired": aired_count,
+            "reported_spots": reported_spots_count,
+            "report_entries": report_entries_count,
         },
         "categories": [c for c in cat_meta.values() if c["count"] > 0],
         "spots": spots_out,
@@ -121,6 +167,7 @@ def _build_calendar_payload(
     topic_history: dict[str, Any] | None,
     today_jst_str: str,
     kodaira_spots: dict[str, Any] | None = None,
+    spot_reports: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Assemble unified past + future broadcast calendar dataset."""
     bundles_by_date: dict[str, list[dict[str, Any]]] = {}
@@ -397,6 +444,7 @@ def _build_calendar_payload(
         editorial_plan=editorial_plan,
         program_schedule=program_schedule,
         today_jst_str=today_jst_str,
+        spot_reports=spot_reports,
     )
     return {
         "today_jst": today_jst_str,
@@ -904,6 +952,66 @@ CALENDAR_CSS = """
   color: #92400e;
   border: 1px solid #fde68a;
 }
+.spot-report-box {
+  margin-top: 0.28rem;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  background: #f0fdf4;
+  padding: 0.42rem 0.6rem;
+  font-size: 0.78rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.spot-report-box > summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: #166534;
+  line-height: 1.45;
+}
+.spot-report-body {
+  margin-top: 0.42rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.32rem;
+  color: var(--ink);
+  line-height: 1.5;
+}
+.spot-report-status {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #14532d;
+}
+.spot-report-headline {
+  font-weight: 700;
+  color: var(--ink);
+}
+.spot-report-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.16rem;
+}
+.spot-report-sources {
+  font-size: 0.73rem;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.spot-report-sources a {
+  color: #0369a1;
+  text-decoration: underline;
+  word-break: break-all;
+}
+.spot-report-special {
+  font-size: 0.74rem;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+  border-radius: 6px;
+  padding: 0.24rem 0.45rem;
+}
 
 @media (max-width: 760px) {
   .cal-dow-head { display: none; }
@@ -949,7 +1057,7 @@ $CALENDAR_CSS
         このカレンダーは、過去の放送実績と <strong>$HORIZON_END までの専門家解説テーマ＆小平スポット予定</strong> をまとめた編成表です（編集元：<code>config/program_schedule.json</code>・<code>config/kodaira_spots.json</code>）。
         一度登場したスポットは<strong>原則90日間（約3か月）再登場させない重複防止ルール</strong>を適用し（大規模リニューアルや開催当日の大型イベントは例外）、最終ネタは週次検討や当日の最新ニュースに応じて鮮度高く選びます。
         <div class="spot-jump-row">
-          <a href="#spot-catalog" class="spot-jump-btn">📍 小平スポット題材ネタ帳を見る（全$SPOT_TOTAL件・16ジャンル）↓</a>
+          <a href="#spot-catalog" class="spot-jump-btn">📍 小平スポット題材ネタ帳を見る（全$SPOT_TOTAL件・$SPOT_CAT_COUNTジャンル）↓</a>
           <a href="kodaira_spots_catalog.md" class="spot-jump-btn is-secondary">📄 ネタ帳Markdown資料を見る →</a>
         </div>
       </div>
@@ -1000,19 +1108,20 @@ $CALENDAR_CSS
 
     <div class="card" id="spot-catalog">
       <div class="section-head">
-        <h2>小平市スポット題材ネタ帳（16ジャンル・全$SPOT_TOTAL件）</h2>
-        <span class="hint">原則90日重複禁止 ／ 追加リクエスト歓迎</span>
+        <h2>小平市スポット題材ネタ帳（$SPOT_CAT_COUNTジャンル・全$SPOT_TOTAL件）</h2>
+        <span class="hint">原則90日重複禁止 ／ 一次情報取材レポート蓄積</span>
       </div>
       <div class="spot-toolbar">
         <div class="cal-stats" id="spot-stats"></div>
         <div class="spot-summary-note">
-          地元民でも納得の「小平の魅力」を公共機関・公民館・駅・スポーツ・美術館/植物園・温浴・工場/企業・商業・カフェ/パン/うどん・本屋/雑貨/ペット・公園/水辺・桜/紅葉・大学/専門学校・モニュメント/社寺・直売所・レジャーの<strong>16ジャンル</strong>から調査・整理しています。
-          <strong>直近90日以内の再登場を避けつつ、大規模リニューアルや当日イベント・最新ニュースは鮮度を優先して臨機応変に採用</strong>します。「このお店やスポットも載せて！」という追加リクエストもぜひお寄せください。
+          地元民でも納得の「小平の魅力」を公共機関・公民館・コミュニティサークル・駅・スポーツ・美術館/植物園・温浴・工場/企業・浄水/給水・発電/変電・商業・カフェ/パン/うどん・本屋/雑貨/ペット・公園/水辺・桜/紅葉・大学/専門学校・モニュメント・神社/仏閣・果樹園/農園・直売所・レジャーの<strong>$SPOT_CAT_COUNTジャンル</strong>から調査・整理しています。
+          各スポットは公式サイトや自治体発表等の<strong>一次情報のみに基づく継続取材レポート（取材手帳）</strong>で最新状況をストックし、長期特集や鮮度重視の放送に活かします。「このお店やスポットも載せて！」という追加リクエストも大歓迎です。
         </div>
-        <input type="search" id="spot-search" class="cal-search" placeholder="スポット名・エリア・駅・防災つながりを検索（例：植物園、本屋、うどん、ペット、花小金井…）" />
+        <input type="search" id="spot-search" class="cal-search" placeholder="スポット名・エリア・駅・取材レポート内容を検索（例：神社、果樹園、発電、花小金井…）" />
         <div class="cal-filter-row" id="spot-status-filters">
-          <span class="cal-filter-label">登場状況:</span>
+          <span class="cal-filter-label">状態・取材:</span>
           <button type="button" class="cal-pill-btn active" data-spot-status="all">すべて</button>
+          <button type="button" class="cal-pill-btn" data-spot-status="has_report">📝 取材レポートあり</button>
           <button type="button" class="cal-pill-btn" data-spot-status="unfeatured">未紹介（待機中）</button>
           <button type="button" class="cal-pill-btn" data-spot-status="planned">予定あり</button>
           <button type="button" class="cal-pill-btn" data-spot-status="aired">紹介済み</button>
@@ -1516,6 +1625,7 @@ $CALENDAR_CSS
       addSpotStatPill("is-planned", "近日予定あり: " + (sc.planned || 0) + "件");
       addSpotStatPill("", "紹介済み: " + (sc.aired || 0) + "件");
       addSpotStatPill("is-special", "全" + (sc.total || 0) + "スポット / " + (sc.categories || 0) + "ジャンル");
+      addSpotStatPill("is-aired", "📝 取材レポート蓄積: " + (sc.reported_spots || 0) + "箇所（計" + (sc.report_entries || 0) + "件）");
 
       if (spotCatFiltersEl) {
         const allCatBtn = document.createElement("button");
@@ -1557,21 +1667,35 @@ $CALENDAR_CSS
       }
 
       const SEASON_JA = { spring: "春", summer: "夏", autumn: "秋", winter: "冬", all: "通年" };
+      const OP_STATUS_JA = {
+        open: "一次確認：営業・公開中",
+        seasonal: "一次確認：季節営業・開園",
+        limited: "一次確認：事前予約・限定公開",
+        renovation: "一次確認：改修・リニューアル予定/中",
+        closed: "一次確認：閉業・閉鎖確認済"
+      };
 
       function renderSpots() {
         if (!spotGridEl) return;
         spotGridEl.innerHTML = "";
         const q = (spotSearchEl ? spotSearchEl.value : "").trim().toLowerCase();
         const filtered = (spotCatalog.spots || []).filter((sp) => {
-          if (selectedSpotStatus !== "all" && sp.catalog_status !== selectedSpotStatus) return false;
+          if (selectedSpotStatus === "has_report") {
+            if (!sp.report) return false;
+          } else if (selectedSpotStatus !== "all" && sp.catalog_status !== selectedSpotStatus) {
+            return false;
+          }
           if (selectedSpotCat !== "all") {
             const matchesCat = sp.category === selectedSpotCat || (sp.secondary_categories || []).includes(selectedSpotCat);
             if (!matchesCat) return false;
           }
           if (!q) return true;
+          const rep = sp.report || {};
           const hay = [
             sp.name, sp.category_label, sp.area, sp.station, sp.address_hint,
-            sp.summary, sp.verify_note, ...(sp.disaster_angles || [])
+            sp.summary, sp.verify_note, ...(sp.disaster_angles || []),
+            rep.latest_headline || "", rep.operating_status_note || "", rep.special_theme || "",
+            ...(rep.discoveries || [])
           ].join(" ").toLowerCase();
           return hay.includes(q);
         });
@@ -1642,6 +1766,74 @@ $CALENDAR_CSS
             card.appendChild(tags);
           }
 
+          if (sp.report) {
+            const rep = sp.report;
+            const det = document.createElement("details");
+            det.className = "spot-report-box";
+            const sum = document.createElement("summary");
+            sum.textContent =
+              "📝 取材レポート（" +
+              (rep.entry_count || 1) +
+              "件・一次確認: " +
+              (rep.latest_checked_at || rep.last_researched_at || "-") +
+              "）";
+            det.appendChild(sum);
+
+            const body = document.createElement("div");
+            body.className = "spot-report-body";
+
+            const stDiv = document.createElement("div");
+            stDiv.className = "spot-report-status";
+            const opTxt = OP_STATUS_JA[rep.operating_status] || rep.operating_status || "";
+            stDiv.textContent = opTxt + (rep.operating_status_note ? "（" + rep.operating_status_note + "）" : "");
+            body.appendChild(stDiv);
+
+            if (rep.latest_headline) {
+              const hlDiv = document.createElement("div");
+              hlDiv.className = "spot-report-headline";
+              hlDiv.textContent = rep.latest_headline;
+              body.appendChild(hlDiv);
+            }
+
+            if ((rep.discoveries || []).length > 0) {
+              const ul = document.createElement("ul");
+              ul.className = "spot-report-list";
+              rep.discoveries.forEach((d) => {
+                const li = document.createElement("li");
+                li.textContent = d;
+                ul.appendChild(li);
+              });
+              body.appendChild(ul);
+            }
+
+            if (rep.special_theme) {
+              const spDiv = document.createElement("div");
+              spDiv.className = "spot-report-special";
+              spDiv.textContent = (rep.special_ready ? "⭐ 特集化OK案: " : "🌱 長期特集の種: ") + rep.special_theme;
+              body.appendChild(spDiv);
+            }
+
+            if ((rep.primary_sources || []).length > 0) {
+              const srcDiv = document.createElement("div");
+              srcDiv.className = "spot-report-sources";
+              const lbl = document.createElement("span");
+              lbl.textContent = "一次ソース:";
+              srcDiv.appendChild(lbl);
+              rep.primary_sources.forEach((src) => {
+                const a = document.createElement("a");
+                a.href = src.url;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.textContent = src.title || src.url;
+                srcDiv.appendChild(a);
+              });
+              body.appendChild(srcDiv);
+            }
+
+            det.appendChild(body);
+            card.appendChild(det);
+          }
+
           spotGridEl.appendChild(card);
         });
       }
@@ -1666,6 +1858,7 @@ def render_calendar_page(
     nav_html: str,
     safe_json_fn: Any,
     kodaira_spots: dict[str, Any] | None = None,
+    spot_reports: dict[str, dict[str, Any]] | None = None,
 ) -> str:
     """Render docs/calendar.html using build_site.py common styling and navigation."""
     payload = _build_calendar_payload(
@@ -1677,6 +1870,7 @@ def render_calendar_page(
         topic_history=topic_history,
         today_jst_str=today_jst_str,
         kodaira_spots=kodaira_spots,
+        spot_reports=spot_reports,
     )
     return CALENDAR_HTML_TEMPLATE.substitute(
         COMMON_CSS=common_css,
@@ -1684,5 +1878,6 @@ def render_calendar_page(
         NAV_HTML=nav_html,
         HORIZON_END=payload["horizon_end"],
         SPOT_TOTAL=str(payload["spot_catalog"]["counts"]["total"]),
+        SPOT_CAT_COUNT=str(payload["spot_catalog"]["counts"]["categories"]),
         PAYLOAD_JSON=safe_json_fn(payload),
     )

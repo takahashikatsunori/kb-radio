@@ -8,10 +8,16 @@ import unicodedata
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 SPOT_COOLDOWN_DAYS = 90
 ROOT_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_SPOTS_PATH = ROOT_DIR / "config" / "kodaira_spots.json"
+SPOT_REPORTS_DIR = ROOT_DIR / "data" / "spot_reports"
+LOW_TRUST_DOMAIN_BLOCKLIST = (
+    "ezua.com",
+)
+VALID_OPERATING_STATUSES = ("open", "seasonal", "limited", "renovation", "closed")
 
 MONTH_TO_SEASON: dict[int, str] = {
     1: "winter",
@@ -414,6 +420,7 @@ def format_spot_cooldown_block(
 def format_spot_candidates_block(
     spots_cfg: dict[str, Any],
     candidates: list[dict[str, Any]],
+    reports_map: dict[str, dict[str, Any]] | None = None,
 ) -> str:
     """Format balanced unfeatured spot candidates across diverse genres & areas for prompts."""
     if not candidates:
@@ -423,6 +430,7 @@ def format_spot_candidates_block(
         for c in (spots_cfg.get("categories") or [])
         if isinstance(c, dict) and c.get("id")
     }
+    reports = reports_map or {}
     lines: list[str] = []
     for sp in candidates:
         cid = str(sp.get("category") or "")
@@ -430,11 +438,23 @@ def format_spot_candidates_block(
         angles = "／".join(sp.get("disaster_angles") or [])
         prio = " ★優先リクエスト" if sp.get("user_request_priority") else ""
         note_extra = f" ※{sp['verify_note']}" if sp.get("verify_note") and "改装" in sp["verify_note"] else ""
+        dossier = reports.get(str(sp.get("id") or ""))
+        dossier_extra = ""
+        if isinstance(dossier, dict):
+            entries = dossier.get("entries") or []
+            if entries:
+                latest = entries[-1] if isinstance(entries[-1], dict) else {}
+                hl = str(latest.get("headline") or "").strip()
+                if hl:
+                    dossier_extra = f" ［取材ストック{len(entries)}件: {hl}］"
+                else:
+                    dossier_extra = f" ［取材ストック{len(entries)}件あり］"
         lines.append(
             f"- [{cat_lbl}] **{sp['name']}**（{sp.get('area', '')}／最寄: {sp.get('station', '')}）{prio}: "
             f"{sp.get('summary', '')}"
             + (f" 〔防災接続例: {angles}〕" if angles else "")
             + note_extra
+            + dossier_extra
         )
     return "\n".join(lines)
 
@@ -529,14 +549,231 @@ def audit_plan_spot_overlaps(
     return overlaps
 
 
+def load_spot_reports(reports_dir: Path = SPOT_REPORTS_DIR) -> dict[str, dict[str, Any]]:
+    """Load accumulated primary-source spot dossiers keyed by spot_id."""
+    if not reports_dir.exists() or not reports_dir.is_dir():
+        return {}
+    reports: dict[str, dict[str, Any]] = {}
+    for p in sorted(reports_dir.glob("*.json")):
+        if p.name.startswith("_") or p.name.startswith("."):
+            continue
+        try:
+            data = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if not isinstance(data, dict):
+            continue
+        sid = str(data.get("spot_id") or p.stem).strip()
+        if not sid:
+            continue
+        entries = [e for e in (data.get("entries") or []) if isinstance(e, dict)]
+        entries.sort(key=lambda e: str(e.get("researched_at") or e.get("date") or ""))
+        data["spot_id"] = sid
+        data["entries"] = entries
+        reports[sid] = data
+    return reports
+
+
+def validate_report_entry(entry: dict[str, Any], *, spot_id: str = "") -> list[str]:
+    """Validate one spot report entry against primary-source fact-checking rules."""
+    errors: list[str] = []
+    prefix = f"[{spot_id}] " if spot_id else ""
+    if not isinstance(entry, dict):
+        return [f"{prefix}entry must be a JSON object"]
+
+    if not str(entry.get("headline") or "").strip():
+        errors.append(f"{prefix}headline must be a non-empty string")
+
+    discoveries = entry.get("discoveries")
+    if not isinstance(discoveries, list) or not [d for d in discoveries if isinstance(d, str) and d.strip()]:
+        errors.append(f"{prefix}discoveries must be a non-empty list of strings")
+
+    op_status = str(entry.get("operating_status") or "").strip()
+    if op_status and op_status not in VALID_OPERATING_STATUSES:
+        errors.append(f"{prefix}operating_status '{op_status}' must be one of {VALID_OPERATING_STATUSES}")
+
+    fc = entry.get("fact_check")
+    if not isinstance(fc, dict):
+        errors.append(f"{prefix}fact_check object is required")
+    else:
+        if fc.get("status") != "verified_primary":
+            errors.append(f"{prefix}fact_check.status must equal 'verified_primary'")
+        if not str(fc.get("checked_at") or "").strip():
+            errors.append(f"{prefix}fact_check.checked_at must be non-empty")
+
+    sources = entry.get("primary_sources")
+    if not isinstance(sources, list) or not sources:
+        errors.append(f"{prefix}primary_sources must be a non-empty list")
+    else:
+        for idx, src in enumerate(sources):
+            if not isinstance(src, dict):
+                errors.append(f"{prefix}primary_sources[{idx}] must be an object")
+                continue
+            title = str(src.get("title") or "").strip()
+            url = str(src.get("url") or "").strip()
+            if not title:
+                errors.append(f"{prefix}primary_sources[{idx}].title must be non-empty")
+            if not (url.startswith("http://") or url.startswith("https://")):
+                errors.append(f"{prefix}primary_sources[{idx}].url must start with http:// or https://")
+                continue
+            host = urlparse(url).netloc.lower().split(":")[0]
+            if not host:
+                errors.append(f"{prefix}primary_sources[{idx}].url has empty host")
+                continue
+            for blocked in LOW_TRUST_DOMAIN_BLOCKLIST:
+                if host == blocked or host.endswith("." + blocked):
+                    errors.append(
+                        f"{prefix}primary_sources[{idx}].url domain '{host}' is in LOW_TRUST_DOMAIN_BLOCKLIST"
+                    )
+
+    return errors
+
+
+_OPERATING_STATUS_JA: dict[str, str] = {
+    "open": "営業・公開中",
+    "seasonal": "季節営業・開園",
+    "limited": "事前予約・限定公開",
+    "renovation": "改修・リニューアル予定/中",
+    "closed": "閉業・閉鎖確認済",
+}
+
+
+def format_spot_reports_context(
+    spot_ids: list[str],
+    reports_map: dict[str, dict[str, Any]],
+    spots_cfg: dict[str, Any] | None = None,
+    *,
+    max_entries_per_spot: int = 3,
+) -> str:
+    """Format accumulated verified spot dossiers for the requested spot_ids."""
+    if not spot_ids or not reports_map:
+        return ""
+    spots_by_id = {
+        str(s["id"]): s
+        for s in ((spots_cfg or {}).get("spots") or [])
+        if isinstance(s, dict) and s.get("id")
+    }
+    seen: set[str] = set()
+    blocks: list[str] = []
+    for raw_sid in spot_ids:
+        sid = str(raw_sid or "").strip()
+        if not sid or sid in seen:
+            continue
+        seen.add(sid)
+        dossier = reports_map.get(sid)
+        if not isinstance(dossier, dict):
+            continue
+        entries = [e for e in (dossier.get("entries") or []) if isinstance(e, dict)]
+        sp_meta = spots_by_id.get(sid) or {}
+        name = str(dossier.get("spot_name") or sp_meta.get("name") or sid)
+        op_code = str(dossier.get("operating_status") or "open")
+        op_ja = _OPERATING_STATUS_JA.get(op_code, op_code)
+        op_note = str(dossier.get("operating_status_note") or "").strip()
+        official_urls = [str(u) for u in (dossier.get("official_urls") or []) if str(u).strip()]
+
+        lines = [
+            f"### 📂 {name}（ID: `{sid}`｜蓄積取材 {len(entries)}件｜一次確認状況: {op_ja}"
+            + (f" — {op_note}" if op_note else "")
+            + "）"
+        ]
+        if official_urls:
+            lines.append(f"- **公式一次URL**: {' / '.join(official_urls)}")
+        highlights = [str(x) for x in (dossier.get("curated_highlights") or []) if str(x).strip()]
+        if highlights:
+            lines.append(f"- **深掘り見どころ**: {' ／ '.join(highlights)}")
+        angles = [str(x) for x in (dossier.get("story_angles") or []) if str(x).strip()]
+        if angles:
+            lines.append(f"- **放送切り口メモ**: {' ／ '.join(angles)}")
+        sfp = dossier.get("special_feature_potential")
+        if isinstance(sfp, dict) and (sfp.get("ready") or sfp.get("theme_idea")):
+            ready_lbl = "特集化OK" if sfp.get("ready") else "特集の種"
+            theme = str(sfp.get("theme_idea") or "").strip()
+            reason = str(sfp.get("reason") or "").strip()
+            lines.append(f"- **長期特集ポテンシャル（{ready_lbl}）**: {theme}" + (f"（理由: {reason}）" if reason else ""))
+
+        for e in reversed(entries[-max_entries_per_spot:]):
+            rdate = str(e.get("researched_at") or e.get("date") or "")
+            hl = str(e.get("headline") or "").strip()
+            lines.append(f"- **[{rdate}] {hl}**")
+            for d in (e.get("discoveries") or []):
+                if str(d).strip():
+                    lines.append(f"  - 発見: {str(d).strip()}")
+            if e.get("seasonal_note"):
+                lines.append(f"  - 季節メモ: {str(e['seasonal_note']).strip()}")
+            if e.get("disaster_tie_in"):
+                lines.append(f"  - 防災・備え接続: {str(e['disaster_tie_in']).strip()}")
+            excluded = [str(x).strip() for x in (e.get("excluded_unverified_claims") or []) if str(x).strip()]
+            if excluded:
+                lines.append(f"  - ※未確認・否定事項（放送禁止）: {' / '.join(excluded)}")
+            srcs = [
+                f"{str(s.get('title') or '').strip()} ({str(s.get('url') or '').strip()})"
+                for s in (e.get("primary_sources") or [])
+                if isinstance(s, dict) and str(s.get("url") or "").strip()
+            ]
+            if srcs:
+                lines.append(f"  - 一次ソース: {' ｜ '.join(srcs)}")
+        blocks.append("\n".join(lines))
+    return "\n\n".join(blocks)
+
+
+def find_longitudinal_special_candidates(
+    spots_cfg: dict[str, Any],
+    reports_map: dict[str, dict[str, Any]],
+    *,
+    min_entries: int = 2,
+) -> list[dict[str, Any]]:
+    """Identify spots whose accumulated dossiers support a deep-dive special episode."""
+    spots_by_id = {
+        str(s["id"]): s
+        for s in (spots_cfg.get("spots") or [])
+        if isinstance(s, dict) and s.get("id")
+    }
+    cat_labels = {
+        str(c["id"]): str(c.get("label") or c["id"])
+        for c in (spots_cfg.get("categories") or [])
+        if isinstance(c, dict) and c.get("id")
+    }
+    results: list[dict[str, Any]] = []
+    for sid, dossier in reports_map.items():
+        if not isinstance(dossier, dict):
+            continue
+        entries = [e for e in (dossier.get("entries") or []) if isinstance(e, dict)]
+        sfp = dossier.get("special_feature_potential") if isinstance(dossier.get("special_feature_potential"), dict) else {}
+        ready = bool(sfp.get("ready"))
+        if not ready and len(entries) < min_entries:
+            continue
+        sp = spots_by_id.get(sid) or {}
+        cid = str(dossier.get("category") or sp.get("category") or "")
+        latest = entries[-1] if entries else {}
+        results.append(
+            {
+                "spot_id": sid,
+                "spot_name": str(dossier.get("spot_name") or sp.get("name") or sid),
+                "category": cid,
+                "category_label": cat_labels.get(cid, cid),
+                "entry_count": len(entries),
+                "ready": ready,
+                "theme_idea": str(sfp.get("theme_idea") or "").strip(),
+                "reason": str(sfp.get("reason") or "").strip(),
+                "latest_headline": str(latest.get("headline") or "").strip(),
+                "operating_status": str(dossier.get("operating_status") or "open"),
+                "last_researched_at": str(dossier.get("last_researched_at") or latest.get("researched_at") or ""),
+            }
+        )
+    results.sort(key=lambda item: (not item["ready"], -item["entry_count"], item["spot_name"]))
+    return results
+
+
 def render_spots_catalog_markdown(
     spots_cfg: dict[str, Any],
     usage_map: dict[str, dict[str, Any]],
     today_jst_str: str,
+    reports_map: dict[str, dict[str, Any]] | None = None,
 ) -> str:
     """Render browsable Markdown catalog of all researched Kodaira spots by category."""
     cats = spots_cfg.get("categories") or []
     spots = [s for s in (spots_cfg.get("spots") or []) if isinstance(s, dict) and s.get("id")]
+    reports = reports_map if reports_map is not None else load_spot_reports()
 
     counts = {
         "total": len(spots),
@@ -548,20 +785,26 @@ def render_spots_catalog_markdown(
             or (usage_map.get(str(s["id"])) or {}).get("hint_dates")
         ),
         "aired": sum(1 for s in spots if (usage_map.get(str(s["id"])) or {}).get("aired_count", 0) > 0),
+        "reported_spots": sum(1 for s in spots if (reports.get(str(s["id"])) or {}).get("entries")),
+        "report_entries": sum(len((reports.get(str(s["id"])) or {}).get("entries") or []) for s in spots),
     }
 
     lines = [
-        "# 小平市スポット題材ネタ帳（16ジャンル網羅・重複防止マスタ）",
+        f"# 小平市スポット題材ネタ帳（{len(cats)}ジャンル網羅・重複防止マスタ）",
         "",
-        f"> 更新基準日: {today_jst_str}（JST）／ 元データ: `config/kodaira_spots.json`（全{counts['total']}スポット・{len(cats)}ジャンル）",
+        f"> 更新基準日: {today_jst_str}（JST）／ 元データ: `config/kodaira_spots.json` + `data/spot_reports/*.json`（全{counts['total']}スポット・{len(cats)}ジャンル）",
         "",
-        "## 運用ルール（重複防止 × 鮮度優先）",
-        "- **原則90日クールダウン**: 一度紹介した小平スポットは原則として**約3か月（90日間）再登場させず**、16ジャンル・市内各エリアからバランスよく選定します。",
+        "## 運用ルール（重複防止 × 鮮度優先 × 一次ソース継続取材）",
+        f"- **原則90日クールダウン**: 一度紹介した小平スポットは原則として**約3か月（90日間）再登場させず**、{len(cats)}ジャンル・市内各エリアからバランスよく選定します。",
         "- **例外（耳よりニュース）**: 大規模リニューアル（例：おふろの王様 花小金井店 2026年12月9日リニューアルオープン）、新店オープン、開催当日の大型地域イベント（例：12月5日 ウクライナのクリスマス）等がある場合は鮮度を優先して取り上げます。",
+        "- **継続取材と一次ソース検証（取材手帳）**: 公式サイト・自治体・団体発表など一次情報のみをもとに各スポットの取材レポートを蓄積し、最新状況の把握と長期特集（深い掘り下げ）に活かします。",
         "- **週次・当日の臨機応変さ**: このネタ帳はあくまで重複防止とジャンル充実のための候補プールです。最終的な配信内容は日曜の編集長AI編成および当日の朝リサーチ・天候・最新市報に応じて柔軟に差し替えます。",
         "- **リクエスト歓迎**: 追加したいお店・公園・施設や優先取り上げ希望はいつでもお知らせください（Web版は [calendar.html#spot-catalog](calendar.html#spot-catalog) でも絞り込み閲覧できます）。",
         "",
-        f"- 集計: **総スポット数 {counts['total']}** ／ 未紹介 **{counts['unfeatured']}** ／ 予定あり **{counts['planned']}** ／ 放送済み **{counts['aired']}**",
+        (
+            f"- 集計: **総スポット数 {counts['total']}** ／ 未紹介 **{counts['unfeatured']}** ／ 予定あり **{counts['planned']}** ／ "
+            f"放送済み **{counts['aired']}** ／ 取材レポート蓄積 **{counts['reported_spots']}スポット（計{counts['report_entries']}件）**"
+        ),
         "",
     ]
 
@@ -593,6 +836,11 @@ def render_spots_catalog_markdown(
             if not badges:
                 badges.append("未紹介")
 
+            dossier = reports.get(sid)
+            entries = (dossier.get("entries") or []) if isinstance(dossier, dict) else []
+            if entries:
+                badges.append(f"取材ストック: {len(entries)}件")
+
             s_tags = "・".join(season_labels.get(x, x) for x in (sp.get("best_seasons") or ["all"]))
             angles = " ／ ".join(sp.get("disaster_angles") or [])
             lines.append(f"### {sp['name']} 〔{' / '.join(badges)}〕")
@@ -604,6 +852,30 @@ def render_spots_catalog_markdown(
                 lines.append(f"- **防災のつなぎ方例**: {angles}")
             if sp.get("verify_note"):
                 lines.append(f"- **確認メモ**: {sp['verify_note']}")
+            if entries:
+                latest = entries[-1]
+                op_code = str(dossier.get("operating_status") or "open")
+                op_ja = _OPERATING_STATUS_JA.get(op_code, op_code)
+                op_note = str(dossier.get("operating_status_note") or "").strip()
+                checked = str((latest.get("fact_check") or {}).get("checked_at") or dossier.get("last_researched_at") or "")
+                lines.append(
+                    f"- **最新取材ノート**（確認状況: {op_ja}"
+                    + (f"・{op_note}" if op_note else "")
+                    + f"｜確認日: {checked}）: **{latest.get('headline', '')}**"
+                )
+                for disc in (latest.get("discoveries") or [])[:3]:
+                    if str(disc).strip():
+                        lines.append(f"  - {str(disc).strip()}")
+                srcs = [
+                    f"[{str(s.get('title') or '一次情報').strip()}]({str(s.get('url') or '').strip()})"
+                    for s in (latest.get("primary_sources") or [])
+                    if isinstance(s, dict) and str(s.get("url") or "").strip()
+                ]
+                if srcs:
+                    lines.append(f"  - 一次ソース: {' / '.join(srcs)}")
+                sfp = dossier.get("special_feature_potential")
+                if isinstance(sfp, dict) and sfp.get("theme_idea"):
+                    lines.append(f"  - 特集案: {sfp['theme_idea']}")
             lines.append("")
 
     return "\n".join(lines).rstrip() + "\n"

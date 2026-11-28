@@ -1,0 +1,53 @@
+{
+  "spot_id": "osama_hanakoganei",
+  "spot_name": "おふろの王様 花小金井店",
+  "category": "sento_spa",
+  "last_researched_at": "2026-11-28",
+  "operating_status": "renovation",
+  "operating_status_note": "約20年ぶりの大型リニューアル（2026年12月9日水曜オープン予定／9:00〜24:00・最終入館23:00）",
+  "official_urls": [
+    "https://www.ousama2603.com/"
+  ],
+  "curated_highlights": [
+    "無料新設ラウンジ『The Woodland Lounge（帰らずの森）』（約1万冊のコミック・Wi-Fi・電源完備）",
+    "キングスサウナに天井ファン導入、男湯・オートロウリュ第2サウナ／女湯・過熱水蒸気サウナ新設"
+  ],
+  "story_angles": [
+    "12月9日の大型リニューアルオープン速報と冬の温浴・ヒートショック対策",
+    "電源・Wi-Fi設備や防寒拠点としての地域温浴施設の注目ポイント"
+  ],
+  "special_feature_potential": {
+    "ready": true,
+    "theme_idea": "おふろの王様 花小金井店 約20年ぶり大型リニューアル＆冬の温浴防災特集",
+    "reason": "2026年12月9日の大型リニューアルオープンという明確な節目があり、地域の楽しみと冬の健康防災を合わせて特集化できる。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_verified",
+      "operating_status": "renovation",
+      "headline": "約20年ぶりの大型リニューアルで2026年12月9日オープン予定（新設ラウンジ・サウナ強化）",
+      "discoveries": [
+        "所在地は東京都小平市花小金井南町3-9-10、営業時間9:00〜24:00（最終入館23:00）。",
+        "開業以来約20年目で初となる大型リニューアルオープンを2026年12月9日（水）に予定。",
+        "無料新設ラウンジ『The Woodland Lounge（帰らずの森）』では約1万冊のコミックに加えWi-Fi・電源を整備予定。",
+        "キングスサウナの天井ファン導入や、男湯のオートロウリュ第2サウナ・女湯の過熱水蒸気サウナ新設が予定されている。"
+      ],
+      "seasonal_note": "12月上旬のオープンに合わせた冬のおでかけ注目スポット。",
+      "disaster_tie_in": "冬の温活とヒートショック予防、入浴前後の水分補給を啓発できる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "運営公式情報・一次リリース照合",
+        "notes": "公式案内およびプレスリリース一次情報にて12月9日リニューアル概要・設備・営業時間を照合。"
+      },
+      "primary_sources": [
+        {
+          "title": "おふろの王様 公式ホームページ",
+          "url": "https://www.ousama2603.com/"
+        }
+      ]
+    }
+  ]
+}

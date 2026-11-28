@@ -21,7 +21,9 @@ from kodaira_spots import (
     compute_spot_usage,
     format_spot_candidates_block,
     format_spot_cooldown_block,
+    format_spot_reports_context,
     load_kodaira_spots,
+    load_spot_reports,
     match_spots_in_text,
     select_balanced_spot_candidates,
 )
@@ -303,10 +305,53 @@ def build_dedup_context(
         reference_date=target_dt,
         exclude_date_range=(target_date_str, target_date_str),
     )
+    reports_map = load_spot_reports()
     cooldown_count = sum(1 for u in usage_map.values() if u.get("in_cooldown"))
     spot_cooldown_text = format_spot_cooldown_block(spots_data, usage_map, target_dt)
     fresh_spots = select_balanced_spot_candidates(spots_data, usage_map, target_dt, count=8)
-    spot_candidates_text = format_spot_candidates_block(spots_data, fresh_spots)
+    spot_candidates_text = format_spot_candidates_block(
+        spots_data,
+        fresh_spots,
+        reports_map=reports_map,
+    )
+
+    sched_text_parts: list[str] = []
+    ps = day_plan.get("program_schedule") or {}
+    if isinstance(ps, dict):
+        sched_text_parts.extend(
+            [
+                str(ps.get("kodaira_hint") or ""),
+                str(ps.get("special_request") or ""),
+                " ".join(str(x) for x in (ps.get("expert_topics") or [])),
+            ]
+        )
+    eg = day_plan.get("editorial_guide") or {}
+    if isinstance(eg, dict):
+        ed_sp = eg.get("editorial_special") if isinstance(eg.get("editorial_special"), dict) else {}
+        sched_text_parts.extend(
+            [
+                str(eg.get("focus_area") or ""),
+                str(eg.get("kodaira_angle") or ""),
+                " ".join(str(x) for x in (eg.get("search_hints") or [])),
+                str(ed_sp.get("title") or ""),
+                str(ed_sp.get("theme_focus") or ""),
+            ]
+        )
+    scheduled_spot_ids = match_spots_in_text("\n".join(sched_text_parts), spots_data)
+    for explicit_sid in (eg.get("spot_ids") or []) if isinstance(eg, dict) else []:
+        if explicit_sid and explicit_sid not in scheduled_spot_ids:
+            scheduled_spot_ids.append(explicit_sid)
+    dossier_target_ids = list(scheduled_spot_ids)
+    for sp in fresh_spots:
+        sid = str(sp.get("id") or "")
+        if sid and sid not in dossier_target_ids and (reports_map.get(sid) or {}).get("entries"):
+            dossier_target_ids.append(sid)
+        if len(dossier_target_ids) >= len(scheduled_spot_ids) + 2:
+            break
+    matched_dossier_ids = [
+        sid for sid in dossier_target_ids if (reports_map.get(sid) or {}).get("entries")
+    ]
+    spot_reports_context = format_spot_reports_context(dossier_target_ids, reports_map, spots_data)
 
     return {
         "recent_local_count": recent_topic_count,
@@ -318,6 +363,9 @@ def build_dedup_context(
         "spot_cooldown_count": cooldown_count,
         "spot_cooldown_text": spot_cooldown_text,
         "spot_candidates_text": spot_candidates_text,
+        "spot_reports_context": spot_reports_context,
+        "matched_dossier_spot_ids": matched_dossier_ids,
+        "total_dossier_spots": sum(1 for r in reports_map.values() if r.get("entries")),
         "expert_covered_keywords": covered_keywords,
         "expert_history_text": (
             "\n".join(expert_lines)
@@ -438,6 +486,10 @@ def build_research_prompt(
 {dedup.get('spot_candidates_text', '（なし）')}
 ※上記ネタ帳に加え、当日の最新地域ニュース・天候・旬の話題があれば臨機応変に取り入れてください。
 
+【事前取材ストック（一次ソース検証済みの注目スポット詳細メモ）】
+{dedup.get('spot_reports_context') or '（対象スポットの蓄積取材レポートはまだありません）'}
+※上記レポートは過去の継続取材で確認された一次情報です。本日の営業・開催状況の最新確認と合わせて活用してください。
+
 【重複禁止②：この専門家（{guest['name']}）が過去3か月（90日）間に解説済みの専門用語・テーマ】
 既出キーワード: {covered_kws_str}
 {dedup['expert_history_text']}
@@ -549,6 +601,9 @@ def build_script_prompt(
   既出: {covered_kws_str}
 {dedup['expert_history_text']}
 ※ 連続成長として一言振り返るのは良いですが、本日のメイン話題や解説用語には**必ず上記と重ならない新しい内容**を選んでください。
+
+### ★ 事前取材ストック（一次ソース確認済の深掘り資料・引用根拠）
+{dedup.get('spot_reports_context') or '（該当スポットの蓄積取材レポートなし）'}
 
 ## 4. 連続成長・過去の学び（自然な流れで振り返りや成長を取り入れる）
 {recent_logs}
@@ -1425,9 +1480,10 @@ def main() -> None:
         print(f"Editorial Guide : {eg_desc}")
         print(f"Dedup {RECENT_LOCAL_DEDUP_DAYS}d Local : {dedup_ctx['recent_local_count']} recent topic(s)")
         print(f"Dedup {SPOT_COOLDOWN_DAYS}d Spots : {dedup_ctx.get('spot_cooldown_count', 0)} spot(s) in cooldown")
+        print(f"Spot Dossiers   : {dedup_ctx.get('total_dossier_spots', 0)} stored | matched={dedup_ctx.get('matched_dossier_spot_ids') or []}")
         print(f"Dedup 90d Expert: {len(dedup_ctx['expert_covered_keywords'])} covered keyword(s) | Fresh candidates: {len(dedup_ctx['fresh_keywords'])}")
         print(f"Tomorrow Preview: {tomorrow_preview['preview_hint']}")
-        print(f"Has special_feat: {'special_feature' in sample_script_prompt}")
+        print(f"Has special_feat: {'special_feature' in sample_script_prompt} | Has spot_dossier: {bool(dedup_ctx.get('spot_reports_context'))}")
         return
 
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()

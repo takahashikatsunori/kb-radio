@@ -1,0 +1,52 @@
+{
+  "spot_id": "kaiganji_temple",
+  "spot_name": "海岸寺（茅葺き山門・市指定有形文化財）",
+  "category": "shrine_temple",
+  "last_researched_at": "2026-11-28",
+  "operating_status": "open",
+  "operating_status_note": "参拝可能（小平市御幸町318／玉川上水・小金井橋近く）",
+  "official_urls": [
+    "https://www.city.kodaira.tokyo.jp/"
+  ],
+  "curated_highlights": [
+    "山号は瑞雲山、臨済宗妙心寺派の古刹（元文元年・1736年の鈴木新田開発に伴い移転・開山）",
+    "小平市指定有形文化財に指定されている鎌倉様式の茅葺き山門"
+  ],
+  "story_angles": [
+    "玉川上水・小金井橋周辺の歴史散策と小平の新田開発物語",
+    "市指定文化財である茅葺き建築の火災予防・保存と地域の防火意識"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "小平の社寺と新田開発・文化財防災ウォーク",
+    "reason": "小平神明宮や小川寺など神社・仏閣ジャンルの取材蓄積と合わせて文化財防災特集に発展可能。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_verified",
+      "operating_status": "open",
+      "headline": "元文元年（1736年）鈴木新田開発と関わる瑞雲山 海岸寺・市指定有形文化財の茅葺き山門を確認",
+      "discoveries": [
+        "所在地は東京都小平市御幸町318（玉川上水・小金井橋付近）。",
+        "臨済宗妙心寺派の寺院（山号：瑞雲山）で、元文元年（1736年）の鈴木新田開発に伴い移転・開山された歴史を持つ。",
+        "鎌倉様式の茅葺き山門は小平市指定有形文化財に指定されている。"
+      ],
+      "seasonal_note": "晩秋〜初冬の玉川上水・小金井橋周辺の歴史散歩スポットとして見どころが多い。",
+      "disaster_tie_in": "冬の乾燥期の火災予防と、貴重な木造・茅葺き文化財を地域全体で火災から守る大切さを伝える話題に好適。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "小平市公式ホームページ 文化財・歴史案内照合",
+        "notes": "所在地（御幸町318）・宗派/山号・元文元年（1736年）移転開山・市指定有形文化財（鎌倉様式茅葺き山門）を確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "小平市 公式ホームページ",
+          "url": "https://www.city.kodaira.tokyo.jp/"
+        }
+      ]
+    }
+  ]
+}

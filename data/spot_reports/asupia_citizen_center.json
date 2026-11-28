@@ -1,0 +1,52 @@
+{
+  "spot_id": "asupia_citizen_center",
+  "spot_name": "小平市民活動支援センター「あすぴあ」＆ 市民活動団体",
+  "category": "community_circle",
+  "last_researched_at": "2026-11-28",
+  "operating_status": "open",
+  "operating_status_note": "2026年11月1日に小川パレット4F・5Fへ移転開館（窓口9:00〜17:00／施設9:00〜22:00）",
+  "official_urls": [
+    "https://kodaira-shiminkatsudo-ctr.jp/"
+  ],
+  "curated_highlights": [
+    "小川駅西口徒歩1分・小川パレット4F・5Fへ2026年11月1日移転オープン",
+    "小平市内のNPO・ボランティア・コミュニティサークル活動を支える相談と交流の中核拠点"
+  ],
+  "story_angles": [
+    "普段からの地域サークル・ボランティア交流が災害時の共助ネットワークに直結する大切さ",
+    "小川駅西口・小川パレット新施設のアクセス向上とバリアフリー情報"
+  ],
+  "special_feature_potential": {
+    "ready": true,
+    "theme_idea": "小川パレット移転記念！『あすぴあ』と小平のコミュニティサークル共助特集",
+    "reason": "2026年11月1日の移転オープンという最新性に加え、新ジャンル『コミュニティサークル』との連動特集に最適。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_verified",
+      "operating_status": "open",
+      "headline": "2026年11月1日に小川駅西口『小川パレット』4F・5Fへ移転オープン",
+      "discoveries": [
+        "2026年11月1日より『〒187-0035 東京都小平市小川西町4-16-1 小川パレット4F・5F』（小川駅西口徒歩1分）へ移転オープン。",
+        "あすぴあ窓口の対応時間は9:00〜17:00、小川パレットは9:00〜22:00（休館日は第3木曜日および12月28日〜1月4日）。",
+        "連絡先は電話 042-348-2104／FAX 042-348-2115／メール info@kodaira-shiminkatsudo-ctr.jp。"
+      ],
+      "seasonal_note": "移転直後の11月〜12月にかけて市民団体向けの新拠点案内・利用が進むタイミング。",
+      "disaster_tie_in": "地域団体・ボランティア同士の平時からの顔の見えるつながりが、発災時の地域共助・支援コーディネートを支える。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "小平市民活動支援センター あすぴあ 公式HP照合",
+        "notes": "公式HP掲載の移転日・小川パレット住所・電話番号・開館時間・休館日を一次確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "小平市民活動支援センター あすぴあ 公式ホームページ",
+          "url": "https://kodaira-shiminkatsudo-ctr.jp/"
+        }
+      ]
+    }
+  ]
+}

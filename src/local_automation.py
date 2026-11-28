@@ -40,9 +40,11 @@ from kodaira_spots import (
     SPOT_COOLDOWN_DAYS,
     audit_plan_spot_overlaps,
     compute_spot_usage,
+    find_longitudinal_special_candidates,
     format_spot_candidates_block,
     format_spot_cooldown_block,
     load_kodaira_spots,
+    load_spot_reports,
     match_spots_in_text,
     select_balanced_spot_candidates,
 )
@@ -211,6 +213,9 @@ def _build_local_daily_prompt_md(
 
 ### ② 未紹介・季節適合スポット候補（当日の鮮度・最新ニュースに応じて臨機応変に差し替え可）
 {dedup_ctx.get('spot_candidates_text', '（なし）')}
+
+### ②-B 事前取材ストック（一次ソース確認済みの注目スポット詳細メモ）
+{dedup_ctx.get('spot_reports_context') or '（該当スポットの蓄積取材レポートなし）'}
 
 ### ③ {guest['name']} 過去{EXPERT_HISTORY_DAYS}日間の既出キーワード
 既出: {', '.join(dedup_ctx['expert_covered_keywords']) or 'なし'}
@@ -806,7 +811,7 @@ def _build_weekly_banner_guide_md(
 ## Photo-Anchored 5-Rule 3-Pattern Banner Protocol（必ず全5ルールを実行）
 
 ### Rule 1: 実在スポット3か所の調査と選定（A・B・C）
-- 今週のテーマと季節に合う **東京都小平市内の実在スポットを3パターン（A・B・C）** 選ぶ（`config/kodaira_spots.json` の16ジャンルを参照し、駅・公園・社寺・博物館/植物園・工場/企業・商店会・カフェ・緑道・農業スポット等をバランスよく、直近バナーと非重複に選定）。
+- 今週のテーマと季節に合う **東京都小平市内の実在スポットを3パターン（A・B・C）** 選ぶ（`config/kodaira_spots.json` の全21ジャンル（神社・仏閣、果樹園・農園、コミュニティサークル、浄水・給水、発電・変電等を含む）を参照し、駅・公園・社寺・博物館/植物園・工場/企業・商店会・カフェ・緑道・農業スポット等をバランスよく、直近バナーと非重複に選定）。
 - `search_web` で各スポットの **{start_str}〜{end_str} 期間中の実際の開館・開園状況、建造物の実寸サイズ感、周辺景観** を必ず裏取りする（例：休館中・工事中の施設ににぎわう観客を描かない、高さ約2.8mの丸ポストを小柄な高さに縮めない等）。
 
 ### Rule 2: 実写写真（Wide + Detail）の取得と目視確認
@@ -1446,6 +1451,7 @@ def cmd_prepare_weekly(args: argparse.Namespace) -> None:
     topic_history_data = _load_optional_json(DATA_DIR / "topic_history.json", {"entries": []})
     topic_entries = topic_history_data.get("entries", [])
     spots_cfg = load_kodaira_spots()
+    reports_map = load_spot_reports()
     usage_map = compute_spot_usage(
         spots_cfg,
         topic_entries,
@@ -1460,7 +1466,17 @@ def cmd_prepare_weekly(args: argparse.Namespace) -> None:
         count=20,
     )
     spot_cooldown_text = format_spot_cooldown_block(spots_cfg, usage_map, start_dt)
-    spot_candidates_text = format_spot_candidates_block(spots_cfg, recommended_fresh_spots)
+    spot_candidates_text = format_spot_candidates_block(
+        spots_cfg,
+        recommended_fresh_spots,
+        reports_map=reports_map,
+    )
+    longitudinal_specials = find_longitudinal_special_candidates(
+        spots_cfg,
+        reports_map,
+        min_entries=2,
+    )
+    cat_count = len(spots_cfg.get("categories") or [])
 
     skeleton = _build_week_skeleton(
         start_dt,
@@ -1482,6 +1498,7 @@ def cmd_prepare_weekly(args: argparse.Namespace) -> None:
         "recent_history_text": recent_history,
         "spot_cooldown_text": spot_cooldown_text,
         "spot_candidates_text": spot_candidates_text,
+        "longitudinal_special_candidates": longitudinal_specials,
         "recommended_fresh_spots": [
             {
                 "id": s["id"],
@@ -1494,6 +1511,7 @@ def cmd_prepare_weekly(args: argparse.Namespace) -> None:
                 "best_seasons": s.get("best_seasons", []),
                 "disaster_angles": s.get("disaster_angles", []),
                 "user_request_priority": bool(s.get("user_request_priority")),
+                "dossier_entry_count": len((reports_map.get(str(s["id"])) or {}).get("entries") or []),
             }
             for s in recommended_fresh_spots
         ],
@@ -1501,7 +1519,7 @@ def cmd_prepare_weekly(args: argparse.Namespace) -> None:
             "cooldown_days": SPOT_COOLDOWN_DAYS,
             "allow_exception_for_major_renewal_or_timely_event": True,
             "preserve_freshness": True,
-            "note": "原則90日クールダウンを守り16ジャンルから多様に選ぶ。大規模リニューアル・新装開店・開催当日の大型イベントは例外可。鮮度を優先し最新ローカルニュースが出たら柔軟に差し替え可。",
+            "note": f"原則90日クールダウンを守り{cat_count}ジャンルから多様に選ぶ。大規模リニューアル・新装開店・開催当日の大型イベントは例外可。鮮度を優先し最新ローカルニュースが出たら柔軟に差し替え可。",
         },
         "season_context": _describe_season_context(start_dt, end_dt),
         "rules": {

@@ -1,0 +1,52 @@
+{
+  "spot_id": "kodaira_kanshisyo",
+  "spot_name": "東京都水道局 小平監視所（小平市西端すぐ隣・立川市幸町）",
+  "category": "water_facility",
+  "last_researched_at": "2026-11-28",
+  "operating_status": "limited",
+  "operating_status_note": "東京都水道局管理の取水・監視施設（構内一般非公開・周辺玉川上水緑道から概観見学可）",
+  "official_urls": [
+    "https://www.waterworks.metro.tokyo.lg.jp/"
+  ],
+  "curated_highlights": [
+    "玉川上水の水を沈砂池・除塵機で処理し地下の砂川線導水管経由で東村山浄水場へ送る要衝",
+    "野火止用水の分岐点かつ下流・再生水による清流復活区間の起点（所在地は市境の立川市幸町6丁目）"
+  ],
+  "story_angles": [
+    "身近な玉川上水と東村山浄水場・水道インフラのつながり",
+    "断水対策としての飲料水ローリングストックと応急給水拠点の把握"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "小平の命の水インフラ特集（小平監視所〜東村山浄水場〜応急給水拠点）",
+    "reason": "浄水・給水施設ジャンルの追加取材と組み合わせることで小平の水道防災特集に発展可能。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_verified",
+      "operating_status": "limited",
+      "headline": "玉川上水〜東村山浄水場導水と野火止用水・清流復活起点の役割（市境の立川市幸町6丁目所在）を一次確認",
+      "discoveries": [
+        "東京都水道局（東村山浄水管理事務所管轄）の施設であり、物理的所在地は小平市境に隣接する東京都立川市幸町6丁目。",
+        "沈砂池と除塵機で玉川上水の水からゴミや砂を取り除き、地下の砂川線導水管を通じて東村山浄水場へ送水する。",
+        "野火止用水の分岐点であると同時に、下流側の下水再生水を用いた玉川上水清流復活区間の起点となっている。"
+      ],
+      "seasonal_note": "晩秋〜冬は玉川上水沿いの見通しが良く用水分岐地形を観察しやすい散歩季節。",
+      "disaster_tie_in": "上水道システムへの理解を入り口に、家庭での飲料水備蓄（1人1日3L×最低3日分〜1週間目安）や給水拠点確認を案内できる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "東京都水道局公式情報照合",
+        "notes": "所在地自治体（立川市幸町6丁目）・取水導水ルート（砂川線〜東村山浄水場）・野火止用水分岐の一次事実を確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "東京都水道局 公式ホームページ",
+          "url": "https://www.waterworks.metro.tokyo.lg.jp/"
+        }
+      ]
+    }
+  ]
+}

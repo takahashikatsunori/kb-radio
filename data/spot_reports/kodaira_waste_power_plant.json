@@ -1,0 +1,52 @@
+{
+  "spot_id": "kodaira_waste_power_plant",
+  "spot_name": "小平・村山・大和衛生組合 ごみ焼却施設発電所（ごみ発電）",
+  "category": "power_energy",
+  "last_researched_at": "2026-11-28",
+  "operating_status": "open",
+  "operating_status_note": "通常稼働中（小平・村山・大和衛生組合／小平市中島町2-1）",
+  "official_urls": [
+    "https://www.kmy-eiseikumiai.jp/"
+  ],
+  "curated_highlights": [
+    "最大出力6,000kWの蒸気タービン発電機でごみ焼却熱から発電",
+    "余剰電力を小平市・東大和市・武蔵村山市の市役所・小中学校へ自己託送し、余熱で隣接『こもれびの足湯』を加温"
+  ],
+  "story_angles": [
+    "地域の廃棄物エネルギー活用と自己託送による3市公共施設への電力供給",
+    "分別の徹底（リチウムイオン電池等の混入防止）が施設火災を防ぐ減災行動になる話"
+  ],
+  "special_feature_potential": {
+    "ready": true,
+    "theme_idea": "最大6,000kW発電＆3市小中学校へ自己託送！衛生組合のエネルギー循環と分別防災特集",
+    "reason": "発電出力・自己託送・こもれびの足湯への余熱活用まで一次根拠が明確で、新規ジャンル『発電・変電施設』を代表する独立特集テーマになる。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_verified",
+      "operating_status": "open",
+      "headline": "最大出力6,000kW発電と小平・東大和・武蔵村山の市役所・小中学校への自己託送を確認",
+      "discoveries": [
+        "小平・村山・大和衛生組合（小平市中島町2-1）の焼却余熱を活用し、最大出力6,000kWの蒸気タービン発電機を運用している。",
+        "施設内利用後の余剰電力は、自己託送により構成3市（小平市・東大和市・武蔵村山市）の市役所および市立小・中学校へ供給されている。",
+        "焼却余熱は地下水の加温にも活用され、隣接する無料温浴施設『こもれびの足湯』の温水供給源となっている。"
+      ],
+      "seasonal_note": "冬の暖房シーズンや年末の大掃除シーズンに合わせ、ごみ分別とエネルギー循環の両面から紹介しやすい。",
+      "disaster_tie_in": "ごみの適正分別（特に充電池・スプレー缶の火災防止）と、地域インフラとしての廃棄物処理・発電設備の役割を学べる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "小平・村山・大和衛生組合 公式HP照合",
+        "notes": "所在地・最大出力6,000kW・自己託送対象・足湯余熱利用を組合公式ページ情報で一次確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "小平・村山・大和衛生組合 公式ホームページ",
+          "url": "https://www.kmy-eiseikumiai.jp/"
+        }
+      ]
+    }
+  ]
+}
