@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import html as html_lib
+from html.parser import HTMLParser
 import json
 import os
 import re
@@ -13,7 +14,7 @@ import sys
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
-from urllib.parse import quote, unquote, urlencode, urlsplit, urlunsplit
+from urllib.parse import quote, unquote, urlencode, urljoin, urlsplit, urlunsplit
 import urllib.request
 
 from build_site import ROOT_DIR as _SITE_ROOT  # noqa: F401
@@ -72,8 +73,10 @@ CACHE_DIR = ROOT_DIR / ".cache"
 DOCS_AUDIO_DIR = ROOT_DIR / "docs" / "audio"
 WEEKLY_BANNERS_PATH = DATA_DIR / "weekly_banners.json"
 DOCS_WEEKLY_DIR = ROOT_DIR / "docs" / "assets" / "weekly"
+DOCS_SPOTS_ASSETS_DIR = ROOT_DIR / "docs" / "assets" / "spots"
 CAST_REF_SHEET_PATH = ROOT_DIR / "docs" / "assets" / "hero_cast_banner.jpg"
 WEEKLY_BANNER_CACHE_DIR = CACHE_DIR / "weekly_banners"
+SPOT_REFS_CACHE_DIR = CACHE_DIR / "spot_refs"
 WIKIMEDIA_USER_AGENT = (
     "KodairaBousaiRadioBannerBot/1.0 "
     "(https://takahashikatsunori.github.io/kb-radio/; local editorial research)"
@@ -951,21 +954,8 @@ def _guess_image_ext(url: str, content_type: str = "") -> str:
     return ".jpg"
 
 
-def cmd_fetch_banner_refs(args: argparse.Namespace) -> None:
-    week_start = str(args.week_start or "").strip()
-    datetime.strptime(week_start, "%Y-%m-%d")
-
-    searches = [str(s).strip() for s in (args.commons_search or []) if str(s).strip()]
-    downloads = [str(d).strip() for d in (args.download or []) if str(d).strip()]
-    if not searches and not downloads:
-        raise ValueError("Provide at least one --commons-search QUERY or --download LABEL=URL_OR_FILE.")
-
-    output: dict[str, Any] = {
-        "week_start": week_start,
-        "commons_results": {},
-        "downloaded": [],
-    }
-
+def _search_commons_queries(searches: list[str]) -> dict[str, list[dict[str, Any]]]:
+    results: dict[str, list[dict[str, Any]]] = {}
     for query in searches:
         data = _commons_api_json(
             {
@@ -1004,39 +994,242 @@ def cmd_fetch_banner_refs(args: argparse.Namespace) -> None:
                     "license": _strip_html_text((meta.get("LicenseShortName") or {}).get("value", ""), limit=80),
                 }
             )
-        output["commons_results"][query] = rows
+        results[query] = rows
+    return results
 
-    if downloads:
-        refs_dir = WEEKLY_BANNER_CACHE_DIR / week_start / "refs"
-        refs_dir.mkdir(parents=True, exist_ok=True)
-        for spec in downloads:
-            if "=" not in spec:
-                raise ValueError(f"Invalid --download format (expected label=url_or_file): {spec}")
-            raw_label, raw_target = spec.split("=", 1)
-            safe_label = re.sub(r"[^A-Za-z0-9_-]+", "_", raw_label.strip()).strip("_") or "ref"
-            dl_url = _resolve_download_url(raw_target)
-            req = urllib.request.Request(dl_url, headers={"User-Agent": WIKIMEDIA_USER_AGENT})
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                ct = resp.headers.get("Content-Type", "")
-                raw_bytes = resp.read()
-            ext = _guess_image_ext(dl_url, ct)
-            dest = refs_dir / f"{safe_label}{ext}"
-            dest.write_bytes(raw_bytes)
-            dims = read_image_dimensions(dest)
-            if not dims:
-                dest.unlink(missing_ok=True)
-                raise ValueError(f"Downloaded file is not a valid PNG/JPEG/WebP image: {dl_url}")
-            output["downloaded"].append(
-                {
-                    "label": raw_label.strip(),
-                    "saved_path": str(dest),
-                    "width": dims[0],
-                    "height": dims[1],
-                    "source_url": dl_url,
-                }
-            )
 
+def _download_image_specs(downloads: list[str], dest_dir: Path) -> list[dict[str, Any]]:
+    downloaded: list[dict[str, Any]] = []
+    if not downloads:
+        return downloaded
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    for spec in downloads:
+        if "=" not in spec:
+            raise ValueError(f"Invalid --download format (expected label=url_or_file): {spec}")
+        raw_label, raw_target = spec.split("=", 1)
+        safe_label = re.sub(r"[^A-Za-z0-9_-]+", "_", raw_label.strip()).strip("_") or "ref"
+        dl_url = _resolve_download_url(raw_target)
+        req = urllib.request.Request(dl_url, headers={"User-Agent": WIKIMEDIA_USER_AGENT})
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            ct = resp.headers.get("Content-Type", "")
+            raw_bytes = resp.read()
+        ext = _guess_image_ext(dl_url, ct)
+        dest = dest_dir / f"{safe_label}{ext}"
+        dest.write_bytes(raw_bytes)
+        dims = read_image_dimensions(dest)
+        if not dims:
+            dest.unlink(missing_ok=True)
+            raise ValueError(f"Downloaded file is not a valid PNG/JPEG/WebP image: {dl_url}")
+        downloaded.append(
+            {
+                "label": raw_label.strip(),
+                "saved_path": str(dest),
+                "width": dims[0],
+                "height": dims[1],
+                "source_url": dl_url,
+            }
+        )
+    return downloaded
+
+
+class _PageImgParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.meta_images: list[tuple[str, str]] = []
+        self.img_tags: list[tuple[str, str]] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        t = tag.lower()
+        attr_map = {k.lower(): (v or "") for k, v in attrs}
+        if t == "meta":
+            prop = (attr_map.get("property") or attr_map.get("name") or "").lower()
+            if prop in ("og:image", "twitter:image", "twitter:image:src"):
+                content = attr_map.get("content", "").strip()
+                if content:
+                    self.meta_images.append((content, prop))
+        elif t == "img":
+            src = (attr_map.get("src") or attr_map.get("data-src") or "").strip()
+            alt = attr_map.get("alt", "").strip()
+            if src:
+                w = attr_map.get("width", "")
+                h = attr_map.get("height", "")
+                try:
+                    if (w and int(w) <= 40) or (h and int(h) <= 40):
+                        return
+                except ValueError:
+                    pass
+                self.img_tags.append((src, alt))
+
+
+def _extract_page_image_candidates(page_url: str, timeout: float = 15.0) -> list[dict[str, str]]:
+    import requests
+
+    resp = requests.get(
+        page_url,
+        headers={"User-Agent": WIKIMEDIA_USER_AGENT},
+        timeout=timeout,
+        allow_redirects=True,
+    )
+    resp.raise_for_status()
+    if resp.encoding is None or resp.encoding.lower() == "iso-8859-1":
+        resp.encoding = resp.apparent_encoding or "utf-8"
+    parser = _PageImgParser()
+    parser.feed(resp.text)
+    base_url = resp.url or page_url
+
+    candidates: list[dict[str, str]] = []
+    seen_urls: set[str] = set()
+    skip_tokens = ("favicon", "sprite", "spacer", "1x1", "pixel", "blank.", "icon_", "/icons/", "btn_", "arrow")
+
+    for raw_src, note in parser.meta_images + parser.img_tags:
+        if raw_src.startswith("data:"):
+            continue
+        full_url = urljoin(base_url, raw_src)
+        if not full_url.startswith(("http://", "https://")):
+            continue
+        low = full_url.lower()
+        path_only = urlsplit(low).path
+        if path_only.endswith((".svg", ".ico", ".gif")):
+            continue
+        if any(tok in low for tok in skip_tokens):
+            continue
+        if full_url in seen_urls:
+            continue
+        seen_urls.add(full_url)
+        candidates.append({"url": full_url, "alt_or_source": note[:120]})
+        if len(candidates) >= 20:
+            break
+    return candidates
+
+
+def cmd_fetch_banner_refs(args: argparse.Namespace) -> None:
+    week_start = str(args.week_start or "").strip()
+    datetime.strptime(week_start, "%Y-%m-%d")
+
+    searches = [str(s).strip() for s in (args.commons_search or []) if str(s).strip()]
+    downloads = [str(d).strip() for d in (args.download or []) if str(d).strip()]
+    if not searches and not downloads:
+        raise ValueError("Provide at least one --commons-search QUERY or --download LABEL=URL_OR_FILE.")
+
+    output: dict[str, Any] = {
+        "week_start": week_start,
+        "commons_results": _search_commons_queries(searches),
+        "downloaded": _download_image_specs(downloads, WEEKLY_BANNER_CACHE_DIR / week_start / "refs"),
+    }
     print(json.dumps(output, ensure_ascii=False, indent=2))
+
+
+def cmd_fetch_spot_refs(args: argparse.Namespace) -> None:
+    spot_id = str(args.spot_id or "").strip()
+    spots_cfg = load_kodaira_spots()
+    valid_ids = {str(s["id"]) for s in (spots_cfg.get("spots") or []) if isinstance(s, dict) and s.get("id")}
+    if spot_id not in valid_ids:
+        raise ValueError(f"Unknown spot_id '{spot_id}' not found in config/kodaira_spots.json")
+
+    searches = [str(s).strip() for s in (args.commons_search or []) if str(s).strip()]
+    page_urls = [str(u).strip() for u in (args.page_url or []) if str(u).strip()]
+    downloads = [str(d).strip() for d in (args.download or []) if str(d).strip()]
+    if not searches and not page_urls and not downloads:
+        raise ValueError("Provide at least one of --commons-search, --page-url, or --download.")
+
+    page_images: dict[str, list[dict[str, str]]] = {}
+    for purl in page_urls:
+        try:
+            page_images[purl] = _extract_page_image_candidates(purl)
+        except Exception as exc:  # noqa: BLE001
+            page_images[purl] = [{"error": str(exc)}]
+
+    output: dict[str, Any] = {
+        "spot_id": spot_id,
+        "commons_results": _search_commons_queries(searches),
+        "page_images": page_images,
+        "downloaded": _download_image_specs(downloads, SPOT_REFS_CACHE_DIR / spot_id),
+    }
+    print(json.dumps(output, ensure_ascii=False, indent=2))
+
+
+def cmd_register_spot_art(args: argparse.Namespace) -> None:
+    spot_id = str(args.spot_id or "").strip()
+    spots_cfg = load_kodaira_spots()
+    spots_by_id = {str(s["id"]): s for s in (spots_cfg.get("spots") or []) if isinstance(s, dict) and s.get("id")}
+    if spot_id not in spots_by_id:
+        raise ValueError(f"Unknown spot_id '{spot_id}' not found in config/kodaira_spots.json")
+
+    dossier_path = SPOT_REPORTS_DIR / f"{spot_id}.json"
+    if not dossier_path.is_file():
+        raise FileNotFoundError(f"Spot dossier not found for '{spot_id}': {dossier_path}")
+    dossier = _load_json(dossier_path)
+
+    src_path = _resolve_existing_path(args.image)
+    if src_path is None:
+        raise FileNotFoundError(f"Illustration source image not found: {args.image}")
+    dims = read_image_dimensions(src_path)
+    if not dims:
+        raise ValueError(f"Illustration source must be a valid PNG/JPEG/WebP image: {src_path}")
+
+    safe_art_id = re.sub(r"[^a-zA-Z0-9_-]+", "_", str(args.art_id or "").strip()).strip("_")
+    if not safe_art_id:
+        raise ValueError("Provide non-empty --art-id (e.g. hero, item_kate_udon).")
+
+    ext = src_path.suffix.lower()
+    if ext == ".jpeg":
+        ext = ".jpg"
+    if ext not in IMAGE_EXTS:
+        raise ValueError(f"Unsupported image extension: {ext}")
+
+    dest_dir = DOCS_SPOTS_ASSETS_DIR / spot_id
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    for old_ext in IMAGE_EXTS:
+        cand = dest_dir / f"{safe_art_id}{old_ext}"
+        if cand.is_file() and cand.suffix.lower() != ext:
+            cand.unlink()
+
+    dest_path = dest_dir / f"{safe_art_id}{ext}"
+    if src_path.resolve() != dest_path.resolve():
+        shutil.copy2(src_path, dest_path)
+
+    today_str = datetime.now(JST).date().isoformat()
+    art_entry = {
+        "id": safe_art_id,
+        "kind": str(args.kind or "scene").strip(),
+        "title": str(args.title or "").strip(),
+        "caption": str(args.caption or "").strip(),
+        "src": f"assets/spots/{spot_id}/{dest_path.name}",
+        "based_on": str(args.based_on or "").strip(),
+        "added_at": today_str,
+    }
+    existing_arts = [x for x in (dossier.get("illustrations") or []) if isinstance(x, dict)]
+    updated_arts: list[dict[str, Any]] = []
+    replaced = False
+    for existing in existing_arts:
+        if str(existing.get("id") or "") == safe_art_id:
+            updated_arts.append(art_entry)
+            replaced = True
+        else:
+            updated_arts.append(existing)
+    if not replaced:
+        updated_arts.append(art_entry)
+
+    dossier["illustrations"] = updated_arts
+    dossier_path.write_text(json.dumps(dossier, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(
+        f"Registered spot illustration: {spot_id}/{safe_art_id} ({dims[0]}x{dims[1]}) -> {dest_path}"
+    )
+
+    if not args.no_build:
+        _run_python_script("build_site.py", [])
+
+    if args.push:
+        add_paths = [p for p in ("data/spot_reports", "docs/") if (ROOT_DIR / p).exists()]
+        _run_git(["add", *add_paths])
+        status = _run_git(["status", "--porcelain"])
+        if status.stdout.strip():
+            _run_git(["commit", "-m", f"spots(art): add illustration {spot_id}/{safe_art_id}"])
+            _run_git(["pull", "--rebase"])
+            _run_git(["push"])
+            print("Pushed updated spot dossier, illustration, and site to origin/main.")
+        else:
+            print("No changes to commit.")
 
 
 def _load_or_init_weekly_banners() -> dict[str, Any]:
@@ -1678,6 +1871,10 @@ def _serialize_patrol_target(
             "latest_headline": str(latest.get("headline") or ""),
             "latest_discoveries": list(latest.get("discoveries") or [])[:4],
             "entry_count": len(entries),
+            "has_editorial_essay": bool((dossier.get("editorial_essay") or {}).get("paragraphs")),
+            "illustration_count": len(dossier.get("illustrations") or []),
+            "connections": list(dossier.get("connections") or []),
+            "next_research_leads": list(dossier.get("next_research_leads") or []),
         }
     return {
         "id": sid,
@@ -1711,19 +1908,24 @@ def _build_local_spot_patrol_prompt_md(
             if ex:
                 urls_str = " / ".join(ex.get("official_urls") or []) or "未登録"
                 ex_note = (
-                    f"既存レポート {ex['entry_count']}件（最終更新: {ex['last_researched_at']} / "
+                    f"既存レポート {ex['entry_count']}件 / イラスト {ex.get('illustration_count', 0)}枚（最終更新: {ex['last_researched_at']} / "
                     f"最終確認: {ex['last_checked_at']} / 状況: {ex['operating_status']}）｜"
                     f"前回見出し: 『{ex['latest_headline']}』｜公式URL: {urls_str}"
                 )
                 action_hint = "変化・新情報があれば `entry` を追加 / 変化がなければ `change_detected: false` 確認記録でOK"
             else:
                 ex_note = "既存レポートなし（初回新規作成が必要）"
-                action_hint = "初回レポートのため必ず `entry`（`headline`, `discoveries`, `fact_check`, `primary_sources`）をフル作成"
+                action_hint = "初回レポートのため必ず `entry`（`headline`, `discoveries`, `fact_check`, `primary_sources`）＋読み物用 `editorial_essay` / `connections` / `next_research_leads` を作成"
             out.append(
                 f"{idx}. **{t['name']}** (`{t['id']}`) ｜ {t['category_label']} ｜ {t['area']} ({t['address_hint']} / 最寄: {t['station']})"
             )
             out.append(f"   - 選定理由: {t['reason']} ｜ {ex_note}")
             out.append(f"   - 実施方針: {action_hint}")
+            if ex and ex.get("next_research_leads"):
+                out.append(f"   - 次期追跡リード: {' ／ '.join(ex['next_research_leads'])}")
+            if ex and ex.get("connections"):
+                conn_ids = ", ".join(f"{c.get('spot_id')}({c.get('relation')})" for c in ex["connections"][:4])
+                out.append(f"   - 関連スポット接続: {conn_ids}")
             if t.get("verify_note"):
                 out.append(f"   - 確認注意: {t['verify_note']}")
         return out
@@ -1737,6 +1939,8 @@ def _build_local_spot_patrol_prompt_md(
         "- **一次情報のみ採用**: 公式ホームページ・小平市役所公式・都水道局/警察/消防・組合公式・公式SNS/PR TIMES 等の一次発表のみを採用し、`primary_sources` に `http://` または `https://` URL を必ず記載すること。",
         f"- **低信頼ブログ等の禁止**: まとめサイト・アフィリエイト系個人ブログ（`{blocked_str}` 等）の記述だけで閉店・休業・移転・数値を断定しないこと。未確認の噂やブログ記述を見つけた場合は事実扱いせず `excluded_unverified_claims` へ分離すること。",
         "- **市境注意**: 小平監視所やNICT本部、多摩変電所など市境付近の施設は、正確な所在地自治体を混同しないこと。",
+        "- **読み物ページ・つながり拡充**: 新規スポットや深掘り更新時には、`editorial_essay`（読み物記事）、`connections`（隣接・関連スポットや歴史のつながり）、`next_research_leads`（次に追いたい話題・季節行事）を充実させること。既に `next_research_leads` が登録されているスポットでは、その追跡結果も確認する。",
+        "- **【任意・1巡回あたり最大2スポットまで】写真ベース・デフォルメイラスト生成**: イラスト未登録スポットの中から最大2件を選び、`fetch-spot-refs` で公式ページや Wikimedia Commons の実写参照画像を取得・目視確認（`read_file`）した上で `image-generator` によりスポット風景や特徴（メニュー・看板・見どころ等）のデフォルメイラストを作成し、`finalize-spot-patrol` 実行後に `register-spot-art --push` で登録できる（文字化け看板は入れないこと）。",
         "",
         f"## 本日の高頻度巡回ターゲット（{len(high_targets)}件 / 更新頻度高グループ）",
         *(_fmt_target_lines(high_targets) or ["（対象なし）"]),
@@ -1763,6 +1967,20 @@ def _build_local_spot_patrol_prompt_md(
                             "theme_idea": "複数回取材や節目に基づく長期特集タイトル案（あれば）",
                             "reason": "特集にできる理由",
                         },
+                        "editorial_essay": {
+                            "lead": "単独取材レポートページの冒頭に掲載する2〜3行の導入リード文",
+                            "paragraphs": [
+                                "スポットへの愛情が伝わる紹介・歴史や魅力の段落1",
+                                "暮らしの季節感・おすすめの過ごし方・防災の接点を描く段落2",
+                            ],
+                            "editor_note": "小春＆平蔵からの温かな取材ひとことメモ",
+                        },
+                        "connections": [
+                            {"spot_id": "<関連スポットID>", "relation": "徒歩圏／同ジャンル／歴史つながり等", "note": "どうつながるかの具体メモ"}
+                        ],
+                        "next_research_leads": [
+                            "次回巡回や次の季節に深掘り確認したい具体的な取材ネタ・イベント"
+                        ],
                         "entry": {
                             "researched_at": target_date,
                             "researcher": "local_patrol_verified",
@@ -2006,6 +2224,23 @@ def main() -> None:
     p_fsp.add_argument("--no-build", action="store_true", help="Skip build_site.py")
     p_fsp.add_argument("--push", action="store_true", help="Commit and push data/spot_reports and docs to origin/main")
 
+    p_fsr = sub.add_parser("fetch-spot-refs", help="Fetch real reference image candidates for a spot dossier illustration")
+    p_fsr.add_argument("--spot-id", required=True, help="Target spot_id from config/kodaira_spots.json")
+    p_fsr.add_argument("--commons-search", action="append", default=[], help="Wikimedia Commons search query")
+    p_fsr.add_argument("--page-url", action="append", default=[], help="Official page URL to extract image candidates")
+    p_fsr.add_argument("--download", action="append", default=[], help="Download reference as label=URL_OR_FILE")
+
+    p_rsa = sub.add_parser("register-spot-art", help="Publish generated illustration into docs/assets/spots and update spot dossier")
+    p_rsa.add_argument("--spot-id", required=True, help="Target spot_id")
+    p_rsa.add_argument("--art-id", required=True, help="Illustration id (e.g. hero, item_kate_udon)")
+    p_rsa.add_argument("--kind", default="scene", choices=("scene", "feature", "menu", "sign", "item"), help="Illustration kind")
+    p_rsa.add_argument("--image", required=True, help="Path to generated PNG/JPEG/WebP image")
+    p_rsa.add_argument("--title", required=True, help="Illustration title")
+    p_rsa.add_argument("--caption", required=True, help="Story caption shown beneath illustration")
+    p_rsa.add_argument("--based-on", default="", help="Reference photo/source provenance note")
+    p_rsa.add_argument("--no-build", action="store_true", help="Skip build_site.py")
+    p_rsa.add_argument("--push", action="store_true", help="Commit and push data/spot_reports and docs to origin/main")
+
     args = parser.parse_args()
     handlers = {
         "prepare-daily": cmd_prepare_daily,
@@ -2016,6 +2251,8 @@ def main() -> None:
         "finalize-weekly": cmd_finalize_weekly,
         "prepare-spot-patrol": cmd_prepare_spot_patrol,
         "finalize-spot-patrol": cmd_finalize_spot_patrol,
+        "fetch-spot-refs": cmd_fetch_spot_refs,
+        "register-spot-art": cmd_register_spot_art,
     }
     handlers[args.command](args)
 

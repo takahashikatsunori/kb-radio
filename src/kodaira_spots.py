@@ -684,6 +684,22 @@ def format_spot_reports_context(
         angles = [str(x) for x in (dossier.get("story_angles") or []) if str(x).strip()]
         if angles:
             lines.append(f"- **放送切り口メモ**: {' ／ '.join(angles)}")
+        essay = dossier.get("editorial_essay")
+        if isinstance(essay, dict) and str(essay.get("lead") or "").strip():
+            lines.append(f"- **取材ストーリー要約**: {str(essay['lead']).strip()}")
+        conns = [c for c in (dossier.get("connections") or []) if isinstance(c, dict) and c.get("spot_id")]
+        if conns:
+            conn_parts = []
+            for c in conns[:4]:
+                rel_sid = str(c["spot_id"])
+                rel_name = str((spots_by_id.get(rel_sid) or {}).get("name") or rel_sid)
+                rel_lbl = str(c.get("relation") or "関連").strip()
+                rel_note = str(c.get("note") or "").strip()
+                conn_parts.append(f"{rel_name}［{rel_lbl}］" + (f"({rel_note})" if rel_note else ""))
+            lines.append(f"- **周辺・関連スポットのつながり**: {' ／ '.join(conn_parts)}")
+        leads = [str(x).strip() for x in (dossier.get("next_research_leads") or []) if str(x).strip()]
+        if leads:
+            lines.append(f"- **次期取材リード**: {' ／ '.join(leads[:3])}")
         sfp = dossier.get("special_feature_potential")
         if isinstance(sfp, dict) and (sfp.get("ready") or sfp.get("theme_idea")):
             ready_lbl = "特集化OK" if sfp.get("ready") else "特集の種"

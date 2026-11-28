@@ -105,6 +105,8 @@ def _build_spot_catalog_payload(
                 if isinstance(src, dict)
                 and str(src.get("url") or "").strip().startswith(("http://", "https://"))
             ]
+            arts = [a for a in (dossier.get("illustrations") or []) if isinstance(a, dict) and a.get("src")]
+            hero_art = next((a for a in arts if a.get("id") == "hero"), arts[0] if arts else None)
             report_summary = {
                 "operating_status": str(dossier.get("operating_status") or "open"),
                 "operating_status_note": str(dossier.get("operating_status_note") or "").strip(),
@@ -116,6 +118,9 @@ def _build_spot_catalog_payload(
                 "primary_sources": srcs,
                 "special_theme": str(sfp.get("theme_idea") or "").strip(),
                 "special_ready": bool(sfp.get("ready")),
+                "hero_image": str(hero_art.get("src") or "") if hero_art else "",
+                "illustration_count": len(arts),
+                "article_href": f"spots/{sid}/index.html",
             }
 
         cm = cat_meta.get(cid) or {"label": cid, "icon": "📍"}
@@ -1012,6 +1017,32 @@ CALENDAR_CSS = """
   border-radius: 6px;
   padding: 0.24rem 0.45rem;
 }
+.spot-report-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-top: 0.2rem;
+}
+.spot-read-article-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.22rem;
+  padding: 0.34rem 0.72rem;
+  border-radius: 999px;
+  background: var(--forest);
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.76rem;
+  font-weight: 700;
+  align-self: flex-start;
+}
+.spot-read-article-btn:hover {
+  background: var(--forest-dark);
+}
 
 @media (max-width: 760px) {
   .cal-dow-head { display: none; }
@@ -1058,6 +1089,7 @@ $CALENDAR_CSS
         一度登場したスポットは<strong>原則90日間（約3か月）再登場させない重複防止ルール</strong>を適用し（大規模リニューアルや開催当日の大型イベントは例外）、最終ネタは週次検討や当日の最新ニュースに応じて鮮度高く選びます。
         <div class="spot-jump-row">
           <a href="#spot-catalog" class="spot-jump-btn">📍 小平スポット題材ネタ帳を見る（全$SPOT_TOTAL件・$SPOT_CAT_COUNTジャンル）↓</a>
+          <a href="spots/index.html" class="spot-jump-btn">📖 スポット取材手帳（イラスト付き読み物一覧）を見る →</a>
           <a href="kodaira_spots_catalog.md" class="spot-jump-btn is-secondary">📄 ネタ帳Markdown資料を見る →</a>
         </div>
       </div>
@@ -1768,11 +1800,32 @@ $CALENDAR_CSS
 
           if (sp.report) {
             const rep = sp.report;
+            if (rep.hero_image) {
+              const thumbLink = document.createElement("a");
+              thumbLink.href = rep.article_href || ("spots/" + sp.id + "/index.html");
+              const thumb = document.createElement("img");
+              thumb.className = "spot-report-thumb";
+              thumb.src = rep.hero_image;
+              thumb.alt = sp.name + " 取材イラスト";
+              thumb.loading = "lazy";
+              thumbLink.appendChild(thumb);
+              card.appendChild(thumbLink);
+            }
+
+            const readBtn = document.createElement("a");
+            readBtn.className = "spot-read-article-btn";
+            readBtn.href = rep.article_href || ("spots/" + sp.id + "/index.html");
+            readBtn.textContent =
+              "📖 単独の取材レポートを読む" +
+              (rep.illustration_count > 0 ? "（イラスト" + rep.illustration_count + "点）" : "") +
+              " →";
+            card.appendChild(readBtn);
+
             const det = document.createElement("details");
             det.className = "spot-report-box";
             const sum = document.createElement("summary");
             sum.textContent =
-              "📝 取材レポート（" +
+              "📝 要点メモ（" +
               (rep.entry_count || 1) +
               "件・一次確認: " +
               (rep.latest_checked_at || rep.last_researched_at || "-") +

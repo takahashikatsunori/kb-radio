@@ -100,7 +100,7 @@ header {
 }
 .nav-links {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 0.32rem;
 }
 .nav-links a {
@@ -819,7 +819,9 @@ footer {
 @media (max-width: 640px) {
   .header-inner { padding: 0.55rem 0.7rem 0.62rem; }
   .brand-bar { margin-bottom: 0.45rem; }
-  .nav-links { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.25rem; }
+  .nav-links { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 0.25rem; }
+  .nav-links a:nth-child(-n+4) { grid-column: span 3; }
+  .nav-links a:nth-child(n+5) { grid-column: span 4; }
   .nav-links a { font-size: 0.72rem; padding: 0.34rem 0.14rem; }
   .ep-hero { padding: 0.62rem 0.75rem; margin-bottom: 0.6rem; }
   .controls { gap: 0.25rem; }
@@ -883,7 +885,7 @@ footer {
 <body>
   <header>
     <div class="header-inner">
-      <div class="brand-bar"><a class="brand" href="index.html">こだいら防災＆まちラジオ</a><span class="time-pill">毎朝7時</span></div><nav class="nav-links" aria-label="メインメニュー"><a href="index.html" class="active">最新回</a><a href="calendar.html">カレンダー</a><a href="archive.html">過去回</a><a href="cast.html">出演者</a><a href="characters.html">防災ノート</a><a href="tech.html">番組のしくみ</a></nav>
+      <div class="brand-bar"><a class="brand" href="index.html">こだいら防災＆まちラジオ</a><span class="time-pill">毎朝7時</span></div><nav class="nav-links" aria-label="メインメニュー"><a href="index.html" class="active">最新回</a><a href="calendar.html">カレンダー</a><a href="spots/index.html">取材手帳</a><a href="archive.html">過去回</a><a href="cast.html">出演者</a><a href="characters.html">防災ノート</a><a href="tech.html">番組のしくみ</a></nav>
     </div>
   </header>
 

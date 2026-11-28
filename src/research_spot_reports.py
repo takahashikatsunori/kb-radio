@@ -420,6 +420,75 @@ def select_patrol_batch(
     return selected_by_tier
 
 
+def _merge_editorial_essay(existing_raw: Any, incoming_raw: Any) -> dict[str, Any]:
+    ex = existing_raw if isinstance(existing_raw, dict) else {}
+    inc = incoming_raw if isinstance(incoming_raw, dict) else {}
+    lead = str(inc.get("lead") or ex.get("lead") or "").strip()
+    inc_paras = [str(p).strip() for p in (inc.get("paragraphs") or []) if str(p).strip()]
+    ex_paras = [str(p).strip() for p in (ex.get("paragraphs") or []) if str(p).strip()]
+    paragraphs = inc_paras if inc_paras else ex_paras
+    editor_note = str(inc.get("editor_note") or ex.get("editor_note") or "").strip()
+    if not (lead or paragraphs or editor_note):
+        return {}
+    return {
+        "lead": lead,
+        "paragraphs": paragraphs,
+        "editor_note": editor_note,
+    }
+
+
+def _merge_illustrations(existing_raw: Any, incoming_raw: Any, *, default_date: str = "") -> list[dict[str, str]]:
+    merged: dict[str, dict[str, str]] = {}
+    order: list[str] = []
+    for raw in list(existing_raw or []) + list(incoming_raw or []):
+        if not isinstance(raw, dict):
+            continue
+        art_id = str(raw.get("id") or "").strip()
+        src = str(raw.get("src") or "").strip()
+        if not art_id or not src:
+            continue
+        prev = merged.get(art_id) or {}
+        entry = {
+            "id": art_id,
+            "kind": str(raw.get("kind") or prev.get("kind") or "scene").strip(),
+            "title": str(raw.get("title") or prev.get("title") or "").strip(),
+            "caption": str(raw.get("caption") or prev.get("caption") or "").strip(),
+            "src": src,
+            "based_on": str(raw.get("based_on") or prev.get("based_on") or "").strip(),
+            "added_at": str(raw.get("added_at") or prev.get("added_at") or default_date).strip(),
+        }
+        if art_id not in merged:
+            order.append(art_id)
+        merged[art_id] = entry
+    return [merged[k] for k in order]
+
+
+def _merge_connections(
+    existing_raw: Any,
+    incoming_raw: Any,
+    *,
+    self_spot_id: str = "",
+) -> list[dict[str, str]]:
+    merged: dict[str, dict[str, str]] = {}
+    order: list[str] = []
+    for raw in list(existing_raw or []) + list(incoming_raw or []):
+        if not isinstance(raw, dict):
+            continue
+        rel_id = str(raw.get("spot_id") or "").strip()
+        if not rel_id or rel_id == self_spot_id:
+            continue
+        prev = merged.get(rel_id) or {}
+        entry = {
+            "spot_id": rel_id,
+            "relation": str(raw.get("relation") or prev.get("relation") or "関連").strip(),
+            "note": str(raw.get("note") or prev.get("note") or "").strip(),
+        }
+        if rel_id not in merged:
+            order.append(rel_id)
+        merged[rel_id] = entry
+    return [merged[k] for k in order]
+
+
 def _normalize_draft_items(payload: Any) -> list[dict[str, Any]]:
     if isinstance(payload, list):
         return [x for x in payload if isinstance(x, dict)]
@@ -498,13 +567,28 @@ def ingest_draft_payload(
                 + [s["url"] for s in clean_sources if s.get("url")]
             )
             prev_checked = str(existing.get("last_checked_at") or existing.get("last_researched_at") or "")
+            merged_checked = max(checked_at, prev_checked)
+            merged_essay = _merge_editorial_essay(existing.get("editorial_essay"), item.get("editorial_essay"))
+            merged_illustrations = _merge_illustrations(
+                existing.get("illustrations"),
+                item.get("illustrations"),
+                default_date=merged_checked,
+            )
+            merged_connections = _merge_connections(
+                existing.get("connections"),
+                item.get("connections"),
+                self_spot_id=sid,
+            )
+            merged_leads = _dedup_str_list(
+                list(existing.get("next_research_leads") or []) + list(item.get("next_research_leads") or [])
+            )
             dossier = {
                 "spot_id": sid,
                 "spot_name": str(item.get("spot_name") or existing.get("spot_name") or sp_meta["name"]),
                 "category": str(sp_meta.get("category") or existing.get("category") or ""),
                 "patrol_tier": str(sp_meta.get("patrol_tier") or existing.get("patrol_tier") or "low"),
                 "last_researched_at": str(existing.get("last_researched_at") or existing_entries[-1].get("researched_at") or ""),
-                "last_checked_at": max(checked_at, prev_checked),
+                "last_checked_at": merged_checked,
                 "last_check_note": str(
                     item.get("check_note") or item.get("last_check_note") or "一次ソース再確認・前回より変更なし"
                 ).strip(),
@@ -523,6 +607,10 @@ def ingest_draft_payload(
                 ),
                 "special_feature_potential": existing.get("special_feature_potential")
                 or {"ready": False, "theme_idea": "", "reason": ""},
+                **({"editorial_essay": merged_essay} if merged_essay else {}),
+                **({"illustrations": merged_illustrations} if merged_illustrations else {}),
+                **({"connections": merged_connections} if merged_connections else {}),
+                **({"next_research_leads": merged_leads} if merged_leads else {}),
                 "entries": existing_entries,
             }
             out_path.write_text(json.dumps(dossier, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -606,13 +694,28 @@ def ingest_draft_payload(
             or ""
         ).strip()
         prev_checked = str(existing.get("last_checked_at") or "")
+        merged_checked = max(latest_checked, prev_checked)
+        merged_essay = _merge_editorial_essay(existing.get("editorial_essay"), item.get("editorial_essay"))
+        merged_illustrations = _merge_illustrations(
+            existing.get("illustrations"),
+            item.get("illustrations"),
+            default_date=merged_checked,
+        )
+        merged_connections = _merge_connections(
+            existing.get("connections"),
+            item.get("connections"),
+            self_spot_id=sid,
+        )
+        merged_leads = _dedup_str_list(
+            list(existing.get("next_research_leads") or []) + list(item.get("next_research_leads") or [])
+        )
         dossier = {
             "spot_id": sid,
             "spot_name": str(item.get("spot_name") or existing.get("spot_name") or sp_meta["name"]),
             "category": str(sp_meta.get("category") or existing.get("category") or ""),
             "patrol_tier": str(sp_meta.get("patrol_tier") or existing.get("patrol_tier") or "low"),
             "last_researched_at": str(latest_entry.get("researched_at") or ""),
-            "last_checked_at": max(latest_checked, prev_checked),
+            "last_checked_at": merged_checked,
             "last_check_note": str(item.get("check_note") or latest_entry.get("headline") or "").strip(),
             "operating_status": top_op or str(existing.get("operating_status") or "open"),
             "operating_status_note": str(
@@ -629,6 +732,10 @@ def ingest_draft_payload(
             ),
             "special_feature_potential": merged_sfp
             or {"ready": False, "theme_idea": "", "reason": ""},
+            **({"editorial_essay": merged_essay} if merged_essay else {}),
+            **({"illustrations": merged_illustrations} if merged_illustrations else {}),
+            **({"connections": merged_connections} if merged_connections else {}),
+            **({"next_research_leads": merged_leads} if merged_leads else {}),
             "entries": merged_entries,
         }
 

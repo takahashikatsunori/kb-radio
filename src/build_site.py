@@ -29,6 +29,11 @@ from site_share import (
     resolve_episode_image,
     resolve_site_base_url,
 )
+from site_spots_page import (
+    build_spot_dossier_context,
+    render_spot_detail_page,
+    render_spots_index_page,
+)
 from site_tech_page import render_tech_page
 
 JST = timezone(timedelta(hours=9))
@@ -396,7 +401,7 @@ header {
 }
 .nav-links {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 0.32rem;
 }
 .nav-links a {
@@ -1115,7 +1120,9 @@ footer {
 @media (max-width: 640px) {
   .header-inner { padding: 0.55rem 0.7rem 0.62rem; }
   .brand-bar { margin-bottom: 0.45rem; }
-  .nav-links { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.25rem; }
+  .nav-links { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 0.25rem; }
+  .nav-links a:nth-child(-n+4) { grid-column: span 3; }
+  .nav-links a:nth-child(n+5) { grid-column: span 4; }
   .nav-links a { font-size: 0.72rem; padding: 0.34rem 0.14rem; }
   .ep-hero { padding: 0.62rem 0.75rem; margin-bottom: 0.6rem; }
   .controls { gap: 0.25rem; }
@@ -1194,6 +1201,7 @@ def _render_nav(root_prefix: str, active: str, subhead: str = "", page_h1: str =
         f'<nav class="nav-links" aria-label="メインメニュー">'
         f'<a href="{root_prefix}index.html"{cls("latest")}>最新回</a>'
         f'<a href="{root_prefix}calendar.html"{cls("calendar")}>カレンダー</a>'
+        f'<a href="{root_prefix}spots/index.html"{cls("spots")}>取材手帳</a>'
         f'<a href="{root_prefix}archive.html"{cls("archive")}>過去回</a>'
         f'<a href="{root_prefix}cast.html"{cls("cast")}>出演者</a>'
         f'<a href="{root_prefix}characters.html"{cls("characters")}>防災ノート</a>'
@@ -3140,6 +3148,51 @@ def build_site() -> None:
         ),
         encoding="utf-8",
     )
+    spot_ctx = build_spot_dossier_context(
+        kodaira_spots=kodaira_spots,
+        spot_reports=spot_reports,
+        topic_history=topic_history,
+        editorial_plan=editorial_plan,
+        program_schedule=program_schedule,
+        bundles=bundles,
+        today_jst_str=today_jst_str,
+    )
+    spots_out_dir = DOCS_DIR / "spots"
+    spots_out_dir.mkdir(parents=True, exist_ok=True)
+    (spots_out_dir / "index.html").write_text(
+        render_spots_index_page(
+            kodaira_spots=kodaira_spots,
+            spot_reports=spot_reports,
+            ctx=spot_ctx,
+            common_css=COMMON_CSS,
+            nav_html=_render_nav(
+                "../",
+                "spots",
+                page_h1="小平スポット取材手帳",
+                subhead="一次ソース検証×写真ベースイラストで読む地域の魅力レポート",
+            ),
+            safe_json_fn=_safe_json_for_html,
+        ),
+        encoding="utf-8",
+    )
+    for sid in spot_ctx["ordered_ids"]:
+        spot_page_dir = spots_out_dir / sid
+        spot_page_dir.mkdir(parents=True, exist_ok=True)
+        (spot_page_dir / "index.html").write_text(
+            render_spot_detail_page(
+                spot_id=sid,
+                dossier=spot_reports[sid],
+                spot_reports=spot_reports,
+                ctx=spot_ctx,
+                common_css=COMMON_CSS,
+                nav_html=_render_nav(
+                    "../../",
+                    "spots",
+                    subhead="小平スポット取材手帳 ／ 一次情報ベース単独取材レポート",
+                ),
+            ),
+            encoding="utf-8",
+        )
     (DOCS_DIR / "archive.html").write_text(
         _render_archive_page(
             bundles,

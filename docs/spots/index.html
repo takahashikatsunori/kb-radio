@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>小平スポット取材手帳（イラスト付き読み物） | 毎朝7時！こだいら防災＆まちラジオ</title>
+  <style>
+
+:root {
+  --forest: #1b5e3c;
+  --forest-dark: #124028;
+  --forest-soft: #e7f4ec;
+  --paper: #f8f7f3;
+  --card: #ffffff;
+  --ink: #1f2937;
+  --muted: #5b6472;
+  --border: #dfe4de;
+  --amber: #d97706;
+  --amber-soft: #fef3c7;
+  --koharu: #e11d48;
+  --koharu-soft: #fff1f2;
+  --heizo: #2563eb;
+  --heizo-soft: #eff6ff;
+  --guest: var(--guest-color, #4338ca);
+  --guest-soft: var(--guest-bg, #eef2ff);
+  --shadow: 0 6px 20px rgba(18, 64, 40, 0.08);
+}
+* { box-sizing: border-box; }
+html, body {
+  overflow-x: clip;
+  max-width: 100%;
+}
+body {
+  margin: 0;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", system-ui, -apple-system, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.65;
+  -webkit-tap-highlight-color: transparent;
+}
+a { color: var(--forest); }
+
+/* Compact app-style header */
+header {
+  background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest) 65%, #2b7a50 100%);
+  color: #ffffff;
+  border-bottom: 3px solid var(--amber);
+}
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.65rem 1rem 0.75rem;
+}
+.brand-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+.brand {
+  font-weight: 800;
+  font-size: clamp(0.98rem, 4vw, 1.22rem);
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.01em;
+}
+.time-pill {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.16rem 0.55rem;
+  border-radius: 999px;
+  background: var(--amber);
+  color: #fff;
+}
+.nav-links {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.32rem;
+}
+.nav-links a {
+  color: rgba(255, 255, 255, 0.94);
+  text-decoration: none;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.34rem 0.2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.15s;
+}
+.nav-links a:hover, .nav-links a.active {
+  background: #ffffff;
+  color: var(--forest-dark);
+  border-color: #ffffff;
+}
+.page-subhead {
+  margin: 0.55rem 0 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+.page-h1 {
+  margin: 0.45rem 0 0;
+  font-size: clamp(1.08rem, 4vw, 1.45rem);
+  line-height: 1.3;
+}
+
+/* Main layout */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(310px, 0.95fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+.container.single {
+  grid-template-columns: minmax(0, 1fr);
+}
+.col-main, .col-side, .card, .now-playing, .section-head, .seg-divider, .mobile-tabs {
+  min-width: 0;
+  max-width: 100%;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.ep-hero {
+  padding: 0.78rem 1rem;
+  border-left: 4px solid var(--amber);
+}
+.ep-hero-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-height: 290px;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 0.65rem;
+  background: #dff0e6;
+}
+.ep-hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ep-hero-spot-badge,
+.archive-spot-badge {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  max-width: calc(100% - 1rem);
+  padding: 0.2rem 0.58rem;
+  border-radius: 999px;
+  background: rgba(18, 64, 40, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+.ep-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.theme-pill {
+  display: inline-block;
+  padding: 0.14rem 0.55rem;
+  border-radius: 999px;
+  background: var(--guest-soft);
+  color: var(--guest);
+  font-weight: 700;
+}
+.edition-pill {
+  display: inline-block;
+  padding: 0.14rem 0.55rem;
+  border-radius: 999px;
+  background: var(--amber-soft);
+  color: #92400e;
+  font-weight: 700;
+}
+.ep-title {
+  margin: 0.35rem 0 0;
+  font-size: clamp(0.98rem, 3.6vw, 1.22rem);
+  line-height: 1.38;
+  color: var(--forest-dark);
+  overflow-wrap: anywhere;
+}
+.section-head {
+  padding: 0.75rem 1rem;
+  background: #fcfcfa;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.3rem 0.6rem;
+}
+.section-head h2 {
+  margin: 0;
+  font-size: 0.96rem;
+  color: var(--forest-dark);
+  flex: 1 1 180px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.hint {
+  font-size: 0.76rem;
+  color: var(--muted);
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* Slim sticky player */
+.player-card {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding: 0.72rem 1rem;
+  border-top: 3px solid var(--forest);
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(8px);
+}
+.audio-pending-banner {
+  background: var(--amber-soft);
+  border: 1px solid #f59e0b;
+  color: #92400e;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.55rem;
+}
+.now-playing {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+.now-chapter {
+  flex: 1 1 auto;
+  font-size: 0.88rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.time-readout {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--heizo);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.scrubber {
+  width: 100%;
+  accent-color: var(--forest);
+  cursor: pointer;
+  height: 22px;
+  margin: 0.2rem 0 0.35rem;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--ink);
+  padding: 0.4rem 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  min-height: 36px;
+  white-space: nowrap;
+}
+button:hover:not(:disabled) {
+  background: var(--forest-soft);
+  border-color: var(--forest);
+}
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+button.primary {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #fff;
+  padding: 0.42rem 0.95rem;
+}
+button.primary:hover:not(:disabled) { background: var(--forest-dark); }
+button.active-toggle {
+  background: var(--heizo-soft);
+  border-color: var(--heizo);
+  color: var(--heizo);
+}
+.speed-group button.is-selected {
+  background: var(--forest);
+  color: #fff;
+  border-color: var(--forest);
+}
+.speed-cycle-btn {
+  display: none;
+}
+.share-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--forest-soft);
+  border-color: rgba(27, 94, 60, 0.35);
+  color: var(--forest-dark);
+}
+.share-toggle-btn[aria-expanded="true"] {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #ffffff;
+}
+.share-icon {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+}
+.share-panel {
+  margin-top: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid #d5e2d8;
+  background: #f8faf7;
+}
+.share-panel[hidden] {
+  display: none;
+}
+.share-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+.share-panel-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--forest-dark);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+button.share-panel-close {
+  min-height: 28px;
+  width: 28px;
+  padding: 0;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.share-btn {
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 36px;
+  padding: 0.36rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  transition: filter 0.15s, background 0.15s, border-color 0.15s;
+}
+.share-btn[hidden] {
+  display: none;
+}
+.share-btn-native {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #ffffff;
+}
+.share-btn-native:hover {
+  background: var(--forest-dark);
+  border-color: var(--forest-dark);
+}
+.share-btn-line {
+  background: #06c755;
+  color: #ffffff;
+}
+.share-btn-x {
+  background: #111827;
+  color: #ffffff;
+}
+.share-btn-copy {
+  background: #ffffff;
+  color: var(--forest-dark);
+  border-color: rgba(27, 94, 60, 0.35);
+}
+.share-btn-line:hover,
+.share-btn-x:hover {
+  filter: brightness(1.07);
+}
+.share-btn-copy:hover {
+  background: var(--forest-soft);
+  border-color: var(--forest);
+}
+.share-feedback {
+  margin-top: 0.38rem;
+  min-height: 1.15em;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--forest-dark);
+}
+.share-feedback:empty {
+  display: none;
+}
+
+/* Mobile 3-tab bar */
+.mobile-tabs {
+  display: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+  background: #ecefe9;
+  padding: 0.3rem;
+  border-radius: 12px;
+}
+.mobile-tabs button {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.8rem;
+  min-height: 36px;
+  padding: 0.35rem 0.25rem;
+  border-radius: 9px;
+}
+.mobile-tabs button.active {
+  background: #ffffff;
+  color: var(--forest-dark);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Chapters accordion */
+.chapter-summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+.chapter-summary h2 {
+  flex: 1 1 auto;
+}
+.chapter-summary .hint {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.chapter-summary::-webkit-details-marker {
+  display: none;
+}
+.chapter-summary .hint::after {
+  content: " ▼";
+  font-size: 0.7rem;
+}
+.chapter-details[open] .chapter-summary .hint::after {
+  content: " ▲";
+}
+.chapter-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.45rem;
+  padding: 0.75rem 0.95rem;
+}
+.chapter-btn {
+  text-align: left;
+  padding: 0.5rem 0.65rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.14rem;
+  white-space: normal;
+  min-height: auto;
+}
+.chapter-btn.active {
+  background: var(--forest-soft);
+  border-color: var(--forest);
+  box-shadow: inset 3px 0 0 var(--forest);
+}
+.chapter-tc {
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--heizo);
+  font-weight: 700;
+  flex: 0 0 auto;
+}
+.chapter-title {
+  font-size: 0.82rem;
+  line-height: 1.35;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Transcript */
+.transcript-body {
+  padding: 0.8rem 0.95rem 1.25rem;
+  max-height: 68vh;
+  overflow-y: auto;
+}
+.seg-divider {
+  margin: 1rem 0 0.55rem;
+  padding: 0.42rem 0.7rem;
+  background: var(--forest-soft);
+  border-left: 4px solid var(--forest);
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--forest-dark);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+  scroll-margin-top: 150px;
+}
+.seg-divider > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.seg-divider:first-child { margin-top: 0; }
+.line-item {
+  display: grid;
+  grid-template-columns: 48px 86px minmax(0, 1fr);
+  grid-template-areas: "tc speaker text";
+  gap: 0.5rem;
+  padding: 0.52rem 0.6rem;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  align-items: baseline;
+  scroll-margin-top: 150px;
+}
+.line-item:hover { background: #f3f5f2; }
+.line-item.active {
+  background: var(--amber-soft);
+  border-color: #f59e0b;
+}
+.line-tc {
+  grid-area: tc;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.76rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.speaker-pill {
+  grid-area: speaker;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.14rem 0.48rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.speaker-koharu { background: var(--koharu-soft); color: var(--koharu); }
+.speaker-heizo { background: var(--heizo-soft); color: var(--heizo); }
+.speaker-guest { background: var(--guest-soft); color: var(--guest); }
+.line-text {
+  grid-area: text;
+  font-size: 0.94rem;
+  overflow-wrap: anywhere;
+}
+
+/* Right panels & cards */
+.panel-body {
+  padding: 0.8rem 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.link-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 0.72rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fcfcfa;
+  transition: border-color 0.15s, background 0.15s;
+}
+.link-card:hover {
+  border-color: var(--forest);
+  background: var(--forest-soft);
+}
+.pill-tag {
+  display: inline-block;
+  font-size: 0.71rem;
+  font-weight: 700;
+  padding: 0.1rem 0.48rem;
+  border-radius: 999px;
+  background: var(--forest-soft);
+  color: var(--forest-dark);
+  margin-bottom: 0.22rem;
+}
+.link-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--forest-dark);
+  margin: 0 0 0.18rem;
+  overflow-wrap: anywhere;
+}
+.link-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.note-box {
+  padding: 0.72rem 0.85rem;
+  border-radius: 10px;
+  background: #fcfcfa;
+  border: 1px solid var(--border);
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+.note-box ul {
+  margin: 0.35rem 0 0.45rem;
+  padding-left: 1.15rem;
+}
+.tel-link {
+  color: var(--heizo);
+  font-weight: 700;
+  text-decoration: underline;
+}
+.guest-card {
+  padding: 0.8rem 0.95rem;
+  border-left: 4px solid var(--guest);
+  background: var(--guest-soft);
+  border-radius: 10px;
+}
+.kw-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+.kw-chip {
+  font-size: 0.74rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.archive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: 0.85rem;
+  padding: 0.9rem;
+}
+.archive-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.9rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  overflow-wrap: anywhere;
+}
+.archive-thumb-wrap {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #dff0e6;
+  margin-bottom: 0.15rem;
+}
+.archive-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.archive-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 0.2rem;
+}
+.btn-link {
+  display: inline-block;
+  text-decoration: none;
+  background: var(--forest);
+  color: #fff;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 0.48rem 0.85rem;
+  border-radius: 8px;
+  text-align: center;
+}
+.btn-link:hover { background: var(--forest-dark); }
+.btn-link-secondary {
+  display: inline-block;
+  text-decoration: none;
+  background: #ffffff;
+  color: var(--forest-dark);
+  border: 1.5px solid var(--forest);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.44rem 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+}
+.btn-link-secondary:hover { background: var(--forest-soft); }
+footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.9rem 1rem 2rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Mobile breakpoint (<= 920px): single column + tab switching */
+@media (max-width: 920px) {
+  .container {
+    display: block;
+    width: 100%;
+    padding: 0.65rem 0.7rem;
+  }
+  .mobile-tabs {
+    display: grid;
+  }
+  .player-card {
+    margin: 0 0 0.65rem;
+    border-radius: 12px;
+    padding: 0.6rem 0.78rem;
+  }
+  main[data-active-tab="script"] #tab-panel-script { display: block; }
+  main[data-active-tab="script"] .col-side { display: none; }
+
+  main[data-active-tab="links"] #tab-panel-script { display: none; }
+  main[data-active-tab="links"] .col-side { display: block; }
+  main[data-active-tab="links"] #tab-panel-links { display: block; }
+  main[data-active-tab="links"] #tab-panel-notes { display: none; }
+
+  main[data-active-tab="notes"] #tab-panel-script { display: none; }
+  main[data-active-tab="notes"] .col-side { display: block; }
+  main[data-active-tab="notes"] #tab-panel-links { display: none; }
+  main[data-active-tab="notes"] #tab-panel-notes { display: block; }
+}
+
+/* Narrow phone breakpoint (<= 640px): vertical-only controls, accordion chapters, 2-row transcript */
+@media (max-width: 640px) {
+  .header-inner { padding: 0.55rem 0.7rem 0.62rem; }
+  .brand-bar { margin-bottom: 0.45rem; }
+  .nav-links { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 0.25rem; }
+  .nav-links a:nth-child(-n+4) { grid-column: span 3; }
+  .nav-links a:nth-child(n+5) { grid-column: span 4; }
+  .nav-links a { font-size: 0.72rem; padding: 0.34rem 0.14rem; }
+  .ep-hero { padding: 0.62rem 0.75rem; margin-bottom: 0.6rem; }
+  .controls { gap: 0.25rem; }
+  .btn-group { gap: 0.25rem; }
+  .speed-group { display: none; }
+  .speed-cycle-btn { display: inline-flex; align-items: center; }
+  button { padding: 0.34rem 0.48rem; font-size: 0.76rem; min-height: 36px; }
+  button.primary { padding: 0.34rem 0.68rem; }
+
+  .chapter-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0.6rem 0.75rem;
+    gap: 0.38rem;
+  }
+  .chapter-btn {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.45rem;
+    width: 100%;
+    padding: 0.48rem 0.62rem;
+  }
+  .chapter-tc {
+    flex: 0 0 auto;
+  }
+
+  .transcript-body {
+    max-height: none;
+    overflow-y: visible;
+    padding: 0.65rem 0.75rem 1.2rem;
+  }
+  .line-item {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "speaker tc"
+      "text text";
+    gap: 0.28rem 0.55rem;
+    padding: 0.55rem 0.55rem;
+    border-bottom: 1px solid #f0f2ee;
+  }
+  .line-tc {
+    justify-self: end;
+    font-size: 0.74rem;
+  }
+  .line-text {
+    font-size: 0.95rem;
+    line-height: 1.72;
+  }
+  .share-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .share-btn {
+    padding: 0.36rem 0.55rem;
+    font-size: 0.76rem;
+  }
+}
+
+
+.spots-hero {
+  padding: 1.05rem 1.15rem;
+  border-left: 4px solid var(--forest);
+  background: linear-gradient(135deg, #fffdf8 0%, #f3fbf5 100%);
+}
+.spots-lead {
+  margin: 0.4rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.68;
+  color: var(--ink);
+}
+.spots-stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.72rem;
+}
+.spots-stat-pill {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: var(--forest-soft);
+  color: var(--forest-dark);
+  border: 1px solid #bbf7d0;
+}
+.spots-stat-pill.is-warm {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #fde68a;
+}
+.spots-stat-pill.is-art {
+  background: #fdf2f8;
+  color: #9d174d;
+  border-color: #fbcfe8;
+}
+.spots-controls {
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.spots-search {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.56rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-family: inherit;
+  background: #fff;
+}
+.spots-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.38rem;
+}
+.spots-filter-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin-right: 0.15rem;
+}
+.spots-pill-btn {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.28rem 0.68rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.spots-pill-btn.active {
+  background: var(--forest);
+  color: #fff;
+  border-color: var(--forest);
+}
+.spots-featured-strip {
+  padding: 0.85rem 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.65rem;
+}
+.spots-ready-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.7rem 0.82rem;
+  border-radius: 10px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  text-decoration: none;
+  color: var(--ink);
+}
+.spots-ready-mini:hover {
+  border-color: #d97706;
+}
+.spots-ready-mini strong {
+  font-size: 0.88rem;
+  color: #92400e;
+}
+.spots-ready-mini span {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.spots-index-grid {
+  padding: 0.95rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.95rem;
+}
+.spot-article-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  min-width: 0;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+}
+.spot-card-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #f8faf8;
+  border-bottom: 1px solid var(--border);
+}
+.spot-sketch-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.spot-card-body {
+  padding: 0.85rem 0.95rem 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.spot-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+.spot-badge {
+  font-size: 0.71rem;
+  font-weight: 700;
+  padding: 0.14rem 0.52rem;
+  border-radius: 999px;
+}
+.spot-badge.cat { background: var(--forest-soft); color: var(--forest-dark); }
+.spot-badge.art { background: #fdf2f8; color: #9d174d; }
+.spot-badge.ready { background: #fef3c7; color: #92400e; }
+.spot-badge.high { background: #e0f2fe; color: #0369a1; }
+.spot-badge.low { background: #f1f5f9; color: #475569; }
+.spot-badge.is-open { background: #dcfce7; color: #166534; }
+.spot-badge.is-seasonal { background: #fef9c3; color: #854d0e; }
+.spot-badge.is-limited { background: #e0e7ff; color: #3730a3; }
+.spot-badge.is-renovation { background: #ffedd5; color: #9a3412; }
+.spot-badge.is-closed { background: #fee2e2; color: #991b1b; }
+.spot-card-title {
+  margin: 0;
+  font-size: 1.03rem;
+  line-height: 1.4;
+  font-weight: 800;
+  color: var(--ink);
+}
+.spot-card-meta {
+  font-size: 0.77rem;
+  color: var(--muted);
+}
+.spot-card-lead {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.62;
+  color: var(--ink);
+}
+.spot-card-footer {
+  margin-top: auto;
+  padding-top: 0.45rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.spot-read-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.38rem 0.78rem;
+  border-radius: 999px;
+  background: var(--forest);
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.spot-read-btn:hover {
+  background: var(--forest-dark);
+}
+
+/* Detail page layout */
+.spot-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+.spot-breadcrumb a {
+  color: var(--forest-dark);
+  font-weight: 700;
+  text-decoration: none;
+}
+.spot-breadcrumb a:hover {
+  text-decoration: underline;
+}
+.spot-detail-hero {
+  overflow: hidden;
+  border-top: 4px solid var(--forest);
+}
+.spot-hero-art-wrap {
+  background: #f8faf8;
+  border-bottom: 1px solid var(--border);
+}
+.spot-hero-art-img {
+  display: block;
+  width: 100%;
+  max-height: 500px;
+  object-fit: cover;
+}
+.spot-hero-art-cap {
+  padding: 0.52rem 1rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  background: #f8faf8;
+  border-top: 1px solid var(--border);
+  line-height: 1.5;
+}
+.spot-detail-head {
+  padding: 1rem 1.15rem 1.15rem;
+}
+.spot-detail-title {
+  margin: 0.45rem 0 0.35rem;
+  font-size: clamp(1.22rem, 3.6vw, 1.62rem);
+  line-height: 1.35;
+  color: var(--ink);
+}
+.spot-detail-lead {
+  margin: 0.35rem 0 0;
+  font-size: 0.96rem;
+  line-height: 1.72;
+  color: var(--ink);
+  font-weight: 500;
+}
+.spot-quick-grid {
+  padding: 0.95rem 1.15rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem 1rem;
+}
+.spot-quick-item {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.85rem;
+  line-height: 1.58;
+}
+.spot-quick-label {
+  display: block;
+  font-size: 0.73rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.spot-url-row {
+  padding: 0 1.15rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.42rem;
+}
+.spot-url-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: #f0f9ff;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.spot-url-pill:hover {
+  background: #e0f2fe;
+}
+.spot-essay-body {
+  padding: 1rem 1.15rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.82rem;
+}
+.spot-essay-body p {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.85;
+  color: var(--ink);
+}
+.spot-editor-note {
+  margin-top: 0.25rem;
+  padding: 0.78rem 0.95rem;
+  border-radius: 10px;
+  border-left: 4px solid #d97706;
+  background: #fffdf5;
+  font-size: 0.87rem;
+  line-height: 1.68;
+  color: #78350f;
+}
+.spot-art-grid {
+  padding: 0.95rem 1.1rem 1.1rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+.spot-art-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  min-width: 0;
+}
+.spot-art-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #f8faf8;
+}
+.spot-art-cap-box {
+  padding: 0.72rem 0.85rem 0.82rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+.spot-art-cap-box h3 {
+  margin: 0;
+  font-size: 0.94rem;
+  color: var(--ink);
+}
+.spot-art-cap-box p {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.58;
+  color: var(--ink);
+}
+.spot-art-provenance {
+  font-size: 0.73rem;
+  color: var(--muted);
+}
+.spot-conn-wrap {
+  padding: 0.95rem 1.15rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.spot-conn-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+.spot-conn-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.24rem;
+  padding: 0.72rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #f8faf8;
+  text-decoration: none;
+  color: var(--ink);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.spot-conn-card:hover {
+  border-color: var(--forest);
+  background: #f0fdf4;
+}
+.spot-conn-rel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--forest-dark);
+}
+.spot-leads-box {
+  padding: 0.75rem 0.95rem;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+}
+.spot-leads-box h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+.spot-leads-box ul,
+.spot-ep-list {
+  margin: 0;
+  padding-left: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+.spot-timeline {
+  padding: 0.95rem 1.15rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+.spot-log-entry {
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--forest);
+  border-radius: 10px;
+  padding: 0.8rem 0.95rem;
+  background: #fff;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.spot-log-meta {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--forest-dark);
+  margin-bottom: 0.25rem;
+}
+.spot-log-headline {
+  margin: 0 0 0.45rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+.spot-log-entry ul {
+  margin: 0 0 0.45rem;
+  padding-left: 1.15rem;
+  font-size: 0.85rem;
+  line-height: 1.62;
+}
+.spot-log-note {
+  font-size: 0.81rem;
+  line-height: 1.55;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+.spot-pager {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+.spot-pager a {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--forest-dark);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.spot-pager a:hover {
+  background: var(--forest-soft);
+}
+@media (max-width: 760px) {
+  .spots-index-grid,
+  .spot-quick-grid,
+  .spot-art-grid,
+  .spot-conn-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="brand-bar"><a class="brand" href="../index.html">こだいら防災＆まちラジオ</a><span class="time-pill">毎朝7時</span></div><nav class="nav-links" aria-label="メインメニュー"><a href="../index.html">最新回</a><a href="../calendar.html">カレンダー</a><a href="../spots/index.html" class="active">取材手帳</a><a href="../archive.html">過去回</a><a href="../cast.html">出演者</a><a href="../characters.html">防災ノート</a><a href="../tech.html">番組のしくみ</a></nav><h1 class="page-h1">小平スポット取材手帳</h1><p class="page-subhead">一次ソース検証×写真ベースイラストで読む地域の魅力レポート</p>
+    </div>
+  </header>
+
+  <main class="container single">
+    <div class="card spots-hero">
+      <h2 style="margin:0; font-size:1.08rem;">地域の魅力を愛情深く掘り下げる、一次情報ベースの継続取材ノート</h2>
+      <p class="spots-lead">
+        放送日だけでなく日々の巡回取材で集めた小平のまち・寺社・農園・公共施設・お店・インフラの発見を、公式情報によるファクトチェックと写真ベースのデフォルメイラスト付き読み物としてスポットごとに一冊ずつまとめました。長期に積み重なるネタ同士のつながりから、番組の特集企画が生まれます。
+      </p>
+      <div class="spots-stats-row" id="spots-stats-row"></div>
+    </div>
+
+    <div class="card" id="ready-specials-card" style="display:none;">
+      <div class="section-head">
+        <h2>⭐ 継続取材から育った長期特集候補（特集化OK）</h2>
+        <span class="hint">番組の深掘り特集に発展できるネタ</span>
+      </div>
+      <div class="spots-featured-strip" id="spots-ready-strip"></div>
+    </div>
+
+    <div class="card spots-controls">
+      <input type="search" id="spots-search" class="spots-search" placeholder="スポット名・本文・イラスト・エリア・つながりで検索（例：糧うどん、イルミネーション、免震、テルメ…）" />
+      <div class="spots-filter-row" id="spots-mode-filters">
+        <span class="spots-filter-label">絞り込み:</span>
+        <button type="button" class="spots-pill-btn active" data-mode="all">すべて</button>
+        <button type="button" class="spots-pill-btn" data-mode="illustrated">🎨 イラスト付き読み物</button>
+        <button type="button" class="spots-pill-btn" data-mode="ready">⭐ 特集化OK</button>
+        <button type="button" class="spots-pill-btn" data-mode="high">⚡ 高頻度巡回</button>
+      </div>
+      <div class="spots-filter-row" id="spots-cat-filters">
+        <span class="spots-filter-label">ジャンル:</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-head">
+        <h2>取材レポート一覧（全22スポット）</h2>
+        <span class="hint">タップすると各スポットの単独読み物ページが開きます</span>
+      </div>
+      <div class="spots-index-grid" id="spots-index-grid"></div>
+    </div>
+  </main>
+
+  <footer>毎朝7時！こだいら防災＆まちラジオ（東京都小平市）／ <a href="../calendar.html#spot-catalog">全127スポット題材カタログへ →</a></footer>
+
+  <script type="application/json" id="spots-index-data">{"stats": {"dossier_spots": 22, "catalog_total": 127, "illustrated_spots": 5, "total_illustrations": 10, "ready_specials": 5, "total_entries": 22}, "categories": [{"id": "public_institution", "label": "公共機関・防災拠点", "icon": "🏛️", "count": 1}, {"id": "community_space", "label": "公民館・地域センター・図書館", "icon": "📚", "count": 2}, {"id": "community_circle", "label": "コミュニティサークル", "icon": "🤝", "count": 1}, {"id": "museum_garden", "label": "美術館・博物館・植物園", "icon": "🖼️", "count": 1}, {"id": "sento_spa", "label": "温浴施設・足湯・リラックス", "icon": "♨️", "count": 3}, {"id": "company_factory", "label": "大きな工場・企業・研究研修機関", "icon": "🏭", "count": 1}, {"id": "water_facility", "label": "浄水・給水施設", "icon": "💧", "count": 1}, {"id": "power_energy", "label": "発電・変電施設", "icon": "⚡", "count": 1}, {"id": "shopping", "label": "ショッピングセンター・商店街", "icon": "🛍️", "count": 2}, {"id": "gourmet_cafe", "label": "レストラン・カフェ・パン・小平うどん", "icon": "☕", "count": 1}, {"id": "pet_book_zakka", "label": "ペットショップ・本屋・雑貨屋", "icon": "📖", "count": 1}, {"id": "park_water_walk", "label": "大小の公園・水辺・散歩道", "icon": "🌳", "count": 2}, {"id": "university_school", "label": "大学・専門学校・学園都市", "icon": "🎓", "count": 1}, {"id": "shrine_temple", "label": "神社・仏閣", "icon": "⛩️", "count": 1}, {"id": "orchard_farm", "label": "果樹園・農園", "icon": "🍐", "count": 1}, {"id": "farm_direct", "label": "直売所・小平の恵み", "icon": "🫐", "count": 1}, {"id": "leisure", "label": "レジャー・体験・休日お出かけ", "icon": "🏕️", "count": 1}], "spots": [{"id": "nakamachi_terrace", "name": "なかまちテラス（仲町公民館・仲町図書館）", "href": "nakamachi_terrace/index.html", "category": "community_space", "category_label": "公民館・地域センター・図書館", "category_icon": "📚", "area": "仲町", "station": "小平駅", "patrol_tier": "high", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "建築家・妹島和世氏が手がけた透明感ある建築に、木と本と人の温もりが集う仲町の拠点。冬は手作りのLEDイルミネーション『陽』が正面を照らします。", "hero_src": "../assets/spots/nakamachi_terrace/hero.jpg", "placeholder_svg": "", "illustration_count": 2, "entry_count": 1, "connection_count": 5, "special_ready": true, "special_theme": "妹島和世氏建築『なかまちテラス』と冬のLEDイルミネーション『陽』＆公民館共助特集", "search_text": "なかまちテラス（仲町公民館・仲町図書館） 公民館・地域センター・図書館 仲町 小平駅 建築家・妹島和世氏が手がけた透明感ある建築に、木と本と人の温もりが集う仲町の拠点。冬は手作りのLEDイルミネーション『陽』が正面を照らします。 2026〜2027冬イルミネーション『陽』点灯中（2027年2月末頃まで）＆公民館・図書館開館案内を確認 妹島和世氏建築『なかまちテラス』と冬のLEDイルミネーション『陽』＆公民館共助特集 折り重なる白い屋根の仲町テラス 建築家・妹島和世氏設計による、白いパンチングメタルが軽やかに折り重なる外観。図書館と公民館が一つに溶け合う小平の象徴です。 木漏れ日と本棚が調和する開放的な閲覧空間 大きなガラス窓の向こうに緑が広がり、天窓から柔らかな自然光が降り注ぐ木の空間。世代を問わず思い思いの時間を過ごせます。 西武線小平駅からほど近い仲町145に建つ「なかまちテラス」は、仲町公民館と仲町図書館が一体となった複合施設です。世界的建築家・妹島和世氏による軽やかなガラス張り外観と木を活かした柔らかな館内空間は、読書や調べものだけでなく地域の憩いの場として親しまれています。 秋から冬にかけての名物が、市内の職業能力開発総合大学校と市民が協力して制作する手作りLEDイルミネーションです。2026年10月31日(土)17:00の点灯式から2027年2月末頃まで正面入口を彩っており、今年のモチーフには太陽のような笑顔への想いを込めた「陽」の文字が掲げられています。公民館（9:00〜22:00）と図書館（火水9:00〜20:00／他曜日9:00〜17:00、金曜・第3木曜（祝日開館）・年末年始休館）の時間差を押さえて訪れるのがコツです。 仲町公民館（電話042-341-0862）は9:00〜22:00（受付21:30まで）、仲町図書館（電話042-344-7151）は火・水9:00〜20:00、月・木・土日祝9:00〜17:00で開館。 休館日は毎週金曜日（祝休日も閉館）、毎月第3木曜日（祝日または休日は開館）、年末年始（12月28日〜1月4日）。 正面入口では職業能力開発総合大学校と市民の手作りLEDイルミネーションが2026年10月31日点灯式〜2027年2月末頃まで実施され、今年のモチーフは『陽』の文字。"}, {"id": "bridgestone_gallery", "name": "Bridgestone Innovation Gallery（ブリヂストン技術センター）", "href": "bridgestone_gallery/index.html", "category": "company_factory", "category_label": "大きな工場・企業・研究研修機関", "category_icon": "🏭", "area": "小川東町", "station": "新小平駅・小川駅", "patrol_tier": "high", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "小川東町の技術センターに併設された無料ミュージアム。巨大タイヤの迫力と、建物を地震から守る『免震ゴム』の世界基準技術を学べます。", "hero_src": "../assets/spots/bridgestone_gallery/hero.jpg", "placeholder_svg": "", "illustration_count": 2, "entry_count": 1, "connection_count": 3, "special_ready": true, "special_theme": "小平から世界へ！Bridgestone Innovation Galleryで学ぶ『免震ゴム』と地震防災特集", "search_text": "Bridgestone Innovation Gallery（ブリヂストン技術センター） 大きな工場・企業・研究研修機関 小川東町 新小平駅・小川駅 小川東町の技術センターに併設された無料ミュージアム。巨大タイヤの迫力と、建物を地震から守る『免震ゴム』の世界基準技術を学べます。 通常開館（月〜土 10:00〜16:00・入館無料／日祝・年末年始休）を公式HPで確認 小平から世界へ！Bridgestone Innovation Galleryで学ぶ『免震ゴム』と地震防災特集 小平の技術拠点とタイヤ進化のミュージアム ケヤキ並木に面した技術センターと、木製車輪から次世代エアフリータイヤまでモビリティの歩みを一望できる明るい展示ギャラリー。 暮らしを静かに守る免震ゴムのしくみ図解 ゴムと鋼板を何層にも重ねた免震ゴムが地面の激しい横揺れをしなやかに受け流し、上の建物の揺れを大きく和らげます。 西武国分寺線・小川駅から徒歩約5分、小平市小川東町3-1-1にある「Bridgestone Innovation Gallery」は、世界的なタイヤ・ゴムメーカーの技術開発拠点に隣接した一般公開ミュージアムです。入館無料で、個人利用なら事前予約なし（月〜土 10:00〜16:00・最終入館15:30／日祝・年末年始休館）で気軽に本物の技術に触れることができます。 注目したい展示の一つが、タイヤだけでなく地震から病院・高層ビル・橋を守る「免震ゴム（免震支承）」などの防災・安全技術です。ゴムが地震の激しい揺れを吸収して建物へ伝わりにくくする仕組みは、月曜日の地震・建築テーマでもリスナーから関心の高いポイント。年末・年始の休館日カレンダーは公式サイトで事前にチェックしてお出かけください。 所在地は東京都小平市小川東町3-1-1（西武国分寺線 小川駅から徒歩約5分）。 開館時間は月曜日〜土曜日10:00〜16:00（最終入館15:30）、入館無料で個人見学は予約不要（団体は要事前連絡）。 原則として日曜日・祝日・年末年始および臨時休館日が休館となるため来館前の公式カレンダー確認が推奨される。"}, {"id": "kodaira_waste_power_plant", "name": "小平・村山・大和衛生組合 ごみ焼却施設発電所（ごみ発電）", "href": "kodaira_waste_power_plant/index.html", "category": "power_energy", "category_label": "発電・変電施設", "category_icon": "⚡", "area": "中島町", "station": "東大和市駅", "patrol_tier": "low", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "小平・村山・大和衛生組合の焼却熱で最大6,000kWを発電。余剰電力は小平など3市の市役所や小中学校へ『自己託送』されています。", "hero_src": "../assets/spots/kodaira_waste_power_plant/hero.jpg", "placeholder_svg": "", "illustration_count": 2, "entry_count": 1, "connection_count": 3, "special_ready": true, "special_theme": "最大6,000kW発電＆3市小中学校へ自己託送！衛生組合のエネルギー循環と分別防災特集", "search_text": "小平・村山・大和衛生組合 ごみ焼却施設発電所（ごみ発電） 発電・変電施設 中島町 東大和市駅 小平・村山・大和衛生組合の焼却熱で最大6,000kWを発電。余剰電力は小平など3市の市役所や小中学校へ『自己託送』されています。 最大出力6,000kW発電と小平・東大和・武蔵村山の市役所・小中学校への自己託送を確認 最大6,000kW発電＆3市小中学校へ自己託送！衛生組合のエネルギー循環と分別防災特集 緑の屋根が連なるごみ焼却発電施設と西武線 緩やかにカーブする屋上緑化テラスと白い煙突、脇を走る黄色い西武線。地域景観に溶け込む次世代のごみ発電拠点です。 ごみから生まれる電気とぬくもりの循環マップ 焼却熱でタービンを回して発電（最大出力6,000kW）し市役所・学校へ自己託送するとともに、余熱で隣接の「こもれびの足湯」を温めます。 小平市中島町2-1に位置する小平・村山・大和衛生組合のごみ焼却施設は、ごみを安全に減容・処理するだけでなく、街のクリーンな発電所としての顔を持っています。焼却時の熱エネルギーを使った蒸気タービン発電機は最大出力6,000kWを備え、まず施設内の電力を自前で賄います。 さらに素晴らしいのが余剰電力の活用です。余った電気は「自己託送」の仕組みを使って、構成3市（小平市・東大和市・武蔵村山市）の市役所や市立小・中学校へ送電され、子どもたちの学校生活や行政サービスを支えています。加えて余熱は隣接する『こもれびの足湯』の井戸水加温にも使われており、まさに無駄のない地域循環モデル。年末の大掃除でリチウムイオン電池をきちんと分別することが、この大切な発電インフラ火災を防ぐ第一歩にもなります。 小平・村山・大和衛生組合（小平市中島町2-1）の焼却余熱を活用し、最大出力6,000kWの蒸気タービン発電機を運用している。 施設内利用後の余剰電力は、自己託送により構成3市（小平市・東大和市・武蔵村山市）の市役所および市立小・中学校へ供給されている。 焼却余熱は地下水の加温にも活用され、隣接する無料温浴施設『こもれびの足湯』の温水供給源となっている。"}, {"id": "kodaira_furusato_mura", "name": "小平ふるさと村", "href": "kodaira_furusato_mura/index.html", "category": "museum_garden", "category_label": "美術館・博物館・植物園", "category_icon": "🖼️", "area": "天神町", "station": "小平駅・花小金井駅", "patrol_tier": "high", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "入園無料で江戸〜明治の古民家と丸ポストに出会える小平のふるさと。週末の「小平糧うどん」や季節の伝統行事が世代をつなぎます。", "hero_src": "../assets/spots/kodaira_furusato_mura/hero.jpg", "placeholder_svg": "", "illustration_count": 2, "entry_count": 1, "connection_count": 5, "special_ready": false, "special_theme": "小平ふるさと村の四季行事と武蔵野新田開発の防災知恵特集", "search_text": "小平ふるさと村 美術館・博物館・植物園 天神町 小平駅・花小金井駅 入園無料で江戸〜明治の古民家と丸ポストに出会える小平のふるさと。週末の「小平糧うどん」や季節の伝統行事が世代をつなぎます。 開園案内（10:00〜16:00・12/27〜1/5年末年始休園）と12月『小平糧うどん』営業日（12/5・6）を公式確認 小平ふるさと村の四季行事と武蔵野新田開発の防災知恵特集 旧小平小川郵便局舎と古民家園の風景 明治の面影を残す赤い屋根の旧郵便局舎と茅葺き古民家が並ぶ園内。散策するだけで江戸・明治の小平へタイムトリップできます。 名物・小平糧（かて）うどんと「みみ」 土日祝に数量限定で味わえる手打ち糧うどん。コシの強い麺と平打ちの「みみ」、ゆずの香り立つつけ汁と季節の糧（茹で野菜）が名物です。 天神町の住宅街を抜けると、昔ながらの茅葺きや木造の建物がゆったりと並ぶ「小平ふるさと村」が現れます。入園無料で気軽に立ち寄れる園内には、江戸〜明治期に移築・復元された古民家や旧小平小川郵便局舎（丸ポスト付き）が保存され、武蔵野の新田開発を切り拓いた先人たちの暮らしを肌で感じることができます。 大きな楽しみのひとつが、武蔵野手打ちうどん保存普及会による週末限定の手打ち「小平糧うどん」（1食500円・11:15から売切れ終了）です。2026年12月は5日(土)・6日(日)に提供が予定されているほか、12日(土)には子ども向けのもちつき体験、12日・13日にはお芝居ワークショップなど、季節ごとの体験が豊富です。月曜・第3火曜・祝翌日および年末年始（12/27〜1/5）が休園となり、専用駐車場はないため電車・バスや自転車での来園がおすすめです。 開園時間は10:00〜16:00（入園無料）、休園日は月曜日・第3火曜日・祝休日の翌日（土曜日・日曜日は開園）・年末年始（12月27日〜1月5日）。 武蔵野手打ちうどん保存普及会による『小平糧うどん』（1食500円・11:15〜売り切れ次第終了）の2026年12月営業予定日は12月5日(土)・6日(日)。 来園者用駐車場はないため、公共交通機関・徒歩・自転車での来園が公式案内されている。"}, {"id": "terme_ogawa", "name": "小平天然温泉 テルメ小川", "href": "terme_ogawa/index.html", "category": "sento_spa", "category_label": "温浴施設・足湯・リラックス", "category_icon": "♨️", "area": "小川町1丁目", "station": "東大和市駅・新小平駅", "patrol_tier": "high", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "小川町1丁目で地下湧出の天然温泉と露天風呂・サウナを楽しめる日帰り湯。一部ブログで閉店と誤解されがちですが、公式HPで通常営業を継続確認済みです。", "hero_src": "../assets/spots/terme_ogawa/hero.jpg", "placeholder_svg": "", "illustration_count": 2, "entry_count": 1, "connection_count": 3, "special_ready": false, "special_theme": "小平の温浴・足湯めぐりと冬の健康防災特集", "search_text": "小平天然温泉 テルメ小川 温浴施設・足湯・リラックス 小川町1丁目 東大和市駅・新小平駅 小川町1丁目で地下湧出の天然温泉と露天風呂・サウナを楽しめる日帰り湯。一部ブログで閉店と誤解されがちですが、公式HPで通常営業を継続確認済みです。 公式サイトで通常営業継続を確認（冬季限定メニュー展開中・第2水曜定休） 小平の温浴・足湯めぐりと冬の健康防災特集 レンガアーチと琥珀色の天然温泉露天風呂 古代ローマの浴場「テルマエ」を思わせるレンガ造りのアーチと、地下深くから湧き出る美肌の湯・琥珀色の露天風呂。 湯上がりの楽しみ・レストランの定食とお茶時間 赤と深緑のテーブルクロスが印象的な明るいレストランコーナー。サクッと揚がったとんかつ定食と温かいお茶が湯上がりの体に染みます。 青梅街道の南側・小平市小川町1-2494に構える「小平天然温泉 テルメ小川」は、ナトリウム-塩化物・炭酸水素塩泉の琥珀色の天然温泉と、落ち着いた石造り・木立の露天風呂やサウナで地元のファンに長く愛される日帰り温泉施設です。営業時間も10:00〜23:00（最終受付22:15）とゆとりがあり、平日仕事帰りから休日のリフレッシュまで幅広く利用されています。 インターネット上の非公式まとめブログ等には閉館と誤認し得る記述が残る例もありましたが、公式ホームページ（http://www.terme-ogawa.com/）を直接確認したところ2026年11月現在も通常営業を継続中で、冬季限定のお食事メニューも案内されています。毎月第2水曜日（祝日の場合は第3水曜日）が定休日、都条例により混浴年齢は未就学児（6歳以下）までとなっています。冬の冷えた身体を温める一方、脱衣所と浴室の寒暖差によるヒートショック予防もラジオで伝えたいテーマです。 公式ホームページ（http://www.terme-ogawa.com/）がHTTP 200で正常公開されており、2026年11月更新の冬季限定メニュー案内とともに通常営業（10:00〜23:00・最終受付22:15）を一次確認。 定休日は毎月第2水曜日（祝日の場合は第3水曜日・2026年11月は11月11日休館）。 東京都条例に基づく混浴制限により未就学児（6歳以下）までとなる点も公式サイトで明記。 所在地は東京都小平市小川町1-2494。"}, {"id": "osama_hanakoganei", "name": "おふろの王様 花小金井店", "href": "osama_hanakoganei/index.html", "category": "sento_spa", "category_label": "温浴施設・足湯・リラックス", "category_icon": "♨️", "area": "花小金井南町", "station": "花小金井駅", "patrol_tier": "high", "op_status_short": "改修・リニューアル予定/中", "op_badge_cls": "is-renovation", "last_checked_at": "2026-11-28", "lead_text": "花小金井南町の人気温浴施設が開業約20年目で初の大型リニューアル。2026年12月9日(水)に無料新設ラウンジや強化サウナが誕生予定です。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"おふろの王様 花小金井店 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_caab7700\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_caab7700\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_caab7700)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_caab7700)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">温浴施設・足湯・リラックス<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">おふろの王様 花小金井店<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">花小金井南町 ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 4, "special_ready": true, "special_theme": "おふろの王様 花小金井店 約20年ぶり大型リニューアル＆冬の温浴防災特集", "search_text": "おふろの王様 花小金井店 温浴施設・足湯・リラックス 花小金井南町 花小金井駅 花小金井南町の人気温浴施設が開業約20年目で初の大型リニューアル。2026年12月9日(水)に無料新設ラウンジや強化サウナが誕生予定です。 約20年ぶりの大型リニューアルで2026年12月9日オープン予定（新設ラウンジ・サウナ強化） おふろの王様 花小金井店 約20年ぶり大型リニューアル＆冬の温浴防災特集 小平市花小金井南町3-9-10にある「おふろの王様 花小金井店」は、営業時間9:00〜24:00（最終入館23:00）で深夜まで頼れる東部の温浴拠点です。2026年12月9日(水)には開業約20年目で初となる大規模リニューアルオープンが予定されており、地元でも大きな話題になっています。 公式発表や一次リリースによると、最大の目玉は無料でくつろげる新設ラウンジ「The Woodland Lounge（帰らずの森）」。約1万冊のコミックに加えWi-Fiと電源も完備される予定で、湯上がりに思い思いの時間を過ごせます。温浴側でもキングスサウナへの天井ファン導入、男湯・オートロウリュ第2サウナ、女湯・過熱水蒸気サウナの導入が計画されており、冬の温活とヒートショック予防を語る特集にもぴったりです。 所在地は東京都小平市花小金井南町3-9-10、営業時間9:00〜24:00（最終入館23:00）。 開業以来約20年目で初となる大型リニューアルオープンを2026年12月9日（水）に予定。 無料新設ラウンジ『The Woodland Lounge（帰らずの森）』では約1万冊のコミックに加えWi-Fi・電源を整備予定。 キングスサウナの天井ファン導入や、男湯のオートロウリュ第2サウナ・女湯の過熱水蒸気サウナ新設が予定されている。"}, {"id": "asupia_citizen_center", "name": "小平市民活動支援センター「あすぴあ」＆ 市民活動団体", "href": "asupia_citizen_center/index.html", "category": "community_circle", "category_label": "コミュニティサークル", "category_icon": "🤝", "area": "小川西町（小川駅西口）", "station": "小川駅西口", "patrol_tier": "high", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "2026年11月1日、小川駅西口徒歩1分の『小川パレット』4F・5Fへ移転オープン！小平の市民活動とボランティアを結ぶ新しい拠点です。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"小平市民活動支援センター「あすぴあ」＆ 市民活動団体 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_790f27f5\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_790f27f5\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_790f27f5)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_790f27f5)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">コミュニティサークル<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">小平市民活動支援センター「あすぴあ」＆ 市民活動団体<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">小川西町（小川駅西口） ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 3, "special_ready": true, "special_theme": "小川パレット移転記念！『あすぴあ』と小平のコミュニティサークル共助特集", "search_text": "小平市民活動支援センター「あすぴあ」＆ 市民活動団体 コミュニティサークル 小川西町（小川駅西口） 小川駅西口 2026年11月1日、小川駅西口徒歩1分の『小川パレット』4F・5Fへ移転オープン！小平の市民活動とボランティアを結ぶ新しい拠点です。 2026年11月1日に小川駅西口『小川パレット』4F・5Fへ移転オープン 小川パレット移転記念！『あすぴあ』と小平のコミュニティサークル共助特集 長年小平のボランティア・NPO・地域サークルの活動を支えてきた「小平市民活動支援センター あすぴあ」が、2026年11月1日より新拠点「〒187-0035 小平市小川西町4-16-1 小川パレット4F・5F」へ移転オープンしました。西武線小川駅西口から徒歩約1分とアクセスが格段に良くなり、西部地域の新たな交流の玄関口となっています。 あすぴあ窓口は9:00〜17:00、小川パレット全体は9:00〜22:00まで開館（第3木曜日および12月28日〜1月4日休館／電話042-348-2104）。防災の視点で考えると、日頃から地域のサークルやボランティア団体が顔をつなぎ合っていることが、いざ災害が起きた時の共助ネットワークや支援調整力につながります。 2026年11月1日より『〒187-0035 東京都小平市小川西町4-16-1 小川パレット4F・5F』（小川駅西口徒歩1分）へ移転オープン。 あすぴあ窓口の対応時間は9:00〜17:00、小川パレットは9:00〜22:00（休館日は第3木曜日および12月28日〜1月4日）。 連絡先は電話 042-348-2104／FAX 042-348-2115／メール info@kodaira-shiminkatsudo-ctr.jp。"}, {"id": "recycling_center", "name": "小平市リサイクルセンター", "href": "recycling_center/index.html", "category": "public_institution", "category_label": "公共機関・防災拠点", "category_icon": "🏛️", "area": "小川東町", "station": "新小平駅・萩山駅", "patrol_tier": "low", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "小川東町の資源回収の中枢。ごみ収集車や処理場の火災を防ぐ『リチウムイオン電池』の使い切り・テープ絶縁処分ルールと『リプレこだいら』を案内しています。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"小平市リサイクルセンター 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_304a3875\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_304a3875\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_304a3875)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_304a3875)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">公共機関・防災拠点<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">小平市リサイクルセンター<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">小川東町 ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 3, "special_ready": false, "special_theme": "年末大掃除×リチウムイオン電池火災ゼロ！小平市リサイクルセンター活用特集", "search_text": "小平市リサイクルセンター 公共機関・防災拠点 小川東町 新小平駅・萩山駅 小川東町の資源回収の中枢。ごみ収集車や処理場の火災を防ぐ『リチウムイオン電池』の使い切り・テープ絶縁処分ルールと『リプレこだいら』を案内しています。 リチウムイオン電池回収拠点＆併設『リプレこだいら』（10:00〜17:00・水木休）の運営案内を公式確認 年末大掃除×リチウムイオン電池火災ゼロ！小平市リサイクルセンター活用特集 年末の大掃除やモバイルバッテリー・コードレス家電の買い替えが増える冬、小平市小川東町5-19-10にある「小平市リサイクルセンター」の役割がぐっと大切になります。資源循環課窓口・見学エリアは月〜金曜8:30〜17:00（土日祝・年末年始休）で利用でき、環境学習や資源分別の中心拠点となっています。 近年特に注意喚起されているのが、不燃ごみ等に混ぜてしまうと収集車や焼却施設で激しい発火事故を起こしかねない「小型充電式電池（リチウムイオン電池など）」の排出方法です。同センターや市役所・市民センター・図書館の回収ボックスでは、破損や変形のない対象電池を『完全に使い切り、端子部分をセロハンテープ等で絶縁』して出すことが公式案内されています。また併設の再生家具等展示販売施設『リプレこだいら』（10:00〜17:00・水木および年末年始休）も資源循環を感じられる人気スポットです。 小平市リサイクルセンター（小平市小川東町5-19-10）の資源循環課窓口・見学エリアは月〜金曜8:30〜17:00（土日祝・年末年始休）。 同施設および市役所・市民センター・図書館等には小型充電式電池の回収ボックスが設置されており、破損・変形のないリチウムイオン電池等を『完全に使い切り・端子をテープ等で絶縁』して排出するよう案内されている。 併設の粗大ごみ再生家具等展示販売施設『リプレこだいら』は10:00〜17:00（水・木・年末年始休）で営業している。"}, {"id": "josuiminami_kominkan", "name": "上水南公民館・上水南図書館", "href": "josuiminami_kominkan/index.html", "category": "community_space", "category_label": "公民館・地域センター・図書館", "category_icon": "📚", "area": "上水南町", "station": "一橋学園駅・国分寺駅", "patrol_tier": "low", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "上水南町・喜平町エリアに寄り添う地域の居場所。公民館（月休）と図書館分室（12:30〜16:30・月金休※日曜開室）の開館ルールの違いも押さえました。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"上水南公民館・上水南図書館 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_f5e7e34a\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_f5e7e34a\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_f5e7e34a)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_f5e7e34a)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">公民館・地域センター・図書館<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">上水南公民館・上水南図書館<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">上水南町 ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 5, "special_ready": false, "special_theme": "小平市内8地域の公民館・図書館ネットとご近所防災拠点ガイド", "search_text": "上水南公民館・上水南図書館 公民館・地域センター・図書館 上水南町 一橋学園駅・国分寺駅 上水南町・喜平町エリアに寄り添う地域の居場所。公民館（月休）と図書館分室（12:30〜16:30・月金休※日曜開室）の開館ルールの違いも押さえました。 上水南公民館（月休）と併設・上水南図書館（12:30〜16:30・月金休※日曜開室）の利用案内を公式確認 小平市内8地域の公民館・図書館ネットとご近所防災拠点ガイド 一橋学園駅・国分寺駅方面からもアクセスしやすい小平市上水南町1-27-1にある「上水南公民館」は、小平市南東部のまちづくりや地域サロン、手打ちうどん講座などを支えるアットホームな拠点です。館内に「小平市図書館 上水南分室」も併設されており、世代を超えた地域の学び場となっています。 利用するときに気をつけたいのが公民館と図書館の開館・休館ルールの違いです。公民館は9:00〜22:00（火〜土夜間と日祝は利用申請時のみ開館・窓口は9:00〜17:00日祝除く・月曜（祝開館）と12/28〜1/4休）である一方、図書館分室は12:30〜16:30開室で月曜・金曜・祝休日（日曜日の場合は開室）・12/28〜1/4休館となります。普段から地域のサロンで顔を合わせておくことが、いざという時の高齢者見守りにつながります。 上水南公民館（小平市上水南町1-27-1）は9:00〜22:00開館（火〜土17:00以降・日祝は利用申請時のみ開館、窓口は日祝除く9:00〜17:00）、月曜（祝開館）および12月28日〜1月4日休館。 同館内の小平市図書館 上水南分室は12:30〜16:30開室、休館日は月曜・金曜・祝休日（ただし日曜日の場合は開室）・12月28日〜1月4日・特別整理期間。"}, {"id": "komorebi_ashiyu", "name": "こもれびの足湯（小平・村山・大和衛生組合）", "href": "komorebi_ashiyu/index.html", "category": "sento_spa", "category_label": "温浴施設・足湯・リラックス", "category_icon": "♨️", "area": "中島町", "station": "東大和市駅", "patrol_tier": "high", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "清掃工場のごみ焼却余熱で井戸水を温める、環境配慮型の無料足湯。10月〜2月は冬季営業時間（9:30〜16:00）でぽかぽか開園中です。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"こもれびの足湯（小平・村山・大和衛生組合） 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_bd811d03\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_bd811d03\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_bd811d03)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_bd811d03)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">温浴施設・足湯・リラックス<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">こもれびの足湯（小平・村山・大和衛生組合）<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">中島町 ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 4, "special_ready": false, "special_theme": "ごみ余熱でぽかぽか！衛生組合『こもれびの足湯』＆冬のリラックスさんぽ", "search_text": "こもれびの足湯（小平・村山・大和衛生組合） 温浴施設・足湯・リラックス 中島町 東大和市駅 清掃工場のごみ焼却余熱で井戸水を温める、環境配慮型の無料足湯。10月〜2月は冬季営業時間（9:30〜16:00）でぽかぽか開園中です。 冬季営業（10〜2月 9:30〜16:00／木曜定休・12/29〜1/3休）の無料運営を衛生組合公式確認 ごみ余熱でぽかぽか！衛生組合『こもれびの足湯』＆冬のリラックスさんぽ 小平市中島町3-5、小平・村山・大和衛生組合の敷地に隣接する「こもれびの足湯」は、なんと無料で利用できる地域の隠れた癒やしスポットです。隣のごみ焼却施設で発生した熱エネルギーを地下水の加温に活かしており、エコロジーと暮らしの快適さが一つになった小平ならではの施設といえます。 2026年11月現在は10月〜2月の冬季スケジュール（9:30〜16:00／3〜9月は16:30まで）でオープンしています。休場日は毎週木曜日（祝日の場合は翌日以降の休日を除く直近平日）、年末年始（12月29日〜1月3日）、および焼却施設の定期点検日です。散歩の途中で靴を脱いで足先を温めることで血流が良くなり、冬場の冷え対策や災害時のエコノミークラス症候群予防の大切さを思い出すきっかけにもなります。 10月〜2月の冬季営業時間は9:30〜16:00（3月〜9月は9:30〜16:30）、利用料金は無料。 休場日は毎週木曜日（祝日の場合は翌日以降の休日を除く直近平日）、年末年始（12月29日〜1月3日）、焼却施設点検日。 隣接するごみ焼却施設の余熱で井戸水を温めている（タオル持参推奨）。"}, {"id": "across_plaza_kodaira", "name": "アクロスプラザ小平", "href": "across_plaza_kodaira/index.html", "category": "shopping", "category_label": "ショッピングセンター・商店街", "category_icon": "🛍️", "area": "上水本町", "station": "一橋学園駅・国分寺駅", "patrol_tier": "high", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "ロピア・サンドラッグ・Seriaなどが一堂に集う上水本町のショッピング拠点。普段のまとめ買いと防災グッズ点検が一度に叶います。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"アクロスプラザ小平 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_167d13ff\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_167d13ff\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_167d13ff)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_167d13ff)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">ショッピングセンター・商店街<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">アクロスプラザ小平<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">上水本町 ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 3, "special_ready": false, "special_theme": "小平のショッピング拠点で揃える『普段買いローリングストック』特集", "search_text": "アクロスプラザ小平 ショッピングセンター・商店街 上水本町 一橋学園駅・国分寺駅 ロピア・サンドラッグ・Seriaなどが一堂に集う上水本町のショッピング拠点。普段のまとめ買いと防災グッズ点検が一度に叶います。 ロピア・サンドラッグ（9:00〜20:00）やSeriaなど全主要テナントの営業状況を公式確認 小平のショッピング拠点で揃える『普段買いローリングストック』特集 小平市上水本町4-22-1（旧日立自動車教習所跡地・2021年開業）に位置する「アクロスプラザ小平」は、一橋学園駅・国分寺駅圏の暮らしを支える地域密着型商業施設です。大和ハウスリアルティマネジメント株式会社が運営し、幅広い日常ニーズに寄り添う店舗が集まっています。 大容量・お値打ち食材で人気のスーパーマーケット「ロピア 小平店」（9:00〜20:00）に加え、「サンドラッグ アクロスプラザ小平店」（9:00〜20:00）や100円ショップ「Seria」、飲食店・クリニックまで隣接しているため、「レトルト・水」「常備薬・マスク・救急品」「簡易ライト・収納袋」という家庭の防災ローリングストックを一度の買い物で見直すことができます。 所在地は〒187-0022 東京都小平市上水本町4-22-1（大和ハウスリアルティマネジメント株式会社運営）。 ロピア小平店（電話042-324-0298）およびサンドラッグ アクロスプラザ小平店（電話042-312-4931）はいずれも9:00〜20:00で営業。 Seria・サイゼリヤ・クリニック/接骨院等を含め複数テナントがワンストップで揃う。"}, {"id": "hanakoganei_market_trial_inageya", "name": "いなげや・トライアル西友 花小金井駅前商業エリア", "href": "hanakoganei_market_trial_inageya/index.html", "category": "shopping", "category_label": "ショッピングセンター・商店街", "category_icon": "🛍️", "area": "花小金井", "station": "花小金井駅北口", "patrol_tier": "low", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "花小金井駅北口の24時間営業『トライアル西友』と夜23時まで営業の『いなげや』。忙しい暮らしの日常とローリングストックを昼夜支える駅前商圏です。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"いなげや・トライアル西友 花小金井駅前商業エリア 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_63f785eb\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_63f785eb\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_63f785eb)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_63f785eb)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">ショッピングセンター・商店街<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">いなげや・トライアル西友 花小金井駅前商業エリア<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">花小金井 ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 3, "special_ready": false, "special_theme": "花小金井北口の暮らしを支える24時間商圏とスマート備蓄特集", "search_text": "いなげや・トライアル西友 花小金井駅前商業エリア ショッピングセンター・商店街 花小金井 花小金井駅北口 花小金井駅北口の24時間営業『トライアル西友』と夜23時まで営業の『いなげや』。忙しい暮らしの日常とローリングストックを昼夜支える駅前商圏です。 トライアル西友（24時間営業）といなげや花小金井駅前店（9:30〜23:00）の最新営業を確認 花小金井北口の暮らしを支える24時間商圏とスマート備蓄特集 西武新宿線・花小金井駅の北口一帯は、日々の買い物から深夜・早朝の急な必需品調達までカバーする利便性の高い商業エリアです。なかでも小平市花小金井1-2-23の「トライアル西友 花小金井店」は、2025年11月28日にトライアルと西友の強みを融合した新フォーマットの第1号店としてオープンし、24時間営業（一部医薬品売場等は時間限定）で地域の生活を支えています。 また北口ロータリーすぐの小平市花小金井1-8-3には「いなげや 花小金井駅前店」（9:30〜23:00営業）があり、同エリアのリブロ花小金井店などと合わせて駅利用者の生活導線に溶け込んでいます。24時間や夜遅くまで営業する身近なスーパーを把握しつつ、家の中にも常に水・保存食を少し多めに循環させる習慣を身につけたいですね。 トライアル西友 花小金井店（小平市花小金井1-2-23・花小金井駅徒歩約3分）は西友とトライアルの融合フォーマット第1号店として2025年11月28日にオープンし、24時間営業（一部売場除く、例：医薬品9:00〜21:00）。 いなげや 花小金井駅前店（小平市花小金井1-8-3・花小金井駅北口ロータリーすぐ）は9:30〜23:00営業。"}, {"id": "cafe_laguras", "name": "Cafe LAGURAS（カフェ・ラグラス）", "href": "cafe_laguras/index.html", "category": "gourmet_cafe", "category_label": "レストラン・カフェ・パン・小平うどん", "category_icon": "☕", "area": "美園町・あじさい公園隣", "station": "小平駅南口", "patrol_tier": "high", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "あじさい公園の隣、緑道沿いに佇む癒やしのカフェ。有機珈琲と手作りスイーツ、テラス席でのペット同伴休憩も楽しめる小平駅南口のオアシスです。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"Cafe LAGURAS（カフェ・ラグラス） 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_e7b5e5e3\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_e7b5e5e3\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_e7b5e5e3)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_e7b5e5e3)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">レストラン・カフェ・パン・小平うどん<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">Cafe LAGURAS（カフェ・ラグラス）<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">美園町・あじさい公園隣 ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 3, "special_ready": false, "special_theme": "あじさい公園〜グリーンロード沿いのカフェとペット防災さんぽ", "search_text": "Cafe LAGURAS（カフェ・ラグラス） レストラン・カフェ・パン・小平うどん 美園町・あじさい公園隣 小平駅南口 あじさい公園の隣、緑道沿いに佇む癒やしのカフェ。有機珈琲と手作りスイーツ、テラス席でのペット同伴休憩も楽しめる小平駅南口のオアシスです。 公式サイトで営業時間（10:30〜16:00）と水木定休（祝営業）・テラスペット同伴可を確認 あじさい公園〜グリーンロード沿いのカフェとペット防災さんぽ 西武新宿線・小平駅南口から歩いて約4〜5分、小平市美園町1-24-14（あじさい公園のすぐ隣）にある「Cafe LAGURAS（カフェ・ラグラス）」は、小川用水のせせらぎと小平グリーンロードの緑に寄り添うカフェです。営業時間は10:30〜16:00で、水曜日・木曜日が定休日（祝日の場合は営業）となっています。 花と緑に包まれたテラス席は愛犬などペット同伴での利用も可能で、散歩途中の飼い主さん同士の優しい会話が生まれる場所でもあります。また店内では作家さんによるハンドメイド雑貨ボックス販売などもあり、平時のこうした「ご近所のお気に入り空間」を知っておくことは、ペット同行避難の散歩ルートや地域の安心感にもつながります。 営業時間は10:30〜16:00、定休日は水曜日・木曜日（祝日の場合は営業）。 西武新宿線 小平駅南口から徒歩約4〜5分、小平グリーンロード沿い・あじさい公園隣の好立地。 公式サイト（https://www.cafelaguras.jp/）および公式Instagram（@cafe_laguras_）で営業案内を発信している。"}, {"id": "book_kusabune_antosu", "name": "植物の本屋 草舟あんとす号（ホーリーガーデン）", "href": "book_kusabune_antosu/index.html", "category": "pet_book_zakka", "category_label": "ペットショップ・本屋・雑貨屋", "category_icon": "📖", "area": "小川町2丁目", "station": "新小平駅", "patrol_tier": "high", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "小川町2丁目の緑の小道に佇む、全国でも珍しい『植物にまつわる本』専門の独立系書店。花と絵本の物語がこころをほぐしてくれます。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"植物の本屋 草舟あんとす号（ホーリーガーデン） 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_8daaa93c\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_8daaa93c\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_8daaa93c)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_8daaa93c)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">ペットショップ・本屋・雑貨屋<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">植物の本屋 草舟あんとす号（ホーリーガーデン）<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">小川町2丁目 ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 3, "special_ready": false, "special_theme": "小平の個性派書店＆こころを潤す暮らしの文化スポット特集", "search_text": "植物の本屋 草舟あんとす号（ホーリーガーデン） ペットショップ・本屋・雑貨屋 小川町2丁目 新小平駅 小川町2丁目の緑の小道に佇む、全国でも珍しい『植物にまつわる本』専門の独立系書店。花と絵本の物語がこころをほぐしてくれます。 植物専門書店『草舟あんとす号』の基本営業情報（12:00〜17:00・水木定休）と公式発信先を確認 小平の個性派書店＆こころを潤す暮らしの文化スポット特集 JR武蔵野線・新小平駅から徒歩約6〜8分、小平市小川町2-2051の住宅街にある「植物の本屋 草舟あんとす号」は、植物・園芸・自然観察・絵本・美術書など“植物”をテーマに選書されたユニークな独立系書店です。木々と花々に囲まれた静かな佇まいは、一歩足を踏み入れるだけで季節の空気を感じられます。 基本の営業時間は12:00〜17:00（展示会期間などは18:00までの場合あり）、定休日は水曜日・木曜日で、土曜日・日曜日・月曜日・火曜日を中心に営業されています。ただし展示企画や不定休・臨時休業が入ることもあるため、訪れる前に公式X（@kusafune_anthos）や公式オンラインショップで最新営業カレンダーを確認するのが安心です。 所在地は〒187-0032 東京都小平市小川町2-2051（新小平駅から徒歩約6〜8分、小川駅から徒歩約8〜10分）。 基本営業時間は12:00〜17:00（展示会開催時は18:00までの場合あり）、定休日は水曜日・木曜日（土曜日・日曜日・月曜日・火曜日を中心に営業、不定休・臨時休業あり）。 公式オンラインショップ（https://kusafune-anthos.shop-pro.jp/）と公式X（@kusafune_anthos）にて最新予定を確認できる。"}, {"id": "nobidome_josui_walk", "name": "野火止用水緑道（小平市域・九道の辻〜東村山）", "href": "nobidome_josui_walk/index.html", "category": "park_water_walk", "category_label": "大小の公園・水辺・散歩道", "category_icon": "🌳", "area": "栄町・中島町・小川町1丁目", "station": "東大和市駅・八坂駅・萩山駅", "patrol_tier": "low", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "1655年にわずか約40日の工事で開削された『伊豆殿堀』。昭和の渇水で一度途絶えた後、1984年の『清流復活事業』で再び水が戻った奇跡の用水路です。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"野火止用水緑道（小平市域・九道の辻〜東村山） 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_f0b6db4e\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_f0b6db4e\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_f0b6db4e)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_f0b6db4e)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">大小の公園・水辺・散歩道<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">野火止用水緑道（小平市域・九道の辻〜東村山）<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">栄町・中島町・小川町1丁目 ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 7, "special_ready": false, "special_theme": "水の路・小平歴史ウォーク（小平監視所〜野火止用水〜九道の辻）", "search_text": "野火止用水緑道（小平市域・九道の辻〜東村山） 大小の公園・水辺・散歩道 栄町・中島町・小川町1丁目 東大和市駅・八坂駅・萩山駅 1655年にわずか約40日の工事で開削された『伊豆殿堀』。昭和の渇水で一度途絶えた後、1984年の『清流復活事業』で再び水が戻った奇跡の用水路です。 承応4年（1655年）開削と昭和59年（1984年）清流復活・九道の辻を結ぶ緑道散策ルートを一次確認 水の路・小平歴史ウォーク（小平監視所〜野火止用水〜九道の辻） 小平市域を東西に横断し、小川東町の歴史交差点「九道の辻」を抜けて東村山方面へ続く「野火止用水緑道」は、江戸時代前期の承応4年（1655年）に川越藩主・松平伊豆守信綱（知恵伊豆）によって開削されました。玉川上水からの分水として新田開発の農地と住民の生活を支え、「伊豆殿堀」の名で長く親しまれてきました。 戦後の都市化と昭和48年（1973年）の渇水などにより分水が止まり一度流れが途絶えましたが、市民や自治体による熱心な保全運動が実を結び、昭和59年（1984年）の東京都「清流復活事業」によって高度処理水による清流が復活しました。今は「小平グリーンロード」の大切な一部として多くの人に歩かれており、平時から徒歩移動路や排水ルートを確かめる散歩にも最適です。 承応4年（1655年）、玉川上水の分水として松平伊豆守信綱により開削（別名『伊豆殿堀』）。 昭和48年（1973年）の渇水等を経て一度流れが絶えたが、住民保全運動と昭和59年（1984年）の清流復活事業により再生水が戻り現在の清流が保たれている。 小川東町の『九道の辻』（かつて鎌倉街道など9本の古道が交わった要所・九道の辻公園）や小平グリーンロードとつながる。"}, {"id": "chuo_park_kodaira", "name": "小平市立中央公園（雑木林・イチョウ並木・小平アートサイト）", "href": "chuo_park_kodaira/index.html", "category": "park_water_walk", "category_label": "大小の公園・水辺・散歩道", "category_icon": "🌳", "area": "津田町", "station": "鷹の台駅", "patrol_tier": "high", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "体育館や中央図書館に隣接する小平のセントラルパーク。グラウンドは2027年3月末までPark-PFI改修休止中ですが、広場では季節の大型交流行事が開かれます。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"小平市立中央公園（雑木林・イチョウ並木・小平アートサ 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_f3091b5d\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_f3091b5d\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_f3091b5d)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_f3091b5d)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">大小の公園・水辺・散歩道<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">小平市立中央公園（雑木林・イチョウ並木・小平アートサ<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">津田町 ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 3, "special_ready": false, "special_theme": "中央公園の四季とPark-PFI生まれ変わり＆多文化共助特集", "search_text": "小平市立中央公園（雑木林・イチョウ並木・小平アートサイト） 大小の公園・水辺・散歩道 津田町 鷹の台駅 体育館や中央図書館に隣接する小平のセントラルパーク。グラウンドは2027年3月末までPark-PFI改修休止中ですが、広場では季節の大型交流行事が開かれます。 公園広場開放中（12/5ウクライナのクリスマス会場）＆グラウンドのみ〜2027年3月末Park-PFI改修休止を再確認 中央公園の四季とPark-PFI生まれ変わり＆多文化共助特集 鷹の台駅近くの津田町1-1-1に広がる「小平市立中央公園」は、雑木林の木漏れ日や美しいイチョウ並木、アート企画などで一年中市民が訪れる市の代表的な公園です。なお都市公園法の公募設置管理制度（Park-PFI／事業者：こだいらパークコネクトグループ）によるグラウンド改修事業のため、中央公園グラウンドは2026年4月1日〜2027年3月31日まで全面利用休止（令和9年度供用再開予定）となっています。 一方で公園の広場・緑地部分は開放されており、2026年12月5日(土)12:00〜18:00にはNPO法人ウクライナ文化センター主催・小平市後援の「小平でのウクライナのクリスマス 2026」が開催予定。伝統料理や手工芸ワークショップを通じた多文化共生の取り組みは、外国人住民も含めて助け合う災害時共助のヒントにもなります。 中央公園グラウンドはPark-PFI事業（事業者：こだいらパークコネクトグループ）の解体・改修工事に伴い2026年4月1日〜2027年3月31日まで全面利用休止（関連園路一部制限あり・令和9年度供用再開予定）。 一方、公園広場・園内は開放されており、2026年12月5日(土)12:00〜18:00にはNPO法人ウクライナ文化センター主催・小平市後援の『小平でのウクライナのクリスマス 2026』が開催予定。 伝統料理・雑貨・伝統工芸体験ワークショップ（刺繍・ヴィティナンカ・クリスマス・スター等）や行列が企画されている。"}, {"id": "tsuda_university", "name": "津田塾大学 小平キャンパス", "href": "tsuda_university/index.html", "category": "university_school", "category_label": "大学・専門学校・学園都市", "category_icon": "🎓", "area": "津田町", "station": "鷹の台駅", "patrol_tier": "low", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "1931年から小平に根づく伝統のキャンパス。関東大震災後の復興を経て建てられた本館『ハーツホン・ホール』は東京都選定歴史的建造物です。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"津田塾大学 小平キャンパス 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_3974a495\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_3974a495\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_3974a495)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_3974a495)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">大学・専門学校・学園都市<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">津田塾大学 小平キャンパス<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">津田町 ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 3, "special_ready": false, "special_theme": "小平の学園都市・歴史建築ウォーク（津田塾大学ハーツホン・ホール＆一橋・職業大）", "search_text": "津田塾大学 小平キャンパス 大学・専門学校・学園都市 津田町 鷹の台駅 1931年から小平に根づく伝統のキャンパス。関東大震災後の復興を経て建てられた本館『ハーツホン・ホール』は東京都選定歴史的建造物です。 本館『ハーツホン・ホール』（1931年竣工・東京都選定歴史的建造物）と小平キャンパス公式情報を確認 小平の学園都市・歴史建築ウォーク（津田塾大学ハーツホン・ホール＆一橋・職業大） 鷹の台駅から徒歩約8分、小平市津田町2-1-1に広がる「津田塾大学 小平キャンパス」は、創立者・津田梅子の精神を受け継ぎ1931年（昭和6年）に小平の地へ移って以来、約1世紀にわたり街とともに歩んできました。玉川上水沿いの豊かな緑に囲まれ、キャンパスの景観自体が小平の宝物のひとつです。 キャンパスの象徴である本館「ハーツホン・ホール」は、校舎再建に尽力したアナ・コープ・ハーツホン氏の名を冠し、2001年2月に東京都選定歴史的建造物に指定されています。大正・昭和初期の震災復興の歴史を今に伝える建築や、若い世代が学ぶ学園都市ならではの地域共助の広がりに思いを馳せられるスポットです。 所在地は〒187-8577 東京都小平市津田町2-1-1（西武国分寺線 鷹の台駅から徒歩約8分）。 キャンパスの象徴である本館『ハーツホン・ホール』は1931年（昭和6年）竣工で、校舎再建に尽力したアナ・コープ・ハーツホン氏の名を冠する。 2001年2月に東京都選定歴史的建造物に指定されている。"}, {"id": "ja_muchan_hiroba", "name": "JA東京むさし 小平ファーマーズ・マーケット（ムーちゃん広場）", "href": "ja_muchan_hiroba/index.html", "category": "farm_direct", "category_label": "直売所・小平の恵み", "category_icon": "🫐", "area": "小川町2丁目", "station": "青梅街道駅・新小平駅", "patrol_tier": "high", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "青梅街道駅すぐのJA東京むさし直売所。小平産の新鮮野菜だけでなく、マンホールトイレや防災井戸を備えた地域の頼もしい防災拠点でもあります。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"JA東京むさし 小平ファーマーズ・マーケット（ムーち 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_c859b6b7\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_c859b6b7\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_c859b6b7)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_c859b6b7)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">直売所・小平の恵み<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">JA東京むさし 小平ファーマーズ・マーケット（ムーち<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">小川町2丁目 ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 4, "special_ready": false, "special_theme": "食べて備える小平の冬野菜＆直売所の防災設備特集", "search_text": "JA東京むさし 小平ファーマーズ・マーケット（ムーちゃん広場） 直売所・小平の恵み 小川町2丁目 青梅街道駅・新小平駅 青梅街道駅すぐのJA東京むさし直売所。小平産の新鮮野菜だけでなく、マンホールトイレや防災井戸を備えた地域の頼もしい防災拠点でもあります。 通常営業（9:00〜16:00）および例年の年末年始休業（12/31〜1/6頃）をJA公式確認 食べて備える小平の冬野菜＆直売所の防災設備特集 青梅街道駅から徒歩約2分（小平市小川町2-1827）にある「小平ファーマーズ・マーケット ムーちゃん広場」は、9:00〜16:00の営業時間中に朝採れの小平産野菜や特産フルーツを求める市民で賑わう直売所です（原則無休・3月と9月の最終平日は休業／年末年始は例年12月31日〜1月6日頃休業）。 新鮮なダイコン・コマツナなどの冬野菜で栄養ある食卓を囲める魅力に加え、敷地内に災害用のマンホールトイレや防災井戸が整備されている点は地元でもぜひ知っておきたいポイント。日持ちのする根菜類を多めに買って食べる「農産物ローリングストック」と地域の給水・トイレ備えを結びつけて伝えられる場所です。 所在地は東京都小平市小川町2-1827（青梅街道駅徒歩約2分・電話042-348-7244）。 営業時間は9:00〜16:00、通常定休日はなし（3月・9月の最終平日は休業）。 例年、年末年始（12月31日〜1月6日頃）は休業となるため年末の買い出し日程確認に役立つ。"}, {"id": "kodaira_furusato_theater_crafts", "name": "小平の伝統体験・ふるさと村糧うどん＆市民文化ワークショップ", "href": "kodaira_furusato_theater_crafts/index.html", "category": "leisure", "category_label": "レジャー・体験・休日お出かけ", "category_icon": "🏕️", "area": "天神町・市内公民館", "station": "小平駅・花小金井駅", "patrol_tier": "high", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "餅つき・帯リース作り・お芝居ワークショップ・郷土かるたまで。家族や多世代が手仕事と笑顔でつながる小平の文化体験シリーズです。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"小平の伝統体験・ふるさと村糧うどん＆市民文化ワークシ 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_73b877f4\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_73b877f4\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_73b877f4)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_73b877f4)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">レジャー・体験・休日お出かけ<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">小平の伝統体験・ふるさと村糧うどん＆市民文化ワークシ<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">天神町・市内公民館 ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 3, "special_ready": false, "special_theme": "小平ふるさと村・市民伝統体験と地域の世代間共助特集", "search_text": "小平の伝統体験・ふるさと村糧うどん＆市民文化ワークショップ レジャー・体験・休日お出かけ 天神町・市内公民館 小平駅・花小金井駅 餅つき・帯リース作り・お芝居ワークショップ・郷土かるたまで。家族や多世代が手仕事と笑顔でつながる小平の文化体験シリーズです。 2026年11月・12月体験企画（帯リース教室11/29、もちつき体験12/12、お芝居WS12/12・13）を公式確認 小平ふるさと村・市民伝統体験と地域の世代間共助特集 小平の冬は、地域の手仕事や参加型ワークショップが街のあちこちで花開きます。ふるさと村では2026年11月29日(日)の「帯リース作り体験教室」、12月12日(土)10:30からの「もちつき体験」（中学生以下・先着50人・無料、お土産付き）など、季節の節目に合わせた催しが続きます。 さらに12月12日(土)・13日(日)には俳優の勝又絢子さんを講師に招いたお芝居ワークショップ「ひみつきち」も開催予定です。また園庭では小平市郷土かるたや竹とんぼ・お手玉といった昔あそびも親しまれており、電気を使わずに楽しめる遊びや地域交流は、いざという時の子どもの心のケアにもそのまま活きていきます。 2026年11月29日(日)に小平ふるさと村『帯リース作り体験教室』、12月12日(土)10:30〜に『もちつき体験』（中学生以下・保護者同伴可・先着50人・無料、ついた餅は展示用鏡もちのため試食なし・お土産あり）を予定。 2026年12月12日(土)・13日(日)（全2回・小学生以上対象）に俳優・勝又絢子さん講師のお芝居ワークショップ『ひみつきち』を開催予定。 通年で小平市郷土かるたや竹とんぼ・お手玉などの昔あそび・遊びのひろばも実施している。"}, {"id": "kaiganji_temple", "name": "海岸寺（茅葺き山門・市指定有形文化財）", "href": "kaiganji_temple/index.html", "category": "shrine_temple", "category_label": "神社・仏閣", "category_icon": "⛩️", "area": "御幸町", "station": "武蔵小金井駅・花小金井駅", "patrol_tier": "low", "op_status_short": "営業・公開中", "op_badge_cls": "is-open", "last_checked_at": "2026-11-28", "lead_text": "元文元年（1736年）の鈴木新田開発とともに移転・開山した瑞雲山 海岸寺。小平市指定有形文化財の鎌倉様式『茅葺き山門』が時代を伝えます。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"海岸寺（茅葺き山門・市指定有形文化財） 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_86154e69\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_86154e69\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_86154e69)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_86154e69)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">神社・仏閣<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">海岸寺（茅葺き山門・市指定有形文化財）<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">御幸町 ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 3, "special_ready": false, "special_theme": "小平の社寺と新田開発・文化財防災ウォーク", "search_text": "海岸寺（茅葺き山門・市指定有形文化財） 神社・仏閣 御幸町 武蔵小金井駅・花小金井駅 元文元年（1736年）の鈴木新田開発とともに移転・開山した瑞雲山 海岸寺。小平市指定有形文化財の鎌倉様式『茅葺き山門』が時代を伝えます。 元文元年（1736年）鈴木新田開発と関わる瑞雲山 海岸寺・市指定有形文化財の茅葺き山門を確認 小平の社寺と新田開発・文化財防災ウォーク 玉川上水・小金井橋のほど近く、小平市御幸町318に静かな境内を構える「海岸寺」は、山号を瑞雲山とする臨済宗妙心寺派の古刹です。江戸時代の元文元年（1736年）に行われた鈴木新田の開発に伴い現在地へ移転・開山され、約290年にわたり地域の人々の心の拠り所となってきました。 参拝時にぜひ仰ぎ見たいのが、小平市指定有形文化財に指定されている「茅葺き山門（鎌倉様式）」です。江戸時代の面影をとどめる貴重な木造・茅葺き建造物を冬場の火災や風雪からどう守り継ぐかという視点は、まさに『文化財防災』そのもの。玉川上水沿いの静かな歴史散歩と合わせて大切に紹介したい寺院です。 所在地は東京都小平市御幸町318（玉川上水・小金井橋付近）。 臨済宗妙心寺派の寺院（山号：瑞雲山）で、元文元年（1736年）の鈴木新田開発に伴い移転・開山された歴史を持つ。 鎌倉様式の茅葺き山門は小平市指定有形文化財に指定されている。"}, {"id": "shimamura_blueberry_farm", "name": "島村ブルーベリー園（日本商業栽培発祥の歴史農園）", "href": "shimamura_blueberry_farm/index.html", "category": "orchard_farm", "category_label": "果樹園・農園", "category_icon": "🍐", "area": "花小金井南町", "station": "花小金井駅南口", "patrol_tier": "low", "op_status_short": "季節営業・開園", "op_badge_cls": "is-seasonal", "last_checked_at": "2026-11-28", "lead_text": "1968年（昭和43年）の東京農工大学との共同栽培試験を起点に、日本における商業的ブルーベリー栽培の扉を開いた花小金井南町の歴史農園です。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"島村ブルーベリー園（日本商業栽培発祥の歴史農園） 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_cb961bc2\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_cb961bc2\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_cb961bc2)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_cb961bc2)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">果樹園・農園<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">島村ブルーベリー園（日本商業栽培発祥の歴史農園）<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">花小金井南町 ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 3, "special_ready": false, "special_theme": "日本の商業ブルーベリー栽培発祥の地・小平の果樹園と都市農業の防災力", "search_text": "島村ブルーベリー園（日本商業栽培発祥の歴史農園） 果樹園・農園 花小金井南町 花小金井駅南口 1968年（昭和43年）の東京農工大学との共同栽培試験を起点に、日本における商業的ブルーベリー栽培の扉を開いた花小金井南町の歴史農園です。 1968年（昭和43年）の東京農工大との栽培試験から始まった日本の商業ブルーベリー発祥史を一次確認 日本の商業ブルーベリー栽培発祥の地・小平の果樹園と都市農業の防災力 今日では全国で親しまれている国産の生鮮ブルーベリーですが、その商業栽培のルーツは東京都小平市花小金井南町1-10-13にある「島村ブルーベリー園」にあります。昭和43年（1968年）に始まった東京農工大学との栽培試験を受け継ぎ、日本で最初に本格的な商業的ブルーベリー栽培を軌道に乗せたことで知られています。 実際の摘み取りや収穫期は夏が中心の季節営業ですが、秋から冬にかけても小平が誇る「ブルーベリー発祥の地」の物語を語る上で欠かせない農業遺産スポットです。防災の観点でも、市内に点在する生産緑地や農園は延焼遮断帯やオープンスペースとしての大切な側面を持っています。 所在地は東京都小平市花小金井南町1-10-13。 1968年（昭和43年）の東京農工大学との共同栽培試験を受け継ぎ、日本の商業的ブルーベリー栽培発祥の地として知られる。 小平駅南口のモニュメント『日本ブルーベリー栽培発祥の地モニュメント』と区別し、実際の栽培史を伝える果樹園・農園スポットとして登録。"}, {"id": "kodaira_kanshisyo", "name": "東京都水道局 小平監視所（小平市西端すぐ隣・立川市幸町）", "href": "kodaira_kanshisyo/index.html", "category": "water_facility", "category_label": "浄水・給水施設", "category_icon": "💧", "area": "中島町・上水新町すぐ西（隣接・立川市幸町6丁目）", "station": "玉川上水駅・東大和市駅", "patrol_tier": "low", "op_status_short": "事前予約・限定公開", "op_badge_cls": "is-limited", "last_checked_at": "2026-11-28", "lead_text": "玉川上水から地下の砂川線を通じて東村山浄水場へ水を送り、野火止用水も分岐する首都圏水道網の要衝。物理所在地が隣接・立川市幸町6丁目である点まで一次確認済みです。", "hero_src": "", "placeholder_svg": "<svg class=\"spot-sketch-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 450\" role=\"img\" aria-label=\"東京都水道局 小平監視所（小平市西端すぐ隣・立川市幸 取材ノートスケッチ\">\n  <defs>\n    <linearGradient id=\"sketchPaper_bf283606\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0%\" stop-color=\"#fffdf8\"/>\n      <stop offset=\"55%\" stop-color=\"#f7fbf7\"/>\n      <stop offset=\"100%\" stop-color=\"#ecf5ee\"/>\n    <\/linearGradient>\n    <pattern id=\"ruledLines_bf283606\" width=\"800\" height=\"36\" patternUnits=\"userSpaceOnUse\">\n      <line x1=\"0\" y1=\"35\" x2=\"800\" y2=\"35\" stroke=\"#d9e7dd\" stroke-width=\"1\"/>\n    <\/pattern>\n  <\/defs>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#sketchPaper_bf283606)\"/>\n  <rect width=\"800\" height=\"450\" rx=\"18\" fill=\"url(#ruledLines_bf283606)\" opacity=\"0.65\"/>\n  <rect x=\"24\" y=\"24\" width=\"752\" height=\"402\" rx=\"14\" fill=\"none\" stroke=\"#9ec4ab\" stroke-width=\"2\" stroke-dasharray=\"8 6\"/>\n  <circle cx=\"676\" cy=\"116\" r=\"54\" fill=\"#fde68a\" fill-opacity=\"0.42\" stroke=\"#d97706\" stroke-width=\"1.8\" stroke-dasharray=\"4 4\"/>\n  <text x=\"676\" y=\"110\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">写真取材<\/text>\n  <text x=\"676\" y=\"132\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#92400e\">準備中<\/text>\n  <rect x=\"52\" y=\"54\" width=\"248\" height=\"34\" rx=\"17\" fill=\"#dcfce7\" stroke=\"#86efac\" stroke-width=\"1.5\"/>\n  <text x=\"176\" y=\"77\" text-anchor=\"middle\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#166534\">浄水・給水施設<\/text>\n  <text x=\"52\" y=\"190\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"28\" font-weight=\"800\" fill=\"#1f2937\">東京都水道局 小平監視所（小平市西端すぐ隣・立川市幸<\/text>\n  <text x=\"52\" y=\"236\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"18\" font-weight=\"600\" fill=\"#4b5563\">中島町・上水新町すぐ西（隣接・立川市幸町6丁目） ｜ 一次ソース取材手帳<\/text>\n  <path d=\"M52 290 C140 264, 210 310, 310 282 C420 250, 520 306, 720 278\" fill=\"none\" stroke=\"#1b5e3c\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\"0.55\"/>\n  <circle cx=\"102\" cy=\"346\" r=\"10\" fill=\"#1b5e3c\" opacity=\"0.22\"/>\n  <circle cx=\"140\" cy=\"346\" r=\"10\" fill=\"#d97706\" opacity=\"0.28\"/>\n  <circle cx=\"178\" cy=\"346\" r=\"10\" fill=\"#2563eb\" opacity=\"0.22\"/>\n  <text x=\"206\" y=\"352\" font-family=\"'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif\" font-size=\"14\" fill=\"#64748b\">今後の巡回取材で現地写真ベースのデフォルメイラストを順次追加予定<\/text>\n<\/svg>", "illustration_count": 0, "entry_count": 1, "connection_count": 4, "special_ready": false, "special_theme": "小平の命の水インフラ特集（小平監視所〜東村山浄水場〜応急給水拠点）", "search_text": "東京都水道局 小平監視所（小平市西端すぐ隣・立川市幸町） 浄水・給水施設 中島町・上水新町すぐ西（隣接・立川市幸町6丁目） 玉川上水駅・東大和市駅 玉川上水から地下の砂川線を通じて東村山浄水場へ水を送り、野火止用水も分岐する首都圏水道網の要衝。物理所在地が隣接・立川市幸町6丁目である点まで一次確認済みです。 玉川上水〜東村山浄水場導水と野火止用水・清流復活起点の役割（市境の立川市幸町6丁目所在）を一次確認 小平の命の水インフラ特集（小平監視所〜東村山浄水場〜応急給水拠点） 「小平監視所」という名前から小平市内にあると思われがちですが、東京都水道局の一次情報によると、施設の物理的所在地は小平市西端に隣接する「東京都立川市幸町6丁目」に位置しています。ここは江戸の頃から続く玉川上水の水を沈砂池と除塵機（スクリーン）で砂やゴミから守り、地下の砂川線導水管を通じて東村山浄水場へと送水する非常に重要な水利拠点です。 さらに小平監視所は、江戸の用水路「野火止用水」への分岐点であり、同時に下流側の玉川上水へ下水再生水を送る「清流復活事業」区間の起点でもあります。構内自体は水道施設のため一般非公開ですが、周辺の玉川上水緑道から歴史ある水の分岐点を眺めるだけで、私たちが毎日使う蛇口の水と小平の水辺景観を支えるインフラの凄みを感じられます。 東京都水道局（東村山浄水管理事務所管轄）の施設であり、物理的所在地は小平市境に隣接する東京都立川市幸町6丁目。 沈砂池と除塵機で玉川上水の水からゴミや砂を取り除き、地下の砂川線導水管を通じて東村山浄水場へ送水する。 野火止用水の分岐点であると同時に、下流側の下水再生水を用いた玉川上水清流復活区間の起点となっている。"}]}</script>
+  <script>
+    (function () {
+      const payload = JSON.parse(document.getElementById("spots-index-data").textContent);
+      const statsEl = document.getElementById("spots-stats-row");
+      const readyCard = document.getElementById("ready-specials-card");
+      const readyStrip = document.getElementById("spots-ready-strip");
+      const searchEl = document.getElementById("spots-search");
+      const modeBtns = Array.from(document.querySelectorAll("#spots-mode-filters button"));
+      const catWrap = document.getElementById("spots-cat-filters");
+      const gridEl = document.getElementById("spots-index-grid");
+
+      let mode = "all";
+      let catFilter = "all";
+
+      function addStatPill(text, cls) {
+        const span = document.createElement("span");
+        span.className = "spots-stat-pill " + (cls || "");
+        span.textContent = text;
+        statsEl.appendChild(span);
+      }
+
+      const st = payload.stats || {};
+      addStatPill("📚 取材レポート公開: " + (st.dossier_spots || 0) + "スポット / 全" + (st.catalog_total || 127));
+      addStatPill("🎨 イラスト掲載: " + (st.illustrated_spots || 0) + "スポット（計" + (st.total_illustrations || 0) + "点）", "is-art");
+      addStatPill("⭐ 特集化OK: " + (st.ready_specials || 0) + "件", "is-warm");
+      addStatPill("📝 一次確認ログ: 計" + (st.total_entries || 0) + "回", "");
+
+      const readyItems = (payload.spots || []).filter((s) => s.special_ready && s.special_theme);
+      if (readyItems.length > 0 && readyCard && readyStrip) {
+        readyCard.style.display = "";
+        readyItems.forEach((item) => {
+          const a = document.createElement("a");
+          a.className = "spots-ready-mini";
+          a.href = item.href;
+          const strong = document.createElement("strong");
+          strong.textContent = "⭐ " + item.name;
+          const span = document.createElement("span");
+          span.textContent = item.special_theme;
+          a.appendChild(strong);
+          a.appendChild(span);
+          readyStrip.appendChild(a);
+        });
+      }
+
+      if (catWrap) {
+        const allBtn = document.createElement("button");
+        allBtn.type = "button";
+        allBtn.className = "spots-pill-btn active";
+        allBtn.dataset.cat = "all";
+        allBtn.textContent = "全ジャンル (" + (st.dossier_spots || 0) + ")";
+        catWrap.appendChild(allBtn);
+
+        (payload.categories || []).forEach((c) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "spots-pill-btn";
+          b.dataset.cat = c.id;
+          b.textContent = c.icon + " " + c.label + " (" + c.count + ")";
+          catWrap.appendChild(b);
+        });
+
+        const catBtns = Array.from(catWrap.querySelectorAll("button"));
+        catBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            catFilter = btn.dataset.cat || "all";
+            catBtns.forEach((x) => x.classList.toggle("active", x === btn));
+            renderCards();
+          });
+        });
+      }
+
+      modeBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          mode = btn.dataset.mode || "all";
+          modeBtns.forEach((x) => x.classList.toggle("active", x === btn));
+          renderCards();
+        });
+      });
+
+      if (searchEl) {
+        searchEl.addEventListener("input", renderCards);
+      }
+
+      function renderCards() {
+        gridEl.innerHTML = "";
+        const q = (searchEl ? searchEl.value : "").trim().toLowerCase();
+        const items = (payload.spots || []).filter((sp) => {
+          if (mode === "illustrated" && !(sp.illustration_count > 0)) return false;
+          if (mode === "ready" && !sp.special_ready) return false;
+          if (mode === "high" && sp.patrol_tier !== "high") return false;
+          if (catFilter !== "all" && sp.category !== catFilter) return false;
+          if (!q) return true;
+          return (sp.search_text || "").toLowerCase().includes(q);
+        });
+
+        if (items.length === 0) {
+          const empty = document.createElement("p");
+          empty.style.padding = "1rem";
+          empty.style.color = "var(--muted)";
+          empty.textContent = "条件に合うスポット取材記事が見つかりませんでした。";
+          gridEl.appendChild(empty);
+          return;
+        }
+
+        items.forEach((sp) => {
+          const art = document.createElement("article");
+          art.className = "spot-article-card";
+
+          const linkImg = document.createElement("a");
+          linkImg.href = sp.href;
+          linkImg.style.display = "block";
+          if (sp.hero_src) {
+            const img = document.createElement("img");
+            img.className = "spot-card-thumb";
+            img.src = sp.hero_src;
+            img.alt = sp.name + " 取材イラスト";
+            img.loading = "lazy";
+            linkImg.appendChild(img);
+          } else {
+            const holder = document.createElement("div");
+            holder.innerHTML = sp.placeholder_svg;
+            linkImg.appendChild(holder.firstElementChild);
+          }
+          art.appendChild(linkImg);
+
+          const body = document.createElement("div");
+          body.className = "spot-card-body";
+
+          const badges = document.createElement("div");
+          badges.className = "spot-card-badges";
+
+          const bCat = document.createElement("span");
+          bCat.className = "spot-badge cat";
+          bCat.textContent = sp.category_icon + " " + sp.category_label;
+          badges.appendChild(bCat);
+
+          const bOp = document.createElement("span");
+          bOp.className = "spot-badge " + (sp.op_badge_cls || "is-open");
+          bOp.textContent = sp.op_status_short;
+          badges.appendChild(bOp);
+
+          if (sp.illustration_count > 0) {
+            const bArt = document.createElement("span");
+            bArt.className = "spot-badge art";
+            bArt.textContent = "🎨 イラスト" + sp.illustration_count + "点";
+            badges.appendChild(bArt);
+          }
+          if (sp.special_ready) {
+            const bReady = document.createElement("span");
+            bReady.className = "spot-badge ready";
+            bReady.textContent = "⭐ 特集化OK";
+            badges.appendChild(bReady);
+          }
+          body.appendChild(badges);
+
+          const h3 = document.createElement("h3");
+          h3.className = "spot-card-title";
+          h3.textContent = sp.name;
+          body.appendChild(h3);
+
+          const meta = document.createElement("div");
+          meta.className = "spot-card-meta";
+          meta.textContent = "📍 " + sp.area + "（" + sp.station + "）｜ 最終確認: " + sp.last_checked_at;
+          body.appendChild(meta);
+
+          const lead = document.createElement("p");
+          lead.className = "spot-card-lead";
+          lead.textContent = sp.lead_text;
+          body.appendChild(lead);
+
+          const footer = document.createElement("div");
+          footer.className = "spot-card-footer";
+
+          const countsSpan = document.createElement("span");
+          countsSpan.textContent =
+            "📝 取材" + sp.entry_count + "回 ／ 🔗 つながり" + sp.connection_count + "件";
+          footer.appendChild(countsSpan);
+
+          const readBtn = document.createElement("a");
+          readBtn.className = "spot-read-btn";
+          readBtn.href = sp.href;
+          readBtn.textContent = "📖 取材記事を読む →";
+          footer.appendChild(readBtn);
+
+          body.appendChild(footer);
+          art.appendChild(body);
+          gridEl.appendChild(art);
+        });
+      }
+
+      renderCards();
+    })();
+  </script>
+</body>
+</html>
