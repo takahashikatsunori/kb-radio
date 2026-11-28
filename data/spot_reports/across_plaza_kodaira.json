@@ -1,0 +1,61 @@
+{
+  "spot_id": "across_plaza_kodaira",
+  "spot_name": "アクロスプラザ小平",
+  "category": "shopping",
+  "patrol_tier": "high",
+  "last_researched_at": "2026-11-28",
+  "last_checked_at": "2026-11-28",
+  "last_check_note": "ロピア・サンドラッグ（9:00〜20:00）やSeriaなど全主要テナントの営業状況を公式確認",
+  "operating_status": "open",
+  "operating_status_note": "通常営業中（ロピア・サンドラッグ等 9:00〜20:00／店舗により異なる）",
+  "official_urls": [
+    "https://www.acrossplaza.jp/",
+    "https://acrossplaza.jp/facility/kodaira.html",
+    "https://lopia.jp/shops/kodaira"
+  ],
+  "curated_highlights": [
+    "上水本町4-22-1・2021年開業の大和ハウスリアルティマネジメント運営商業施設",
+    "ロピア小平店（9:00〜20:00）、サンドラッグ（9:00〜20:00）、Seriaなど防災日用品調達にも強いテナント群"
+  ],
+  "story_angles": [
+    "スーパー・ドラッグストア・100円ショップを1か所で回る日常ローリングストック補充",
+    "家族の体調や常備薬・衛生用品をまとめて整える週末防災ショッピング"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "小平のショッピング拠点で揃える『普段買いローリングストック』特集",
+    "reason": "他商業施設と合わせた週末お買い物防災企画の素材として蓄積可能。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_patrol_verified",
+      "operating_status": "open",
+      "headline": "ロピア・サンドラッグ（9:00〜20:00）やSeriaなど全主要テナントの営業状況を公式確認",
+      "discoveries": [
+        "所在地は〒187-0022 東京都小平市上水本町4-22-1（大和ハウスリアルティマネジメント株式会社運営）。",
+        "ロピア小平店（電話042-324-0298）およびサンドラッグ アクロスプラザ小平店（電話042-312-4931）はいずれも9:00〜20:00で営業。",
+        "Seria・サイゼリヤ・クリニック/接骨院等を含め複数テナントがワンストップで揃う。"
+      ],
+      "seasonal_note": "年末の買い出しや冬物衛生用品の調達需要が高まる時期。",
+      "disaster_tie_in": "食品（ロピア）・常備薬や衛生資材（サンドラッグ）・簡易収納やライト（Seria）を1度の買い物で点検補充できる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "Antigravity search_web 一次情報二段階照合（アクロスプラザ・ロピア・サンドラッグ公式）",
+        "notes": "アクロスプラザ公式施設ページおよびロピア・サンドラッグ公式店舗ページにて住所・電話番号・営業時間を照合。"
+      },
+      "primary_sources": [
+        {
+          "title": "アクロスプラザ小平 公式ホームページ",
+          "url": "https://acrossplaza.jp/facility/kodaira.html"
+        },
+        {
+          "title": "ロピア 小平店 公式店舗情報",
+          "url": "https://lopia.jp/shops/kodaira"
+        }
+      ]
+    }
+  ]
+}

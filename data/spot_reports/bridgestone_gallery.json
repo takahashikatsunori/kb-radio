@@ -1,0 +1,56 @@
+{
+  "spot_id": "bridgestone_gallery",
+  "spot_name": "Bridgestone Innovation Gallery（ブリヂストン技術センター）",
+  "category": "company_factory",
+  "patrol_tier": "high",
+  "last_researched_at": "2026-11-28",
+  "last_checked_at": "2026-11-28",
+  "last_check_note": "通常開館（月〜土 10:00〜16:00・入館無料／日祝・年末年始休）を公式HPで確認",
+  "operating_status": "open",
+  "operating_status_note": "通常開館中（月〜土 10:00〜16:00・入館15:30まで／日祝・年末年始等休館・個人予約不要・無料）",
+  "official_urls": [
+    "https://www.bridgestone.co.jp/",
+    "https://www.bridgestone.co.jp/corporate/innovation_gallery/information/"
+  ],
+  "curated_highlights": [
+    "小川東町3-1-1で無料・個人予約不要で入館できるブリヂストンの企業ミュージアム",
+    "巨大タイヤ展示や建物を地震から守る『免震ゴム』技術の展示が見どころ"
+  ],
+  "story_angles": [
+    "小平の技術が全国の建物・橋の地震対策を支える『免震構造』の仕組み",
+    "冬場の路面状況とタイヤ空気圧・溝点検など日常の交通安全"
+  ],
+  "special_feature_potential": {
+    "ready": true,
+    "theme_idea": "小平から世界へ！Bridgestone Innovation Galleryで学ぶ『免震ゴム』と地震防災特集",
+    "reason": "月曜テーマ（地震・建築・地盤）との相性が抜群で、小平の技術拠点と免震の仕組みを深く接続できる。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_patrol_verified",
+      "operating_status": "open",
+      "headline": "通常開館（月〜土 10:00〜16:00・入館無料／日祝・年末年始休）を公式HPで確認",
+      "discoveries": [
+        "所在地は東京都小平市小川東町3-1-1（西武国分寺線 小川駅から徒歩約5分）。",
+        "開館時間は月曜日〜土曜日10:00〜16:00（最終入館15:30）、入館無料で個人見学は予約不要（団体は要事前連絡）。",
+        "原則として日曜日・祝日・年末年始および臨時休館日が休館となるため来館前の公式カレンダー確認が推奨される。"
+      ],
+      "seasonal_note": "冬タイヤへの備えや年末前の無料見学スポットとして活用しやすい（日祝休に注意）。",
+      "disaster_tie_in": "地震の揺れを建物に伝えにくくする免震ゴム技術の理解と、日常のマイカー安全点検につなげられる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "Antigravity search_web 一次情報二段階照合（株式会社ブリヂストン公式HP）",
+        "notes": "bridgestone.co.jp 公式ページで開館時間（10:00〜16:00・入館15:30まで）・休館日・入館無料を確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "株式会社ブリヂストン 公式ホームページ（Bridgestone Innovation Gallery）",
+          "url": "https://www.bridgestone.co.jp/corporate/innovation_gallery/information/"
+        }
+      ]
+    }
+  ]
+}

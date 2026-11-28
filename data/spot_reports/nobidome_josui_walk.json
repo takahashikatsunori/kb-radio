@@ -1,0 +1,56 @@
+{
+  "spot_id": "nobidome_josui_walk",
+  "spot_name": "野火止用水緑道（小平市域・九道の辻〜東村山）",
+  "category": "park_water_walk",
+  "patrol_tier": "low",
+  "last_researched_at": "2026-11-28",
+  "last_checked_at": "2026-11-28",
+  "last_check_note": "承応4年（1655年）開削と昭和59年（1984年）清流復活・九道の辻を結ぶ緑道散策ルートを一次確認",
+  "operating_status": "open",
+  "operating_status_note": "通年散策可能（小平グリーンロード構成ルート・九道の辻〜東村山方面）",
+  "official_urls": [
+    "https://www.city.kodaira.tokyo.jp/",
+    "https://www.city.kodaira.tokyo.jp/kids/017/017990.html"
+  ],
+  "curated_highlights": [
+    "承応4年（1655年）に松平伊豆守信綱（知恵伊豆）が開削した別名『伊豆殿堀』",
+    "昭和48年渇水で途絶えた後、住民らの運動を経て昭和59年（1984年）の清流復活事業で水が戻った歴史的用水路"
+  ],
+  "story_angles": [
+    "1655年開削から300年以上続く武蔵野台地の水路史と1984年清流復活のストーリー",
+    "九道の辻（9つの古道の交差点）周辺の散策と都市部の雨水・水辺環境"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "水の路・小平歴史ウォーク（小平監視所〜野火止用水〜九道の辻）",
+    "reason": "既登録の小平監視所レポートと九道の辻・玉川上水を接続する大型散歩特集の核になる。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_patrol_verified",
+      "operating_status": "open",
+      "headline": "承応4年（1655年）開削と昭和59年（1984年）清流復活・九道の辻を結ぶ緑道散策ルートを一次確認",
+      "discoveries": [
+        "承応4年（1655年）、玉川上水の分水として松平伊豆守信綱により開削（別名『伊豆殿堀』）。",
+        "昭和48年（1973年）の渇水等を経て一度流れが絶えたが、住民保全運動と昭和59年（1984年）の清流復活事業により再生水が戻り現在の清流が保たれている。",
+        "小川東町の『九道の辻』（かつて鎌倉街道など9本の古道が交わった要所・九道の辻公園）や小平グリーンロードとつながる。"
+      ],
+      "seasonal_note": "晩秋〜冬は木漏れ日の中を静かに歩ける歴史散策の好機。",
+      "disaster_tie_in": "武蔵野台地で水を引き守ってきた先人の工夫と、緑道沿いの災害時徒歩ルート確認につながる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "Antigravity search_web 一次情報照合（小平市公式・こだいら観光まちづくり協会等）",
+        "notes": "小平市公式および地域観光アーカイブ等で承応4年（1655年）開削・1973年渇水・1984年清流復活・九道の辻史実を確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "小平市公式ホームページ（野火止用水関連）",
+          "url": "https://www.city.kodaira.tokyo.jp/kids/017/017990.html"
+        }
+      ]
+    }
+  ]
+}

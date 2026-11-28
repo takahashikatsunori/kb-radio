@@ -1,0 +1,60 @@
+{
+  "spot_id": "josuiminami_kominkan",
+  "spot_name": "上水南公民館・上水南図書館",
+  "category": "community_space",
+  "patrol_tier": "low",
+  "last_researched_at": "2026-11-28",
+  "last_checked_at": "2026-11-28",
+  "last_check_note": "上水南公民館（月休）と併設・上水南図書館（12:30〜16:30・月金休※日曜開室）の利用案内を公式確認",
+  "operating_status": "open",
+  "operating_status_note": "開館中（公民館 9:00〜22:00※夜間/日曜は予約利用時／図書館 12:30〜16:30・月金祝等休館）",
+  "official_urls": [
+    "https://www.city.kodaira.tokyo.jp/",
+    "https://www.city.kodaira.tokyo.jp/kurashi/001/001354.html",
+    "https://www.city.kodaira.tokyo.jp/kurashi/002/002590.html"
+  ],
+  "curated_highlights": [
+    "上水南公民館（9:00〜22:00・窓口9:00〜17:00日祝除く・月曜/12/28〜1/4休）",
+    "併設の上水南図書館（上水南分室）は午後12:30〜16:30開室（月・金・祝休日※日曜は開室・12/28〜1/4休）"
+  ],
+  "story_angles": [
+    "公民館と図書館（分室）の開館時間帯の違いを押さえた便利な使い分けガイド",
+    "地域サロンや講座を通じた南東部（上水南・喜平町）の高齢者見守り・共助"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "小平市内8地域の公民館・図書館ネットとご近所防災拠点ガイド",
+    "reason": "他の地域センター・公民館とまとめて生活圏別の最寄り防災学びスポット案内を作れる。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_patrol_verified",
+      "operating_status": "open",
+      "headline": "上水南公民館（月休）と併設・上水南図書館（12:30〜16:30・月金休※日曜開室）の利用案内を公式確認",
+      "discoveries": [
+        "上水南公民館（小平市上水南町1-27-1）は9:00〜22:00開館（火〜土17:00以降・日祝は利用申請時のみ開館、窓口は日祝除く9:00〜17:00）、月曜（祝開館）および12月28日〜1月4日休館。",
+        "同館内の小平市図書館 上水南分室は12:30〜16:30開室、休館日は月曜・金曜・祝休日（ただし日曜日の場合は開室）・12月28日〜1月4日・特別整理期間。"
+      ],
+      "seasonal_note": "公民館は月曜休・図書館分室は月金休という休館日の違いに要注意。",
+      "disaster_tie_in": "地域ごとの公民館活動への参加が、災害時の声掛けや高齢者の孤立防止につながる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "Antigravity search_web 一次情報照合（小平市公式・都立図書館案内等）",
+        "notes": "小平市公式ページにて上水南公民館および図書館上水南分室の開館時間・休館日を確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "小平市公式ホームページ（上水南公民館 開館案内）",
+          "url": "https://www.city.kodaira.tokyo.jp/kurashi/001/001354.html"
+        },
+        {
+          "title": "小平市公式ホームページ（図書館 上水南分室案内）",
+          "url": "https://www.city.kodaira.tokyo.jp/kurashi/002/002590.html"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "spot_id": "komorebi_ashiyu",
+  "spot_name": "こもれびの足湯（小平・村山・大和衛生組合）",
+  "category": "sento_spa",
+  "patrol_tier": "high",
+  "last_researched_at": "2026-11-28",
+  "last_checked_at": "2026-11-28",
+  "last_check_note": "冬季営業（10〜2月 9:30〜16:00／木曜定休・12/29〜1/3休）の無料運営を衛生組合公式確認",
+  "operating_status": "open",
+  "operating_status_note": "冬季営業時間で無料営業中（10月〜2月 9:30〜16:00／毎週木曜定休（祝時は翌日以降直近平日）・12/29〜1/3休）",
+  "official_urls": [
+    "https://www.kmy-eiseikumiai.jp/",
+    "https://www.kmy-eiseikumiai.jp/soshiki/gyomu/1/2/316.html"
+  ],
+  "curated_highlights": [
+    "小平・村山・大和衛生組合の焼却施設余熱で井戸水を加温した利用無料の環境配慮型足湯",
+    "10月〜2月の冬季は9:30〜16:00（3月〜9月は16:30まで）、年末年始12/29〜1/3および施設点検日休場"
+  ],
+  "story_angles": [
+    "冬の冷え対策・血流促進によるエコノミークラス症候群予防の豆知識",
+    "隣接ごみ発電（最大6,000kW）の余熱利用と資源循環・ゴミ分別の大切さ"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "ごみ余熱でぽかぽか！衛生組合『こもれびの足湯』＆冬のリラックスさんぽ",
+    "reason": "既登録の『ごみ焼却施設発電所（6,000kW）』レポートと合わせると強力な循環エネルギー回が組める。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_patrol_verified",
+      "operating_status": "open",
+      "headline": "冬季営業（10〜2月 9:30〜16:00／木曜定休・12/29〜1/3休）の無料運営を衛生組合公式確認",
+      "discoveries": [
+        "10月〜2月の冬季営業時間は9:30〜16:00（3月〜9月は9:30〜16:30）、利用料金は無料。",
+        "休場日は毎週木曜日（祝日の場合は翌日以降の休日を除く直近平日）、年末年始（12月29日〜1月3日）、焼却施設点検日。",
+        "隣接するごみ焼却施設の余熱で井戸水を温めている（タオル持参推奨）。"
+      ],
+      "seasonal_note": "すでに10〜2月の冬季スケジュール（16:00閉場）に入っているため夕方早めの訪問が案内向き。",
+      "disaster_tie_in": "足元を温めて血流を保つ重要性（車中泊・避難所での深部静脈血栓症予防）やごみ分別の安全意識につながる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "Antigravity search_web 一次情報二段階照合（小平・村山・大和衛生組合公式HP）",
+        "notes": "小平・村山・大和衛生組合公式HPおよび小平市公式ページにて夏季・冬季営業時間・祝日振替定休日・年末年始休を確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "小平・村山・大和衛生組合 公式ホームページ（こもれびの足湯）",
+          "url": "https://www.kmy-eiseikumiai.jp/soshiki/gyomu/1/2/316.html"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "spot_id": "cafe_laguras",
+  "spot_name": "Cafe LAGURAS（カフェ・ラグラス）",
+  "category": "gourmet_cafe",
+  "patrol_tier": "high",
+  "last_researched_at": "2026-11-28",
+  "last_checked_at": "2026-11-28",
+  "last_check_note": "公式サイトで営業時間（10:30〜16:00）と水木定休（祝営業）・テラスペット同伴可を確認",
+  "operating_status": "open",
+  "operating_status_note": "営業中（10:30〜16:00／水曜・木曜定休※祝日営業）",
+  "official_urls": [
+    "https://www.cafelaguras.jp/",
+    "https://www.instagram.com/cafe_laguras_/"
+  ],
+  "curated_highlights": [
+    "小平市美園町1-24-14（あじさい公園隣・小平駅南口徒歩約4〜5分）の小川用水沿いカフェ",
+    "営業時間10:30〜16:00、定休日は水・木（祝日の場合は営業）、テラス席ペット同伴可"
+  ],
+  "story_angles": [
+    "ペット（犬）と一緒に歩ける小平グリーンロード沿いの休憩＆ペット同行散歩マナー",
+    "地域のハンドメイド雑貨ボックス販売など住民同士の緩やかなコミュニティの場"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "あじさい公園〜グリーンロード沿いのカフェとペット防災さんぽ",
+    "reason": "あじさい公園や市内カフェ他店と合わせて土曜・平日まち歩き企画に展開可能。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_patrol_verified",
+      "operating_status": "open",
+      "headline": "公式サイトで営業時間（10:30〜16:00）と水木定休（祝営業）・テラスペット同伴可を確認",
+      "discoveries": [
+        "営業時間は10:30〜16:00、定休日は水曜日・木曜日（祝日の場合は営業）。",
+        "西武新宿線 小平駅南口から徒歩約4〜5分、小平グリーンロード沿い・あじさい公園隣の好立地。",
+        "公式サイト（https://www.cafelaguras.jp/）および公式Instagram（@cafe_laguras_）で営業案内を発信している。"
+      ],
+      "seasonal_note": "天気の良い日のテラス席休憩とグリーンロード・あじさい公園散歩の組み合わせに好適。",
+      "disaster_tie_in": "テラス同伴可能なカフェを起点に、普段からペットの散歩ルートや近隣避難経路・同行避難備品を確認できる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "Antigravity search_web 一次情報照合（Cafe LAGURAS公式サイト）",
+        "notes": "cafelaguras.jp 公式ページで10:30〜16:00・水木定休（祝営業）を確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "Cafe LAGURAS 公式ホームページ",
+          "url": "https://www.cafelaguras.jp/"
+        }
+      ]
+    }
+  ]
+}

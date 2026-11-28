@@ -1,0 +1,61 @@
+{
+  "spot_id": "nakamachi_terrace",
+  "spot_name": "なかまちテラス（仲町公民館・仲町図書館）",
+  "category": "community_space",
+  "patrol_tier": "high",
+  "last_researched_at": "2026-11-28",
+  "last_checked_at": "2026-11-28",
+  "last_check_note": "2026〜2027冬イルミネーション『陽』点灯中（2027年2月末頃まで）＆公民館・図書館開館案内を確認",
+  "operating_status": "open",
+  "operating_status_note": "通常開館中（仲町公民館 9:00〜22:00・受付21:30まで／図書館 火水 9:00〜20:00、他曜日・祝 9:00〜17:00／休館：金曜・第3木曜（祝日開館）・12/28〜1/4）",
+  "official_urls": [
+    "https://www.city.kodaira.tokyo.jp/",
+    "https://www.city.kodaira.tokyo.jp/shihou/131/131055.html",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHDtaVWZWBCsD4pdehWecdLdt_-REMEFVDWHxdFziqx44BDy6d-KkwBntVdUfjBLQj_trJJ2fd3yRTIPWTu2YOzPfyDey1apeOnFHZJ6IV2vLbdw1821K9z7yqjxzDX2dwBNMj4MiJuA5Fc1_yMNmM=="
+  ],
+  "curated_highlights": [
+    "建築家・妹島和世氏設計のガラス張り建築と木を活かした地域交流ハブ（仲町公民館・図書館）",
+    "職業能力開発総合大学校・市民協働のイルミネーション（2026年10月31日〜2027年2月末）は今年のモチーフ『陽』"
+  ],
+  "story_angles": [
+    "冬のイルミネーション『陽』に込められた思いと夜間まち歩きの防寒・足元安全",
+    "図書館での防災知識学習と夏冬のコミュニティ避難・休憩拠点機能"
+  ],
+  "special_feature_potential": {
+    "ready": true,
+    "theme_idea": "妹島和世氏建築『なかまちテラス』と冬のLEDイルミネーション『陽』＆公民館共助特集",
+    "reason": "2026年10月31日〜2027年2月末のイルミネーション『陽』、職能大との産学地域協働、公民館＋図書館複合の一次情報が揃ったため。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_patrol_verified",
+      "operating_status": "open",
+      "headline": "2026〜2027冬イルミネーション『陽』点灯中（2027年2月末頃まで）＆公民館・図書館開館案内を確認",
+      "discoveries": [
+        "仲町公民館（電話042-341-0862）は9:00〜22:00（受付21:30まで）、仲町図書館（電話042-344-7151）は火・水9:00〜20:00、月・木・土日祝9:00〜17:00で開館。",
+        "休館日は毎週金曜日（祝休日も閉館）、毎月第3木曜日（祝日または休日は開館）、年末年始（12月28日〜1月4日）。",
+        "正面入口では職業能力開発総合大学校と市民の手作りLEDイルミネーションが2026年10月31日点灯式〜2027年2月末頃まで実施され、今年のモチーフは『陽』の文字。"
+      ],
+      "seasonal_note": "2027年2月末頃まで夕暮れ以降に正面入口イルミネーション『陽』が楽しめる。",
+      "disaster_tie_in": "冬の冷え込み対策としての温かな地域拠点利用と、図書館の郷土・防災資料の活用を紹介できる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "Antigravity search_web 一次情報二段階照合（小平市公式ページ）",
+        "notes": "小平市公式HPおよび図書館公式案内で2026〜2027年イルミネーション日程・デザイン『陽』・開館時間・休館日を照合。"
+      },
+      "primary_sources": [
+        {
+          "title": "小平市公式ホームページ（なかまちテラス イルミネーション案内）",
+          "url": "https://www.city.kodaira.tokyo.jp/shihou/131/131055.html"
+        },
+        {
+          "title": "小平市公式ホームページ（なかまちテラス 施設・休館日案内）",
+          "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHDtaVWZWBCsD4pdehWecdLdt_-REMEFVDWHxdFziqx44BDy6d-KkwBntVdUfjBLQj_trJJ2fd3yRTIPWTu2YOzPfyDey1apeOnFHZJ6IV2vLbdw1821K9z7yqjxzDX2dwBNMj4MiJuA5Fc1_yMNmM=="
+        }
+      ]
+    }
+  ]
+}

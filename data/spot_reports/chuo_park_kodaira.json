@@ -1,0 +1,62 @@
+{
+  "spot_id": "chuo_park_kodaira",
+  "spot_name": "小平市立中央公園（雑木林・イチョウ並木・小平アートサイト）",
+  "category": "park_water_walk",
+  "patrol_tier": "high",
+  "last_researched_at": "2026-11-28",
+  "last_checked_at": "2026-11-28",
+  "last_check_note": "公園広場開放中（12/5ウクライナのクリスマス会場）＆グラウンドのみ〜2027年3月末Park-PFI改修休止を再確認",
+  "operating_status": "open",
+  "operating_status_note": "公園広場は通常開放中（グラウンドのみ2026-04-01〜2027-03-31 Park-PFI改修により全面休止）",
+  "official_urls": [
+    "https://www.city.kodaira.tokyo.jp/",
+    "https://ukrainehouse.jp/",
+    "https://www.city.kodaira.tokyo.jp/shihou/131/131088.html",
+    "https://www.ukrainehouse.jp/ja/event-details/ukrainian-christmas-in-kodaira-2026"
+  ],
+  "curated_highlights": [
+    "2026年12月5日(土)12:00〜18:00『小平でのウクライナのクリスマス 2026』（小平市後援）を開催",
+    "中央公園グラウンドは『こだいらパークコネクトグループ』Park-PFI事業により2027年3月31日まで改修休止中"
+  ],
+  "story_angles": [
+    "ウクライナのクリスマスなど多文化共生イベントと災害時の外国人支援・やさしい日本語",
+    "グラウンド改修期間中でも公園広場・雑木林側が広域避難や地域交流の場である確認"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "中央公園の四季とPark-PFI生まれ変わり＆多文化共助特集",
+    "reason": "12/5イベント後の経過や2027年春のグラウンドリニューアルに向けた長期記録の対象として継続観察価値が高い。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_patrol_verified",
+      "operating_status": "open",
+      "headline": "公園広場開放中（12/5ウクライナのクリスマス会場）＆グラウンドのみ〜2027年3月末Park-PFI改修休止を再確認",
+      "discoveries": [
+        "中央公園グラウンドはPark-PFI事業（事業者：こだいらパークコネクトグループ）の解体・改修工事に伴い2026年4月1日〜2027年3月31日まで全面利用休止（関連園路一部制限あり・令和9年度供用再開予定）。",
+        "一方、公園広場・園内は開放されており、2026年12月5日(土)12:00〜18:00にはNPO法人ウクライナ文化センター主催・小平市後援の『小平でのウクライナのクリスマス 2026』が開催予定。",
+        "伝統料理・雑貨・伝統工芸体験ワークショップ（刺繍・ヴィティナンカ・クリスマス・スター等）や行列が企画されている。"
+      ],
+      "seasonal_note": "晩秋の雑木林・イチョウ景観と12月5日(土)クリスマスイベントに注目。",
+      "disaster_tie_in": "工事中の立入制限エリア把握と、多文化交流イベントをきっかけにした外国人住民との災害時助け合いを意識できる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "Antigravity search_web 一次情報二段階照合（小平市公式・指定管理者・主催NPO）",
+        "notes": "公園管理者および小平市公式案内でグラウンド休止期間（2026/4/1〜2027/3/31）、主催NPO法人ウクライナ文化センターで12/5開催時間を確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "小平市公式ホームページ（中央公園グラウンド 新しい利用方法・改修案内）",
+          "url": "https://www.city.kodaira.tokyo.jp/shihou/131/131088.html"
+        },
+        {
+          "title": "NPO法人ウクライナ文化センター（小平でのウクライナのクリスマス 2026）",
+          "url": "https://www.ukrainehouse.jp/ja/event-details/ukrainian-christmas-in-kodaira-2026"
+        }
+      ]
+    }
+  ]
+}

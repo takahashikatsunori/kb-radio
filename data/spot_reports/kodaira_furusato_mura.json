@@ -1,0 +1,61 @@
+{
+  "spot_id": "kodaira_furusato_mura",
+  "spot_name": "小平ふるさと村",
+  "category": "museum_garden",
+  "patrol_tier": "high",
+  "last_researched_at": "2026-11-28",
+  "last_checked_at": "2026-11-28",
+  "last_check_note": "開園案内（10:00〜16:00・12/27〜1/5年末年始休園）と12月『小平糧うどん』営業日（12/5・6）を公式確認",
+  "operating_status": "open",
+  "operating_status_note": "通常開園中（10:00〜16:00・入園無料／休園：月曜・第3火曜・祝翌日（土日除く）・12/27〜1/5）",
+  "official_urls": [
+    "https://kodaira-furusatomura.jp/",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGrz7Hy-MIIVPiew0-40noO5pUuA-VPQ1YqklTrOG42Gj29HgXGT9yxEWoAis8d9a957WZrZh_H4gDEMl4LYzlsaD12VBfg89NYppXeHLEOXFk5g4M272V57-r0ioWBtIe14H6aFZgC",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFm2UjBtCF1gy1NuuB7lu84NfS3YLEUCWNR3I_eK5GzHe9R-Qr1CYYDZ0a7oT4IbFpgUFXuEuc-4u5XapFT4Vkx_rXbR303vLwbPTbh6O1BWwXC5-dEN4DXMh9BtATnG3Uko4OGzNrASo5e"
+  ],
+  "curated_highlights": [
+    "開園10:00〜16:00・入場無料で江戸〜明治の復元古民家や旧小平小川郵便局舎を見学可能",
+    "2026年12月の『小平糧うどん』営業は12月5日(土)・6日(日)11:15〜（1食500円・売切終了・駐車場なし）"
+  ],
+  "story_angles": [
+    "古民家の囲炉裏・井戸・新田開発の知恵から学ぶ暮らしの備え",
+    "年末年始休園（12/27〜1/5）や祝日振替休園を踏まえたおでかけ案内"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "小平ふるさと村の四季行事と武蔵野新田開発の防災知恵特集",
+    "reason": "12/5・6の小平糧うどんや12/12もちつき、年末年始後の初春行事とつなげて長期企画化可能。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_patrol_verified",
+      "operating_status": "open",
+      "headline": "開園案内（10:00〜16:00・12/27〜1/5年末年始休園）と12月『小平糧うどん』営業日（12/5・6）を公式確認",
+      "discoveries": [
+        "開園時間は10:00〜16:00（入園無料）、休園日は月曜日・第3火曜日・祝休日の翌日（土曜日・日曜日は開園）・年末年始（12月27日〜1月5日）。",
+        "武蔵野手打ちうどん保存普及会による『小平糧うどん』（1食500円・11:15〜売り切れ次第終了）の2026年12月営業予定日は12月5日(土)・6日(日)。",
+        "来園者用駐車場はないため、公共交通機関・徒歩・自転車での来園が公式案内されている。"
+      ],
+      "seasonal_note": "12月5日・6日の糧うどん提供日と12月27日〜1月5日の年末年始休園情報に要注意。",
+      "disaster_tie_in": "復元古民家にある井戸やかまど・囲炉裏の構造を通じ、無電化での調理や水確保の歴史的知恵を紹介できる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "Antigravity search_web 一次情報二段階照合（小平ふるさと村公式HP）",
+        "notes": "小平ふるさと村公式HPにて開園時間・休園規則・12月5日・6日の糧うどん販売予定を確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "小平ふるさと村 公式ホームページ（開園・休園案内）",
+          "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGrz7Hy-MIIVPiew0-40noO5pUuA-VPQ1YqklTrOG42Gj29HgXGT9yxEWoAis8d9a957WZrZh_H4gDEMl4LYzlsaD12VBfg89NYppXeHLEOXFk5g4M272V57-r0ioWBtIe14H6aFZgC"
+        },
+        {
+          "title": "小平ふるさと村 公式ホームページ（小平糧うどん 営業予定）",
+          "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFm2UjBtCF1gy1NuuB7lu84NfS3YLEUCWNR3I_eK5GzHe9R-Qr1CYYDZ0a7oT4IbFpgUFXuEuc-4u5XapFT4Vkx_rXbR303vLwbPTbh6O1BWwXC5-dEN4DXMh9BtATnG3Uko4OGzNrASo5e"
+        }
+      ]
+    }
+  ]
+}

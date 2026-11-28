@@ -1,0 +1,56 @@
+{
+  "spot_id": "tsuda_university",
+  "spot_name": "津田塾大学 小平キャンパス",
+  "category": "university_school",
+  "patrol_tier": "low",
+  "last_researched_at": "2026-11-28",
+  "last_checked_at": "2026-11-28",
+  "last_check_note": "本館『ハーツホン・ホール』（1931年竣工・東京都選定歴史的建造物）と小平キャンパス公式情報を確認",
+  "operating_status": "open",
+  "operating_status_note": "通常運用中（小平市津田町2-1-1／本館ハーツホン・ホールは東京都選定歴史的建造物）",
+  "official_urls": [
+    "https://www.tsuda.ac.jp/",
+    "https://www.tsuda.ac.jp/student-life/campus-guide.html"
+  ],
+  "curated_highlights": [
+    "1931年（昭和6年）竣工の本館『ハーツホン・ホール』は2001年2月指定の東京都選定歴史的建造物",
+    "創立者・津田梅子の友人アナ・コープ・ハーツホンにちなむ名称と玉川上水沿いの豊かな緑"
+  ],
+  "story_angles": [
+    "1931年竣工の歴史的校舎の保存・耐震化と関東大震災（1923年）復興史のつながり",
+    "学園都市・小平における学生と地域住民の災害時共助のポテンシャル"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "小平の学園都市・歴史建築ウォーク（津田塾大学ハーツホン・ホール＆一橋・職業大）",
+    "reason": "大学・専門学校カテゴリの他キャンパス調査が揃うと特集化できる。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_patrol_verified",
+      "operating_status": "open",
+      "headline": "本館『ハーツホン・ホール』（1931年竣工・東京都選定歴史的建造物）と小平キャンパス公式情報を確認",
+      "discoveries": [
+        "所在地は〒187-8577 東京都小平市津田町2-1-1（西武国分寺線 鷹の台駅から徒歩約8分）。",
+        "キャンパスの象徴である本館『ハーツホン・ホール』は1931年（昭和6年）竣工で、校舎再建に尽力したアナ・コープ・ハーツホン氏の名を冠する。",
+        "2001年2月に東京都選定歴史的建造物に指定されている。"
+      ],
+      "seasonal_note": "玉川上水沿いの四季の並木とともに落ち着いたキャンパス景観が味わえる。",
+      "disaster_tie_in": "関東大震災後の復興を経て昭和初期に建てられた歴史的建造物の保存・防災意識を学ぶ話題につながる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "Antigravity search_web 一次情報照合（津田塾大学公式HP）",
+        "notes": "tsuda.ac.jp 公式ページでハーツホン・ホール1931年竣工および2001年2月東京都選定歴史的建造物指定を確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "津田塾大学 公式ホームページ（小平キャンパス・ハーツホン・ホール案内）",
+          "url": "https://www.tsuda.ac.jp/student-life/campus-guide.html"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "spot_id": "book_kusabune_antosu",
+  "spot_name": "植物の本屋 草舟あんとす号（ホーリーガーデン）",
+  "category": "pet_book_zakka",
+  "patrol_tier": "high",
+  "last_researched_at": "2026-11-28",
+  "last_checked_at": "2026-11-28",
+  "last_check_note": "植物専門書店『草舟あんとす号』の基本営業情報（12:00〜17:00・水木定休）と公式発信先を確認",
+  "operating_status": "open",
+  "operating_status_note": "営業中（12:00〜17:00・展示会時18:00までの場合あり／水・木定休・金曜等不定休確認推奨）",
+  "official_urls": [
+    "https://kusafune-anthos.shop-pro.jp/",
+    "https://twitter.com/kusafune_anthos"
+  ],
+  "curated_highlights": [
+    "全国でも希少な『植物にまつわる本』専門の独立系書店（小平市小川町2-2051）",
+    "公式オンラインショップおよび公式X（@kusafune_anthos）で最新営業日・展示会情報を発信"
+  ],
+  "story_angles": [
+    "在宅時のこころのケアや身近な野草・園芸の知識を深める読書スポット",
+    "水木定休など曜日営業の特徴を押さえた週末まち歩き提案"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "小平の個性派書店＆こころを潤す暮らしの文化スポット特集",
+    "reason": "他書店（リブロ花小金井店、文教堂小平店など）の調査と合わせて街の本屋特集にできる。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_patrol_verified",
+      "operating_status": "open",
+      "headline": "植物専門書店『草舟あんとす号』の基本営業情報（12:00〜17:00・水木定休）と公式発信先を確認",
+      "discoveries": [
+        "所在地は〒187-0032 東京都小平市小川町2-2051（新小平駅から徒歩約6〜8分、小川駅から徒歩約8〜10分）。",
+        "基本営業時間は12:00〜17:00（展示会開催時は18:00までの場合あり）、定休日は水曜日・木曜日（土曜日・日曜日・月曜日・火曜日を中心に営業、不定休・臨時休業あり）。",
+        "公式オンラインショップ（https://kusafune-anthos.shop-pro.jp/）と公式X（@kusafune_anthos）にて最新予定を確認できる。"
+      ],
+      "seasonal_note": "冬の読書シーズン・年末の贈り物探しにもぴったりな落ち着いた空間。",
+      "disaster_tie_in": "避難生活や在宅停電時の心の安らぎに紙の本・植物図鑑が持つ力を紹介できる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "Antigravity search_web 一次情報照合（公式オンラインショップ等）",
+        "notes": "公式ショップURL・公式Xアカウント・所在地・12:00〜17:00・水木定休を確認（来店前の公式X確認案内を併記）。"
+      },
+      "primary_sources": [
+        {
+          "title": "ボタニカルブックショップ 草舟あんとす号 公式オンラインショップ",
+          "url": "https://kusafune-anthos.shop-pro.jp/"
+        }
+      ]
+    }
+  ]
+}

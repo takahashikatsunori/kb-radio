@@ -1,0 +1,61 @@
+{
+  "spot_id": "recycling_center",
+  "spot_name": "小平市リサイクルセンター",
+  "category": "public_institution",
+  "patrol_tier": "low",
+  "last_researched_at": "2026-11-28",
+  "last_checked_at": "2026-11-28",
+  "last_check_note": "リチウムイオン電池回収拠点＆併設『リプレこだいら』（10:00〜17:00・水木休）の運営案内を公式確認",
+  "operating_status": "open",
+  "operating_status_note": "通常運営中（窓口・見学 平日8:30〜17:00／併設『リプレこだいら』10:00〜17:00 水木・年末年始休）",
+  "official_urls": [
+    "https://www.city.kodaira.tokyo.jp/",
+    "https://www.city.kodaira.tokyo.jp/kurashi/000/000189.html",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFSYLY93BNZc9couVVET94c6aAXu4f1DFt-M-CEWXHJ5BMRzrUI1XcH01I-j-TAv2vA_esrj3AUTHhMBYXur8tG6PuYmWd05jAWUcSZt2ibZ92xnI1gQWq9MgMdGIh7s0qLGrVuIt9P9mXkrd2pbNM=="
+  ],
+  "curated_highlights": [
+    "小平市リサイクルセンター（小川東町5-19-10）内に小型充電式電池（リチウムイオン電池等）回収ボックスを設置",
+    "併設の粗大ごみ再生展示販売施設『リプレこだいら』は10:00〜17:00営業（水・木・年末年始休）"
+  ],
+  "story_angles": [
+    "冬の大掃除シーズンに向けたモバイルバッテリー等リチウムイオン電池の安全処分（使い切り＋端子絶縁）",
+    "ごみ収集車・焼却施設火災の予防と正しい資源回収ルートの把握"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "年末大掃除×リチウムイオン電池火災ゼロ！小平市リサイクルセンター活用特集",
+    "reason": "12月の水曜テーマ『火災・電気』（特に12月9日予定『リチウムイオン電池の熱暴走と絶縁処分』）と完全連動。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_patrol_verified",
+      "operating_status": "open",
+      "headline": "リチウムイオン電池回収拠点＆併設『リプレこだいら』（10:00〜17:00・水木休）の運営案内を公式確認",
+      "discoveries": [
+        "小平市リサイクルセンター（小平市小川東町5-19-10）の資源循環課窓口・見学エリアは月〜金曜8:30〜17:00（土日祝・年末年始休）。",
+        "同施設および市役所・市民センター・図書館等には小型充電式電池の回収ボックスが設置されており、破損・変形のないリチウムイオン電池等を『完全に使い切り・端子をテープ等で絶縁』して排出するよう案内されている。",
+        "併設の粗大ごみ再生家具等展示販売施設『リプレこだいら』は10:00〜17:00（水・木・年末年始休）で営業している。"
+      ],
+      "seasonal_note": "年末の大掃除シーズン（12月）はモバイルバッテリーやコードレス家電の電池処分が増えるため啓発効果が高い。",
+      "disaster_tie_in": "可燃・不燃ごみへの充電池混入による収集車・処理施設火災を防ぐ、具体的な絶縁ルール（テープ2重貼り等）を周知できる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "Antigravity search_web 一次情報二段階照合（小平市公式HP・指定管理施設情報）",
+        "notes": "city.kodaira.tokyo.jp 公式ページにて小型充電式電池回収ボックス拠点・リサイクルセンター利用時間・リプレこだいら営業時間を確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "小平市公式ホームページ（小型充電式電池の回収案内）",
+          "url": "https://www.city.kodaira.tokyo.jp/kurashi/000/000189.html"
+        },
+        {
+          "title": "小平市公式ホームページ（リサイクルセンター窓口・利用案内）",
+          "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFSYLY93BNZc9couVVET94c6aAXu4f1DFt-M-CEWXHJ5BMRzrUI1XcH01I-j-TAv2vA_esrj3AUTHhMBYXur8tG6PuYmWd05jAWUcSZt2ibZ92xnI1gQWq9MgMdGIh7s0qLGrVuIt9P9mXkrd2pbNM=="
+        }
+      ]
+    }
+  ]
+}

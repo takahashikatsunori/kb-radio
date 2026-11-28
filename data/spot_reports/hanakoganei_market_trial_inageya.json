@@ -1,0 +1,61 @@
+{
+  "spot_id": "hanakoganei_market_trial_inageya",
+  "spot_name": "いなげや・トライアル西友 花小金井駅前商業エリア",
+  "category": "shopping",
+  "patrol_tier": "low",
+  "last_researched_at": "2026-11-28",
+  "last_checked_at": "2026-11-28",
+  "last_check_note": "トライアル西友（24時間営業）といなげや花小金井駅前店（9:30〜23:00）の最新営業を確認",
+  "operating_status": "open",
+  "operating_status_note": "通常営業中（トライアル西友 花小金井店 24時間営業／いなげや花小金井駅前店 9:30〜23:00）",
+  "official_urls": [
+    "https://www.seiyu.co.jp/",
+    "https://www.inageya.co.jp/",
+    "https://www.seiyu.co.jp/shop/%E3%83%88%E3%83%A9%E3%82%A4%E3%82%A2%E3%83%AB%E8%A5%BF%E5%8F%8B%E8%8A%B1%E5%B0%8F%E9%87%91%E4%BA%95%E5%BA%97/",
+    "https://stores.inageya.co.jp/store/?s=180"
+  ],
+  "curated_highlights": [
+    "トライアル西友 花小金井店（花小金井1-2-23）は2025年11月28日オープンの融合フォーマット1号店・24時間営業",
+    "いなげや 花小金井駅前店（花小金井1-8-3）は9:30〜23:00営業で駅北口すぐの利便拠点"
+  ],
+  "story_angles": [
+    "24時間営業・深夜営業スーパーを味方にした日常食料・飲料水ローリングストック",
+    "花小金井駅北口エリアの買い物動線とリブロ花小金井店（1-8-3同ビル周辺）との回遊"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "花小金井北口の暮らしを支える24時間商圏とスマート備蓄特集",
+    "reason": "11月28日で新業態オープン1周年を迎え、暮らし・食備蓄テーマと結びつけやすい。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_patrol_verified",
+      "operating_status": "open",
+      "headline": "トライアル西友（24時間営業）といなげや花小金井駅前店（9:30〜23:00）の最新営業を確認",
+      "discoveries": [
+        "トライアル西友 花小金井店（小平市花小金井1-2-23・花小金井駅徒歩約3分）は西友とトライアルの融合フォーマット第1号店として2025年11月28日にオープンし、24時間営業（一部売場除く、例：医薬品9:00〜21:00）。",
+        "いなげや 花小金井駅前店（小平市花小金井1-8-3・花小金井駅北口ロータリーすぐ）は9:30〜23:00営業。"
+      ],
+      "seasonal_note": "2025年11月28日開店からちょうど1年の節目。",
+      "disaster_tie_in": "遅い時間や早朝にも開いている駅前スーパーの存在把握と、普段からの少し多めの買い置き（ローリングストック）の習慣化に役立つ。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "Antigravity search_web 一次情報照合（西友・トライアル・いなげや公式）",
+        "notes": "seiyu.co.jp / inageya.co.jp 各公式サイトで店舗住所・24時間/9:30〜23:00営業を確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "西友 公式店舗ページ（トライアル西友 花小金井店）",
+          "url": "https://www.seiyu.co.jp/shop/%E3%83%88%E3%83%A9%E3%82%A4%E3%82%A2%E3%83%AB%E8%A5%BF%E5%8F%8B%E8%8A%B1%E5%B0%8F%E9%87%91%E4%BA%95%E5%BA%97/"
+        },
+        {
+          "title": "いなげや 公式店舗ページ（花小金井駅前店）",
+          "url": "https://stores.inageya.co.jp/store/?s=180"
+        }
+      ]
+    }
+  ]
+}

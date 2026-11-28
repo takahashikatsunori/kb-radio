@@ -1,0 +1,56 @@
+{
+  "spot_id": "ja_muchan_hiroba",
+  "spot_name": "JA東京むさし 小平ファーマーズ・マーケット（ムーちゃん広場）",
+  "category": "farm_direct",
+  "patrol_tier": "high",
+  "last_researched_at": "2026-11-28",
+  "last_checked_at": "2026-11-28",
+  "last_check_note": "通常営業（9:00〜16:00）および例年の年末年始休業（12/31〜1/6頃）をJA公式確認",
+  "operating_status": "open",
+  "operating_status_note": "通常営業中（9:00〜16:00／無休※3月・9月最終平日および年末年始12/31〜1/6頃休業）",
+  "official_urls": [
+    "https://www.jatm.or.jp/",
+    "https://www.jatm.or.jp/economy/kodaira.php"
+  ],
+  "curated_highlights": [
+    "青梅街道駅徒歩約2分・小川町2-1827のJA東京むさし大型農産物直売所（042-348-7244）",
+    "新鮮な小平産野菜の購入に加え、災害時対応のマンホールトイレ・防災井戸を備える拠点"
+  ],
+  "story_angles": [
+    "地元の冬野菜を使ったローリングストック・節水時短レシピ",
+    "身近な直売所が持つマンホールトイレ・防災井戸という地域の防災機能"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "食べて備える小平の冬野菜＆直売所の防災設備特集",
+    "reason": "冬季の地場野菜・年末営業日程に合わせて金曜（食・備蓄）と好連携できる。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_patrol_verified",
+      "operating_status": "open",
+      "headline": "通常営業（9:00〜16:00）および例年の年末年始休業（12/31〜1/6頃）をJA公式確認",
+      "discoveries": [
+        "所在地は東京都小平市小川町2-1827（青梅街道駅徒歩約2分・電話042-348-7244）。",
+        "営業時間は9:00〜16:00、通常定休日はなし（3月・9月の最終平日は休業）。",
+        "例年、年末年始（12月31日〜1月6日頃）は休業となるため年末の買い出し日程確認に役立つ。"
+      ],
+      "seasonal_note": "12月は冬の根菜・葉物野菜や正月準備食材が並ぶ賑わいの季節。",
+      "disaster_tie_in": "直売所敷地にある災害用マンホールトイレや井戸の存在と、日持ちする冬野菜のローリングストック活用を紹介できる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "Antigravity search_web 一次情報二段階照合（JA東京むさし公式サイト）",
+        "notes": "JA東京むさし公式サイトにて営業時間・所在地・電話番号・3月/9月最終平日および年末年始の休業傾向を確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "JA東京むさし 公式ホームページ（小平ファーマーズ・マーケット ムーちゃん広場）",
+          "url": "https://www.jatm.or.jp/economy/kodaira.php"
+        }
+      ]
+    }
+  ]
+}

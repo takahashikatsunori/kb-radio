@@ -1,0 +1,61 @@
+{
+  "spot_id": "kodaira_furusato_theater_crafts",
+  "spot_name": "小平の伝統体験・ふるさと村糧うどん＆市民文化ワークショップ",
+  "category": "leisure",
+  "patrol_tier": "high",
+  "last_researched_at": "2026-11-28",
+  "last_checked_at": "2026-11-28",
+  "last_check_note": "2026年11月・12月体験企画（帯リース教室11/29、もちつき体験12/12、お芝居WS12/12・13）を公式確認",
+  "operating_status": "open",
+  "operating_status_note": "通常開催（小平ふるさと村等で11月・12月体験企画を予定）",
+  "official_urls": [
+    "https://www.city.kodaira.tokyo.jp/",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGYFpVa7IorpyjDt72NPNQsESF62L56N0fMdg8ndmFiGj8gxiBw4B6IY8BgTXTx9YNs3Cu4FzvlZnIAHtssjS_EoC83PsMlS7U4uP9dvLfLs09vQxYBzheHP3Sri8Q8cT1KT4x_Klg=",
+    "https://www.city.kodaira.tokyo.jp/shihou/files/131068/131068/att_0000008.pdf"
+  ],
+  "curated_highlights": [
+    "2026年11月29日(日)『帯リース作り体験教室』・12月12日(土)『もちつき体験』（先着50人・無料）を開催",
+    "2026年12月12日(土)・13日(日)にお芝居ワークショップ『ひみつきち』（講師：俳優・勝又絢子さん）を開催"
+  ],
+  "story_angles": [
+    "昔あそび・手仕事・演劇を通じた多世代交流と地域コミュニティのレジリエンス",
+    "電源を使わない郷土かるた・手仕事と停電時のおうち時間の知恵"
+  ],
+  "special_feature_potential": {
+    "ready": false,
+    "theme_idea": "小平ふるさと村・市民伝統体験と地域の世代間共助特集",
+    "reason": "年末の伝統行事や冬の公民館・文化体験が揃う12月に掘り下げ可能。"
+  },
+  "entries": [
+    {
+      "researched_at": "2026-11-28",
+      "researcher": "local_patrol_verified",
+      "operating_status": "open",
+      "headline": "2026年11月・12月体験企画（帯リース教室11/29、もちつき体験12/12、お芝居WS12/12・13）を公式確認",
+      "discoveries": [
+        "2026年11月29日(日)に小平ふるさと村『帯リース作り体験教室』、12月12日(土)10:30〜に『もちつき体験』（中学生以下・保護者同伴可・先着50人・無料、ついた餅は展示用鏡もちのため試食なし・お土産あり）を予定。",
+        "2026年12月12日(土)・13日(日)（全2回・小学生以上対象）に俳優・勝又絢子さん講師のお芝居ワークショップ『ひみつきち』を開催予定。",
+        "通年で小平市郷土かるたや竹とんぼ・お手玉などの昔あそび・遊びのひろばも実施している。"
+      ],
+      "seasonal_note": "11月末〜12月中旬にかけて年末伝統行事・文化ワークショップが目白押し。",
+      "disaster_tie_in": "電気を使わない昔あそびや手仕事体験は、子どもとの避難所・在宅停電時のストレスケアにも応用できる。",
+      "excluded_unverified_claims": [],
+      "fact_check": {
+        "status": "verified_primary",
+        "checked_at": "2026-11-28",
+        "method": "Antigravity search_web 一次情報二段階照合（小平ふるさと村公式・小平市公式）",
+        "notes": "小平ふるさと村公式および小平市公式ページにて2026年11月・12月の各イベント日程・定員・試食有無を確認。"
+      },
+      "primary_sources": [
+        {
+          "title": "小平ふるさと村 公式ホームページ（もちつき体験 2026年12月12日）",
+          "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGYFpVa7IorpyjDt72NPNQsESF62L56N0fMdg8ndmFiGj8gxiBw4B6IY8BgTXTx9YNs3Cu4FzvlZnIAHtssjS_EoC83PsMlS7U4uP9dvLfLs09vQxYBzheHP3Sri8Q8cT1KT4x_Klg="
+        },
+        {
+          "title": "小平市公式ホームページ（お芝居ワークショップ「ひみつきち」）",
+          "url": "https://www.city.kodaira.tokyo.jp/shihou/files/131068/131068/att_0000008.pdf"
+        }
+      ]
+    }
+  ]
+}
