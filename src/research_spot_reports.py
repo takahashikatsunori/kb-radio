@@ -9,6 +9,7 @@ import sys
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 SRC_DIR = Path(__file__).resolve().parent
 if str(SRC_DIR) not in sys.path:
@@ -219,6 +220,185 @@ def select_target_spots(
     return chosen[:count]
 
 
+def _validate_primary_sources_list(sources: Any, *, spot_id: str = "") -> list[str]:
+    """Validate primary_sources URL list against HTTP(S) and low-trust domain blocklist."""
+    prefix = f"[{spot_id}] " if spot_id else ""
+    if not isinstance(sources, list) or not sources:
+        return [f"{prefix}primary_sources must be a non-empty list"]
+    errors: list[str] = []
+    for idx, src in enumerate(sources):
+        if not isinstance(src, dict):
+            errors.append(f"{prefix}primary_sources[{idx}] must be an object")
+            continue
+        if not str(src.get("title") or "").strip():
+            errors.append(f"{prefix}primary_sources[{idx}].title must be non-empty")
+        url = str(src.get("url") or "").strip()
+        if not url.startswith(("http://", "https://")):
+            errors.append(f"{prefix}primary_sources[{idx}].url must start with http:// or https://")
+            continue
+        host = urlparse(url).netloc.lower().split(":")[0]
+        if not host:
+            errors.append(f"{prefix}primary_sources[{idx}].url has empty host")
+            continue
+        for blocked in LOW_TRUST_DOMAIN_BLOCKLIST:
+            if host == blocked or host.endswith("." + blocked):
+                errors.append(
+                    f"{prefix}primary_sources[{idx}].url domain '{host}' is in LOW_TRUST_DOMAIN_BLOCKLIST"
+                )
+    return errors
+
+
+def select_patrol_batch(
+    spots_cfg: dict[str, Any],
+    reports_map: dict[str, dict[str, Any]],
+    usage_map: dict[str, dict[str, Any]],
+    *,
+    today_dt: date,
+    high_count: int = 10,
+    low_count: int = 5,
+    high_stale_days: int = 4,
+    low_stale_days: int = 14,
+) -> dict[str, list[dict[str, Any]]]:
+    """Select daily high-tier and low-tier patrol targets with same-day skip & round-robin FIFO fairness."""
+    from kodaira_spots import MONTH_TO_SEASON
+
+    spots = [s for s in (spots_cfg.get("spots") or []) if isinstance(s, dict) and s.get("id")]
+    cat_labels = {
+        str(c["id"]): str(c.get("label") or c["id"])
+        for c in (spots_cfg.get("categories") or [])
+        if isinstance(c, dict) and c.get("id")
+    }
+    cat_report_counts: dict[str, int] = {cid: 0 for cid in cat_labels}
+    for sp in spots:
+        sid = str(sp["id"])
+        if (reports_map.get(sid) or {}).get("entries"):
+            cid = str(sp.get("category") or "")
+            cat_report_counts[cid] = cat_report_counts.get(cid, 0) + 1
+
+    cur_season = MONTH_TO_SEASON.get(today_dt.month, "all")
+    horizon_end = today_dt + timedelta(days=14)
+    tier_cfg = (
+        ("high", high_count, high_stale_days, "高頻度"),
+        ("low", low_count, low_stale_days, "低頻度"),
+    )
+    selected_by_tier: dict[str, list[dict[str, Any]]] = {"high": [], "low": []}
+
+    for tier_name, quota, stale_threshold, tier_ja in tier_cfg:
+        if quota <= 0:
+            continue
+        unresearched: list[tuple[tuple[Any, ...], dict[str, Any]]] = []
+        previously_checked: list[tuple[tuple[Any, ...], dict[str, Any]]] = []
+
+        for sp in spots:
+            sp_tier = str(sp.get("patrol_tier") or "low").strip()
+            if sp_tier != tier_name:
+                continue
+            sid = str(sp["id"])
+            cid = str(sp.get("category") or "")
+            dossier = reports_map.get(sid) or {}
+            last_checked_raw = str(dossier.get("last_checked_at") or dossier.get("last_researched_at") or "").strip()
+            last_dt = _parse_iso_date(last_checked_raw)
+            days_since = (today_dt - last_dt).days if last_dt else None
+
+            # Idempotency: skip spots already checked today
+            if days_since is not None and days_since <= 0:
+                continue
+
+            usage = usage_map.get(sid) or {}
+            upcoming = False
+            for d_str in list(usage.get("planned_dates") or []) + list(usage.get("hint_dates") or []):
+                dt = _parse_iso_date(d_str)
+                if dt and today_dt <= dt <= horizon_end:
+                    upcoming = True
+                    break
+
+            seasons = sp.get("best_seasons") or ["all"]
+            season_rank = 0 if cur_season in seasons else (1 if "all" in seasons else 2)
+            c_count = cat_report_counts.get(cid, 0)
+            cat_scarcity = 0 if c_count == 0 else (1 if c_count < 3 else 2)
+            item = dict(sp)
+            item["patrol_tier"] = tier_name
+            item["category_label"] = cat_labels.get(cid, cid)
+            item["last_checked_at"] = last_dt.isoformat() if last_dt else ""
+            item["last_researched_at"] = str(dossier.get("last_researched_at") or "")
+            item["days_since_check"] = days_since
+
+            reasons = [f"{tier_ja}(目安{stale_threshold}日)"]
+            if upcoming:
+                reasons.append("直近2週間予定")
+            if sp.get("user_request_priority"):
+                reasons.append("優先リクエスト")
+
+            if last_dt is None:
+                reasons.append("未取材(新規)")
+                if season_rank == 0:
+                    reasons.append(f"旬({cur_season})")
+                item["_reason"] = " / ".join(reasons)
+                key = (
+                    0 if upcoming else 1,
+                    0 if sp.get("user_request_priority") else 1,
+                    cat_scarcity,
+                    season_rank,
+                    str(sp.get("name") or ""),
+                )
+                unresearched.append((key, item))
+            else:
+                is_stale = days_since is not None and days_since >= stale_threshold
+                if is_stale:
+                    reasons.append(f"要再確認({days_since}日経過)")
+                else:
+                    reasons.append(f"最終確認 {last_dt.isoformat()} ({days_since}日前)")
+                item["_reason"] = " / ".join(reasons)
+                if upcoming and is_stale:
+                    bucket = 0
+                elif is_stale:
+                    bucket = 1
+                elif upcoming:
+                    bucket = 2
+                else:
+                    bucket = 3
+                key = (
+                    bucket,
+                    last_dt.isoformat(),
+                    0 if sp.get("user_request_priority") else 1,
+                    season_rank,
+                    str(sp.get("name") or ""),
+                )
+                previously_checked.append((key, item))
+
+        unresearched.sort(key=lambda pair: pair[0])
+        previously_checked.sort(key=lambda pair: pair[0])
+
+        chosen: list[dict[str, Any]] = []
+        seen_cats: set[str] = set()
+        deferred_unresearched: list[dict[str, Any]] = []
+
+        # Soft category diversity across unresearched spots first
+        for _, sp in unresearched:
+            cid = str(sp.get("category") or "")
+            if cid not in seen_cats:
+                chosen.append(sp)
+                seen_cats.add(cid)
+            else:
+                deferred_unresearched.append(sp)
+            if len(chosen) >= quota:
+                break
+
+        for sp in deferred_unresearched:
+            if len(chosen) >= quota:
+                break
+            chosen.append(sp)
+
+        for _, sp in previously_checked:
+            if len(chosen) >= quota:
+                break
+            chosen.append(sp)
+
+        selected_by_tier[tier_name] = chosen[:quota]
+
+    return selected_by_tier
+
+
 def _normalize_draft_items(payload: Any) -> list[dict[str, Any]]:
     if isinstance(payload, list):
         return [x for x in payload if isinstance(x, dict)]
@@ -254,6 +434,90 @@ def ingest_draft_payload(
             raise ValueError(f"Unknown spot_id '{sid}' not found in config/kodaira_spots.json")
         sp_meta = spots_by_id[sid]
 
+        out_path = reports_dir / f"{sid}.json"
+        existing: dict[str, Any] = {}
+        if out_path.exists():
+            try:
+                loaded = _load_json(out_path)
+                if isinstance(loaded, dict):
+                    existing = loaded
+            except Exception:
+                existing = {}
+
+        existing_entries: list[dict[str, Any]] = [
+            e for e in (existing.get("entries") or []) if isinstance(e, dict)
+        ]
+        is_no_change = bool(item.get("no_change") is True or item.get("change_detected") is False)
+        if is_no_change and existing_entries:
+            fc_obj = item.get("fact_check") if isinstance(item.get("fact_check"), dict) else {}
+            checked_at = str(
+                item.get("checked_at")
+                or item.get("researched_at")
+                or fc_obj.get("checked_at")
+                or ""
+            ).strip()
+            if _parse_iso_date(checked_at) is None:
+                raise ValueError(f"[{sid}] checked_at (YYYY-MM-DD) is required for no-change check-in")
+
+            raw_sources = item.get("primary_sources")
+            if raw_sources is None and isinstance(item.get("entry"), dict):
+                raw_sources = item["entry"].get("primary_sources")
+            clean_sources = _clean_primary_sources(raw_sources) if isinstance(raw_sources, list) else []
+            src_errs = _validate_primary_sources_list(clean_sources, spot_id=sid)
+            if src_errs:
+                raise ValueError("Primary-source check-in validation failed: " + " ; ".join(src_errs))
+
+            top_op = str(item.get("operating_status") or "").strip()
+            if top_op and top_op not in VALID_OPERATING_STATUSES:
+                raise ValueError(f"[{sid}] Invalid operating_status '{top_op}'")
+
+            new_urls = (
+                list(existing.get("official_urls") or [])
+                + list(item.get("official_urls") or [])
+                + [s["url"] for s in clean_sources if s.get("url")]
+            )
+            prev_checked = str(existing.get("last_checked_at") or existing.get("last_researched_at") or "")
+            dossier = {
+                "spot_id": sid,
+                "spot_name": str(item.get("spot_name") or existing.get("spot_name") or sp_meta["name"]),
+                "category": str(sp_meta.get("category") or existing.get("category") or ""),
+                "patrol_tier": str(sp_meta.get("patrol_tier") or existing.get("patrol_tier") or "low"),
+                "last_researched_at": str(existing.get("last_researched_at") or existing_entries[-1].get("researched_at") or ""),
+                "last_checked_at": max(checked_at, prev_checked),
+                "last_check_note": str(
+                    item.get("check_note") or item.get("last_check_note") or "一次ソース再確認・前回より変更なし"
+                ).strip(),
+                "operating_status": top_op or str(existing.get("operating_status") or "open"),
+                "operating_status_note": str(
+                    item.get("operating_status_note")
+                    or existing.get("operating_status_note")
+                    or ""
+                ).strip(),
+                "official_urls": _dedup_str_list(new_urls),
+                "curated_highlights": _dedup_str_list(
+                    list(existing.get("curated_highlights") or []) + list(item.get("curated_highlights") or [])
+                ),
+                "story_angles": _dedup_str_list(
+                    list(existing.get("story_angles") or []) + list(item.get("story_angles") or [])
+                ),
+                "special_feature_potential": existing.get("special_feature_potential")
+                or {"ready": False, "theme_idea": "", "reason": ""},
+                "entries": existing_entries,
+            }
+            out_path.write_text(json.dumps(dossier, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            results.append(
+                {
+                    "spot_id": sid,
+                    "spot_name": dossier["spot_name"],
+                    "status": "checked_no_change",
+                    "total_entries": len(existing_entries),
+                    "added_entries": 0,
+                    "checked_at": dossier["last_checked_at"],
+                    "path": str(out_path),
+                }
+            )
+            continue
+
         raw_entries: list[dict[str, Any]] = []
         if isinstance(item.get("entries"), list):
             raw_entries = [dict(e) for e in item["entries"] if isinstance(e, dict)]
@@ -280,19 +544,7 @@ def ingest_draft_payload(
         if top_op and top_op not in VALID_OPERATING_STATUSES:
             raise ValueError(f"[{sid}] Invalid operating_status '{top_op}'")
 
-        out_path = reports_dir / f"{sid}.json"
-        existing: dict[str, Any] = {}
-        if out_path.exists():
-            try:
-                loaded = _load_json(out_path)
-                if isinstance(loaded, dict):
-                    existing = loaded
-            except Exception:
-                existing = {}
-
-        merged_entries: list[dict[str, Any]] = [
-            e for e in (existing.get("entries") or []) if isinstance(e, dict)
-        ]
+        merged_entries: list[dict[str, Any]] = list(existing_entries)
         seen_keys = {
             (str(e.get("researched_at") or ""), str(e.get("headline") or "").strip())
             for e in merged_entries
@@ -327,11 +579,20 @@ def ingest_draft_payload(
                 "reason": str(sfp_in.get("reason") or merged_sfp.get("reason") or "").strip(),
             }
 
+        latest_checked = str(
+            (latest_entry.get("fact_check") or {}).get("checked_at")
+            or latest_entry.get("researched_at")
+            or ""
+        ).strip()
+        prev_checked = str(existing.get("last_checked_at") or "")
         dossier = {
             "spot_id": sid,
             "spot_name": str(item.get("spot_name") or existing.get("spot_name") or sp_meta["name"]),
             "category": str(sp_meta.get("category") or existing.get("category") or ""),
+            "patrol_tier": str(sp_meta.get("patrol_tier") or existing.get("patrol_tier") or "low"),
             "last_researched_at": str(latest_entry.get("researched_at") or ""),
+            "last_checked_at": max(latest_checked, prev_checked),
+            "last_check_note": str(item.get("check_note") or latest_entry.get("headline") or "").strip(),
             "operating_status": top_op or str(existing.get("operating_status") or "open"),
             "operating_status_note": str(
                 item.get("operating_status_note")
@@ -355,8 +616,10 @@ def ingest_draft_payload(
             {
                 "spot_id": sid,
                 "spot_name": dossier["spot_name"],
+                "status": "updated",
                 "total_entries": len(merged_entries),
                 "added_entries": added_count,
+                "checked_at": dossier["last_checked_at"],
                 "path": str(out_path),
             }
         )
@@ -591,10 +854,24 @@ def cmd_status(args: argparse.Namespace) -> int:
                 stale_spots += 1
         print(f"  {icon} {lbl:<20} | spots: {len(cat_spots):>2} | dossiers: {cat_with_rep:>2} | entries: {cat_entries:>2}")
 
+    high_total = sum(1 for sp in spots if (sp.get("patrol_tier") or "low") == "high")
+    high_reported = sum(
+        1
+        for sp in spots
+        if (sp.get("patrol_tier") or "low") == "high" and (reports_map.get(str(sp["id"])) or {}).get("entries")
+    )
+    low_total = sum(1 for sp in spots if (sp.get("patrol_tier") or "low") != "high")
+    low_reported = sum(
+        1
+        for sp in spots
+        if (sp.get("patrol_tier") or "low") != "high" and (reports_map.get(str(sp["id"])) or {}).get("entries")
+    )
+
     print(
         f"\nSummary: total_spots={len(spots)}, categories={len(cats)}, "
         f"spots_with_dossiers={reported_spots}, total_entries={total_entries}, stale_or_unresearched={stale_spots}"
     )
+    print(f"Patrol Tiers: high={high_reported}/{high_total} covered | low={low_reported}/{low_total} covered")
     specials = find_longitudinal_special_candidates(spots_cfg, reports_map, min_entries=2)
     if specials:
         print(f"\nSpecial Feature Candidates ({len(specials)}):")
@@ -766,10 +1043,55 @@ def cmd_check_specials(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_patrol_batch(args: argparse.Namespace) -> int:
+    spots_cfg, reports_map, topic_history, editorial_plan, program_schedule = _load_schedule_context()
+    today_dt = datetime.now(JST).date()
+    usage_map = compute_spot_usage(
+        spots_cfg,
+        topic_history,
+        editorial_plan=editorial_plan,
+        program_schedule=program_schedule,
+        reference_date=today_dt,
+    )
+    policy = spots_cfg.get("patrol_policy") or {}
+    high_stale = int(policy.get("high_stale_days") or 4)
+    low_stale = int(policy.get("low_stale_days") or 14)
+    batched = select_patrol_batch(
+        spots_cfg,
+        reports_map,
+        usage_map,
+        today_dt=today_dt,
+        high_count=args.high_count,
+        low_count=args.low_count,
+        high_stale_days=high_stale,
+        low_stale_days=low_stale,
+    )
+    high_list = batched["high"]
+    low_list = batched["low"]
+    print(
+        f"Patrol Batch (date={today_dt.isoformat()} | high={len(high_list)}/{args.high_count}, "
+        f"low={len(low_list)}/{args.low_count}, total={len(high_list) + len(low_list)}):"
+    )
+    print("\n[HIGH TIER — 1日10件・高頻度巡回]")
+    for idx, sp in enumerate(high_list, start=1):
+        print(
+            f"  {idx:>2}. {sp['id']} — {sp['name']} [{sp.get('category_label')}] ({sp.get('area')}) | {sp.get('_reason')}"
+        )
+    print("\n[LOW TIER — 1日5件・低頻度巡回]")
+    for idx, sp in enumerate(low_list, start=1):
+        print(
+            f"  {idx:>2}. {sp['id']} — {sp['name']} [{sp.get('category_label')}] ({sp.get('area')}) | {sp.get('_reason')}"
+        )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Kodaira spot continuous primary-source research & dossier manager.")
     p.add_argument("--status", action="store_true", help="Show dossier coverage across all categories.")
     p.add_argument("--select-batch", type=int, default=0, help="Select N priority spots to research next.")
+    p.add_argument("--patrol-batch", action="store_true", help="Preview tiered daily patrol targets (high + low).")
+    p.add_argument("--high-count", type=int, default=10, help="Daily high-tier quota (default: 10).")
+    p.add_argument("--low-count", type=int, default=5, help="Daily low-tier quota (default: 5).")
     p.add_argument("--spot-id", action="append", default=[], help="Target specific spot_id (repeatable).")
     p.add_argument("--category", default=None, help="Filter target selection by category id.")
     p.add_argument("--stale-days", type=int, default=DEFAULT_STALE_DAYS, help="Staleness threshold in days (default: 45).")
@@ -792,6 +1114,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_run_api(args)
     if args.prepare_local:
         return cmd_prepare_local(args)
+    if args.patrol_batch:
+        return cmd_patrol_batch(args)
     if args.select_batch > 0 and not args.status:
         return cmd_select_batch(args)
     if args.check_specials:

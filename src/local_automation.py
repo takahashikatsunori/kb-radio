@@ -37,7 +37,9 @@ from generate_episode import (
 )
 from live_feeds import collect_live_briefing
 from kodaira_spots import (
+    LOW_TRUST_DOMAIN_BLOCKLIST,
     SPOT_COOLDOWN_DAYS,
+    SPOT_REPORTS_DIR,
     audit_plan_spot_overlaps,
     compute_spot_usage,
     find_longitudinal_special_candidates,
@@ -48,6 +50,7 @@ from kodaira_spots import (
     match_spots_in_text,
     select_balanced_spot_candidates,
 )
+from research_spot_reports import ingest_draft_payload, select_patrol_batch
 from plan_weekly_editorial import (
     EDITORIAL_PLAN_PATH,
     _build_week_skeleton,
@@ -1656,6 +1659,296 @@ def cmd_finalize_weekly(args: argparse.Namespace) -> None:
     print(f"STATUS: WEEKLY_COMPLETE ({start_str})")
 
 
+def _serialize_patrol_target(
+    sp: dict[str, Any],
+    reports_map: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    sid = str(sp["id"])
+    dossier = reports_map.get(sid)
+    existing_summary: dict[str, Any] | None = None
+    if isinstance(dossier, dict) and dossier.get("entries"):
+        entries = [e for e in (dossier.get("entries") or []) if isinstance(e, dict)]
+        latest = entries[-1]
+        existing_summary = {
+            "last_researched_at": str(dossier.get("last_researched_at") or ""),
+            "last_checked_at": str(dossier.get("last_checked_at") or dossier.get("last_researched_at") or ""),
+            "operating_status": str(dossier.get("operating_status") or "open"),
+            "operating_status_note": str(dossier.get("operating_status_note") or ""),
+            "official_urls": list(dossier.get("official_urls") or []),
+            "latest_headline": str(latest.get("headline") or ""),
+            "latest_discoveries": list(latest.get("discoveries") or [])[:4],
+            "entry_count": len(entries),
+        }
+    return {
+        "id": sid,
+        "name": str(sp.get("name") or ""),
+        "patrol_tier": str(sp.get("patrol_tier") or "low"),
+        "category": str(sp.get("category") or ""),
+        "category_label": str(sp.get("category_label") or ""),
+        "area": str(sp.get("area") or ""),
+        "station": str(sp.get("station") or ""),
+        "address_hint": str(sp.get("address_hint") or ""),
+        "summary": str(sp.get("summary") or ""),
+        "verify_note": str(sp.get("verify_note") or ""),
+        "disaster_angles": list(sp.get("disaster_angles") or []),
+        "reason": str(sp.get("_reason") or ""),
+        "existing_dossier": existing_summary,
+    }
+
+
+def _build_local_spot_patrol_prompt_md(
+    target_date: str,
+    high_targets: list[dict[str, Any]],
+    low_targets: list[dict[str, Any]],
+    draft_path: Path,
+) -> str:
+    blocked_str = ", ".join(LOW_TRUST_DOMAIN_BLOCKLIST)
+
+    def _fmt_target_lines(items: list[dict[str, Any]]) -> list[str]:
+        out: list[str] = []
+        for idx, t in enumerate(items, start=1):
+            ex = t.get("existing_dossier")
+            if ex:
+                urls_str = " / ".join(ex.get("official_urls") or []) or "未登録"
+                ex_note = (
+                    f"既存レポート {ex['entry_count']}件（最終更新: {ex['last_researched_at']} / "
+                    f"最終確認: {ex['last_checked_at']} / 状況: {ex['operating_status']}）｜"
+                    f"前回見出し: 『{ex['latest_headline']}』｜公式URL: {urls_str}"
+                )
+                action_hint = "変化・新情報があれば `entry` を追加 / 変化がなければ `change_detected: false` 確認記録でOK"
+            else:
+                ex_note = "既存レポートなし（初回新規作成が必要）"
+                action_hint = "初回レポートのため必ず `entry`（`headline`, `discoveries`, `fact_check`, `primary_sources`）をフル作成"
+            out.append(
+                f"{idx}. **{t['name']}** (`{t['id']}`) ｜ {t['category_label']} ｜ {t['area']} ({t['address_hint']} / 最寄: {t['station']})"
+            )
+            out.append(f"   - 選定理由: {t['reason']} ｜ {ex_note}")
+            out.append(f"   - 実施方針: {action_hint}")
+            if t.get("verify_note"):
+                out.append(f"   - 確認注意: {t['verify_note']}")
+        return out
+
+    lines = [
+        f"# 小平スポット定時巡回取材・一次ソース検証ブリーフィング（{target_date}・19:00 JST）",
+        "",
+        "## 厳守ルール（API不使用・一次情報ファクトチェック必須）",
+        "- **Gemini 外部 API は一切使用しないこと**（Antigravity サブスクリプション内の `search_web` と自己検証のみで完結させる）。",
+        "- **二段階検証（Pass 1 巡回調査 → Pass 2 独立一次ソースファクトチェック）** を対象全スポットに実施すること。",
+        "- **一次情報のみ採用**: 公式ホームページ・小平市役所公式・都水道局/警察/消防・組合公式・公式SNS/PR TIMES 等の一次発表のみを採用し、`primary_sources` に `http://` または `https://` URL を必ず記載すること。",
+        f"- **低信頼ブログ等の禁止**: まとめサイト・アフィリエイト系個人ブログ（`{blocked_str}` 等）の記述だけで閉店・休業・移転・数値を断定しないこと。未確認の噂やブログ記述を見つけた場合は事実扱いせず `excluded_unverified_claims` へ分離すること。",
+        "- **市境注意**: 小平監視所やNICT本部、多摩変電所など市境付近の施設は、正確な所在地自治体を混同しないこと。",
+        "",
+        f"## 本日の高頻度巡回ターゲット（{len(high_targets)}件 / 更新頻度高グループ）",
+        *(_fmt_target_lines(high_targets) or ["（対象なし）"]),
+        "",
+        f"## 本日の低頻度巡回ターゲット（{len(low_targets)}件 / 安定スポット定期巡回グループ）",
+        *(_fmt_target_lines(low_targets) or ["（対象なし）"]),
+        "",
+        f"## 出力ファイルとJSONスキーマ（書き出し先: `{draft_path}`）",
+        "既存レポートがあるスポットで一次ソースを確認し**新たな変更・イベント・状況変化がない場合**は、ケースB（確認チェックイン）を使って重複エントリを増やさずに最終確認日だけを更新してください。初回スポットまたは変化・新発見がある場合はケースA（完全エントリ）を作成してください。",
+        "",
+        "```json",
+        json.dumps(
+            {
+                "reports": [
+                    {
+                        "spot_id": "<ケースA: 新規作成または変化・新発見ありのスポットID>",
+                        "operating_status": "open | seasonal | limited | renovation | closed",
+                        "operating_status_note": "確認した営業時間・定休日・公開状況",
+                        "official_urls": ["https://..."],
+                        "curated_highlights": ["小平市民が喜ぶ魅力・豆知識"],
+                        "story_angles": ["ラジオでの切り口・防災へのつなぎ"],
+                        "special_feature_potential": {
+                            "ready": False,
+                            "theme_idea": "複数回取材や節目に基づく長期特集タイトル案（あれば）",
+                            "reason": "特集にできる理由",
+                        },
+                        "entry": {
+                            "researched_at": target_date,
+                            "researcher": "local_patrol_verified",
+                            "operating_status": "open",
+                            "headline": "一次情報で確認した最新状況・トピック見出し",
+                            "discoveries": ["一次情報で確認できた具体事実1", "具体事実2"],
+                            "seasonal_note": "季節の話題・見頃・期間限定事項",
+                            "disaster_tie_in": "防災・減災・暮らしの備えへの自然なつなぎ",
+                            "excluded_unverified_claims": [],
+                            "fact_check": {
+                                "status": "verified_primary",
+                                "checked_at": target_date,
+                                "method": "Antigravity search_web 一次情報二段階照合",
+                                "notes": "どの公式・一次ページで営業状況と事実を確認したか",
+                            },
+                            "primary_sources": [
+                                {"title": "公式サイト等のページタイトル", "url": "https://..."}
+                            ],
+                        },
+                    },
+                    {
+                        "spot_id": "<ケースB: 既存レポートあり＆一次ソース確認で変化なしの場合>",
+                        "change_detected": False,
+                        "checked_at": target_date,
+                        "check_note": "公式サイトを再確認し、前回の営業時間・通常運営から変更なしを確認。",
+                        "operating_status": "open",
+                        "primary_sources": [
+                            {"title": "確認した公式ページタイトル", "url": "https://..."}
+                        ],
+                    },
+                ]
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        "```",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def cmd_prepare_spot_patrol(args: argparse.Namespace) -> None:
+    target_date = args.date or datetime.now(JST).strftime("%Y-%m-%d")
+    today_dt = datetime.strptime(target_date, "%Y-%m-%d").date()
+
+    if not args.no_pull:
+        _run_git(["pull", "--rebase"])
+
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    done_marker = CACHE_DIR / f"local_spot_patrol_done_{target_date}.json"
+    if done_marker.exists():
+        print(f"STATUS: ALREADY_PATROLLED ({target_date})")
+        print(f"DONE_MARKER: {done_marker}")
+        return
+
+    spots_cfg = load_kodaira_spots()
+    reports_map = load_spot_reports(SPOT_REPORTS_DIR)
+    policy = spots_cfg.get("patrol_policy") or {}
+    high_quota = args.high_count if args.high_count is not None else int(policy.get("high_daily_quota") or 10)
+    low_quota = args.low_count if args.low_count is not None else int(policy.get("low_daily_quota") or 5)
+    high_stale = int(policy.get("high_stale_days") or 4)
+    low_stale = int(policy.get("low_stale_days") or 14)
+
+    topic_history_data = _load_optional_json(DATA_DIR / "topic_history.json", {"entries": []})
+    editorial_plan = _load_optional_json(DATA_DIR / "editorial_plan.json", None)
+    program_schedule = _load_optional_json(CONFIG_DIR / "program_schedule.json", None)
+    usage_map = compute_spot_usage(
+        spots_cfg,
+        topic_history_data.get("entries", []),
+        editorial_plan=editorial_plan,
+        program_schedule=program_schedule,
+        reference_date=today_dt,
+    )
+
+    batched = select_patrol_batch(
+        spots_cfg,
+        reports_map,
+        usage_map,
+        today_dt=today_dt,
+        high_count=high_quota,
+        low_count=low_quota,
+        high_stale_days=high_stale,
+        low_stale_days=low_stale,
+    )
+    high_targets = [_serialize_patrol_target(sp, reports_map) for sp in batched["high"]]
+    low_targets = [_serialize_patrol_target(sp, reports_map) for sp in batched["low"]]
+
+    if not high_targets and not low_targets:
+        print(f"STATUS: ALREADY_PATROLLED ({target_date})")
+        return
+
+    briefing_path = CACHE_DIR / f"local_spot_patrol_briefing_{target_date}.json"
+    prompt_path = CACHE_DIR / f"local_spot_patrol_prompt_{target_date}.md"
+    draft_path = CACHE_DIR / f"local_spot_patrol_draft_{target_date}.json"
+
+    briefing_payload = {
+        "target_date": target_date,
+        "quotas": {
+            "high": high_quota,
+            "low": low_quota,
+            "high_stale_days": high_stale,
+            "low_stale_days": low_stale,
+        },
+        "high_targets": high_targets,
+        "low_targets": low_targets,
+        "total_targets": len(high_targets) + len(low_targets),
+        "draft_target": str(draft_path),
+    }
+    briefing_path.write_text(json.dumps(briefing_payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    prompt_md = _build_local_spot_patrol_prompt_md(target_date, high_targets, low_targets, draft_path)
+    prompt_path.write_text(prompt_md, encoding="utf-8")
+
+    print(f"STATUS: READY_FOR_PATROL ({target_date})")
+    print(f"BRIEFING_JSON: {briefing_path}")
+    print(f"PROMPT_MD: {prompt_path}")
+    print(f"DRAFT_TARGET: {draft_path}")
+    print(f"TARGETS: high={len(high_targets)} low={len(low_targets)} total={len(high_targets) + len(low_targets)}")
+
+
+def cmd_finalize_spot_patrol(args: argparse.Namespace) -> None:
+    target_date = args.date or datetime.now(JST).strftime("%Y-%m-%d")
+    datetime.strptime(target_date, "%Y-%m-%d")
+
+    draft_path = Path(args.draft) if args.draft else (CACHE_DIR / f"local_spot_patrol_draft_{target_date}.json")
+    if not draft_path.exists():
+        raise FileNotFoundError(f"Spot patrol draft JSON not found: {draft_path}")
+
+    payload = _load_json(draft_path)
+    spots_cfg = load_kodaira_spots()
+    results = ingest_draft_payload(payload, reports_dir=SPOT_REPORTS_DIR, spots_cfg=spots_cfg)
+
+    updated_cnt = sum(1 for r in results if r.get("status") == "updated")
+    checked_cnt = sum(1 for r in results if r.get("status") == "checked_no_change")
+    reports_map = load_spot_reports(SPOT_REPORTS_DIR)
+    total_dossiers = sum(1 for r in reports_map.values() if r.get("entries"))
+    specials = find_longitudinal_special_candidates(spots_cfg, reports_map, min_entries=2)
+
+    print(f"Ingested {len(results)} patrol result(s) (updated={updated_cnt}, checked_no_change={checked_cnt}):")
+    for r in results:
+        print(f"  - [{r['status']}] {r['spot_id']} ({r['spot_name']}): +{r['added_entries']} entries (total={r['total_entries']})")
+
+    if specials:
+        print(f"\nLongitudinal special feature candidates ({len(specials)}):")
+        for sp in specials:
+            tag = "READY" if sp["ready"] else "SEED"
+            print(f"  - [{tag}] {sp['spot_name']} ({sp['spot_id']}): {sp['theme_idea']}")
+
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    done_marker = CACHE_DIR / f"local_spot_patrol_done_{target_date}.json"
+    done_marker.write_text(
+        json.dumps(
+            {
+                "date": target_date,
+                "processed": len(results),
+                "updated": updated_cnt,
+                "checked_no_change": checked_cnt,
+                "spot_ids": [r["spot_id"] for r in results],
+                "total_dossiers": total_dossiers,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    if not args.no_build:
+        _run_python_script("build_site.py", [])
+
+    if args.push:
+        add_paths = [p for p in ("data/spot_reports", "docs/") if (ROOT_DIR / p).exists()]
+        _run_git(["add", *add_paths])
+        status = _run_git(["status", "--porcelain"])
+        if status.stdout.strip():
+            _run_git(["commit", "-m", f"spots: daily patrol {target_date} ({updated_cnt} updated, {checked_cnt} checked)"])
+            _run_git(["pull", "--rebase"])
+            _run_git(["push"])
+            print("Pushed spot patrol dossiers and site to origin/main.")
+        else:
+            print("No spot_reports or docs changes to commit.")
+
+    print(
+        f"STATUS: PATROL_COMPLETE ({target_date}) | updated={updated_cnt} | "
+        f"checked_no_change={checked_cnt} | total_dossiers={total_dossiers}"
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Local Antigravity automation helper for kb-radio")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -1701,6 +1994,18 @@ def main() -> None:
     p_fw.add_argument("--banner-pattern", default=None, help="Optional pattern override (A|B|C)")
     p_fw.add_argument("--push", action="store_true", help="Commit and push updated editorial_plan.json, weekly_banners.json, and docs")
 
+    p_psp = sub.add_parser("prepare-spot-patrol", help="Prepare daily tiered spot patrol briefing and prompt (high 10 + low 5)")
+    p_psp.add_argument("--date", default=None, help="Target date YYYY-MM-DD (default: today JST)")
+    p_psp.add_argument("--high-count", type=int, default=10, help="High-frequency patrol quota (default: 10)")
+    p_psp.add_argument("--low-count", type=int, default=5, help="Low-frequency patrol quota (default: 5)")
+    p_psp.add_argument("--no-pull", action="store_true", help="Skip git pull --rebase")
+
+    p_fsp = sub.add_parser("finalize-spot-patrol", help="Validate spot patrol draft, rebuild site, and optionally push")
+    p_fsp.add_argument("--date", default=None, help="Target date YYYY-MM-DD (default: today JST)")
+    p_fsp.add_argument("--draft", default=None, help="Path to spot patrol draft JSON")
+    p_fsp.add_argument("--no-build", action="store_true", help="Skip build_site.py")
+    p_fsp.add_argument("--push", action="store_true", help="Commit and push data/spot_reports and docs to origin/main")
+
     args = parser.parse_args()
     handlers = {
         "prepare-daily": cmd_prepare_daily,
@@ -1709,6 +2014,8 @@ def main() -> None:
         "fetch-banner-refs": cmd_fetch_banner_refs,
         "set-weekly-banner": cmd_set_weekly_banner,
         "finalize-weekly": cmd_finalize_weekly,
+        "prepare-spot-patrol": cmd_prepare_spot_patrol,
+        "finalize-spot-patrol": cmd_finalize_spot_patrol,
     }
     handlers[args.command](args)
 
