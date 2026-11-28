@@ -64,7 +64,7 @@
   - 小平市リサイクルセンター（小平市小川東町5-19-10）の資源循環課窓口・見学エリアは月〜金曜8:30〜17:00（土日祝・年末年始休）。
   - 同施設および市役所・市民センター・図書館等には小型充電式電池の回収ボックスが設置されており、破損・変形のないリチウムイオン電池等を『完全に使い切り・端子をテープ等で絶縁』して排出するよう案内されている。
   - 併設の粗大ごみ再生家具等展示販売施設『リプレこだいら』は10:00〜17:00（水・木・年末年始休）で営業している。
-  - 一次ソース: [小平市公式ホームページ（小型充電式電池の回収案内）](https://www.city.kodaira.tokyo.jp/kurashi/000/000189.html) / [小平市公式ホームページ（リサイクルセンター窓口・利用案内）](https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFSYLY93BNZc9couVVET94c6aAXu4f1DFt-M-CEWXHJ5BMRzrUI1XcH01I-j-TAv2vA_esrj3AUTHhMBYXur8tG6PuYmWd05jAWUcSZt2ibZ92xnI1gQWq9MgMdGIh7s0qLGrVuIt9P9mXkrd2pbNM==)
+  - 一次ソース: [小平市公式ホームページ（小型充電式電池の回収案内）](https://www.city.kodaira.tokyo.jp/kurashi/000/000189.html)
   - 特集案: 年末大掃除×リチウムイオン電池火災ゼロ！小平市リサイクルセンター活用特集
 
 ## 📚 公民館・地域センター・図書館（8件）
@@ -78,7 +78,7 @@
   - 仲町公民館（電話042-341-0862）は9:00〜22:00（受付21:30まで）、仲町図書館（電話042-344-7151）は火・水9:00〜20:00、月・木・土日祝9:00〜17:00で開館。
   - 休館日は毎週金曜日（祝休日も閉館）、毎月第3木曜日（祝日または休日は開館）、年末年始（12月28日〜1月4日）。
   - 正面入口では職業能力開発総合大学校と市民の手作りLEDイルミネーションが2026年10月31日点灯式〜2027年2月末頃まで実施され、今年のモチーフは『陽』の文字。
-  - 一次ソース: [小平市公式ホームページ（なかまちテラス イルミネーション案内）](https://www.city.kodaira.tokyo.jp/shihou/131/131055.html) / [小平市公式ホームページ（なかまちテラス 施設・休館日案内）](https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHDtaVWZWBCsD4pdehWecdLdt_-REMEFVDWHxdFziqx44BDy6d-KkwBntVdUfjBLQj_trJJ2fd3yRTIPWTu2YOzPfyDey1apeOnFHZJ6IV2vLbdw1821K9z7yqjxzDX2dwBNMj4MiJuA5Fc1_yMNmM==)
+  - 一次ソース: [小平市公式ホームページ（なかまちテラス イルミネーション案内）](https://www.city.kodaira.tokyo.jp/shihou/131/131055.html)
   - 特集案: 妹島和世氏建築『なかまちテラス』と冬のLEDイルミネーション『陽』＆公民館共助特集
 
 ### ルネこだいら（小平市民文化会館） 〔放送済: 2026-11-25〕
@@ -241,7 +241,7 @@
   - 開園時間は10:00〜16:00（入園無料）、休園日は月曜日・第3火曜日・祝休日の翌日（土曜日・日曜日は開園）・年末年始（12月27日〜1月5日）。
   - 武蔵野手打ちうどん保存普及会による『小平糧うどん』（1食500円・11:15〜売り切れ次第終了）の2026年12月営業予定日は12月5日(土)・6日(日)。
   - 来園者用駐車場はないため、公共交通機関・徒歩・自転車での来園が公式案内されている。
-  - 一次ソース: [小平ふるさと村 公式ホームページ（開園・休園案内）](https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGrz7Hy-MIIVPiew0-40noO5pUuA-VPQ1YqklTrOG42Gj29HgXGT9yxEWoAis8d9a957WZrZh_H4gDEMl4LYzlsaD12VBfg89NYppXeHLEOXFk5g4M272V57-r0ioWBtIe14H6aFZgC) / [小平ふるさと村 公式ホームページ（小平糧うどん 営業予定）](https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFm2UjBtCF1gy1NuuB7lu84NfS3YLEUCWNR3I_eK5GzHe9R-Qr1CYYDZ0a7oT4IbFpgUFXuEuc-4u5XapFT4Vkx_rXbR303vLwbPTbh6O1BWwXC5-dEN4DXMh9BtATnG3Uko4OGzNrASo5e)
+  - 一次ソース: [小平ふるさと村 公式ホームページ（開園・休園案内）](http://kodaira-furusatomura.jp/detail/z00011.html) / [小平ふるさと村 公式ホームページ（小平糧うどん 営業予定）](http://www.kodaira-furusatomura.jp/detail/z00179.html)
   - 特集案: 小平ふるさと村の四季行事と武蔵野新田開発の防災知恵特集
 
 ### 小平市ふれあい下水道館 〔放送済: 2026-11-24〕
@@ -936,7 +936,7 @@
   - 2026年11月29日(日)に小平ふるさと村『帯リース作り体験教室』、12月12日(土)10:30〜に『もちつき体験』（中学生以下・保護者同伴可・先着50人・無料、ついた餅は展示用鏡もちのため試食なし・お土産あり）を予定。
   - 2026年12月12日(土)・13日(日)（全2回・小学生以上対象）に俳優・勝又絢子さん講師のお芝居ワークショップ『ひみつきち』を開催予定。
   - 通年で小平市郷土かるたや竹とんぼ・お手玉などの昔あそび・遊びのひろばも実施している。
-  - 一次ソース: [小平ふるさと村 公式ホームページ（もちつき体験 2026年12月12日）](https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGYFpVa7IorpyjDt72NPNQsESF62L56N0fMdg8ndmFiGj8gxiBw4B6IY8BgTXTx9YNs3Cu4FzvlZnIAHtssjS_EoC83PsMlS7U4uP9dvLfLs09vQxYBzheHP3Sri8Q8cT1KT4x_Klg=) / [小平市公式ホームページ（お芝居ワークショップ「ひみつきち」）](https://www.city.kodaira.tokyo.jp/shihou/files/131068/131068/att_0000008.pdf)
+  - 一次ソース: [小平ふるさと村 公式ホームページ（もちつき体験 2026年12月12日）](http://kodaira-furusatomura.jp/detail/z00184.html) / [小平市公式ホームページ（お芝居ワークショップ「ひみつきち」）](https://www.city.kodaira.tokyo.jp/shihou/files/131068/131068/att_0000008.pdf)
   - 特集案: 小平ふるさと村・市民伝統体験と地域の世代間共助特集
 
 ### 小平市内 季節のマルシェ・多文化交流イベント（中央公園・駅前等） 〔週間予定: 2026-12-05〕

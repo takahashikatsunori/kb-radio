@@ -10,7 +10,7 @@
   "operating_status_note": "通常開催（小平ふるさと村等で11月・12月体験企画を予定）",
   "official_urls": [
     "https://www.city.kodaira.tokyo.jp/",
-    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGYFpVa7IorpyjDt72NPNQsESF62L56N0fMdg8ndmFiGj8gxiBw4B6IY8BgTXTx9YNs3Cu4FzvlZnIAHtssjS_EoC83PsMlS7U4uP9dvLfLs09vQxYBzheHP3Sri8Q8cT1KT4x_Klg=",
+    "http://kodaira-furusatomura.jp/detail/z00184.html",
     "https://www.city.kodaira.tokyo.jp/shihou/files/131068/131068/att_0000008.pdf"
   ],
   "curated_highlights": [
@@ -49,7 +49,7 @@
       "primary_sources": [
         {
           "title": "小平ふるさと村 公式ホームページ（もちつき体験 2026年12月12日）",
-          "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGYFpVa7IorpyjDt72NPNQsESF62L56N0fMdg8ndmFiGj8gxiBw4B6IY8BgTXTx9YNs3Cu4FzvlZnIAHtssjS_EoC83PsMlS7U4uP9dvLfLs09vQxYBzheHP3Sri8Q8cT1KT4x_Klg="
+          "url": "http://kodaira-furusatomura.jp/detail/z00184.html"
         },
         {
           "title": "小平市公式ホームページ（お芝居ワークショップ「ひみつきち」）",

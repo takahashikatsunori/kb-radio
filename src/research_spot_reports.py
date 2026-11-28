@@ -63,6 +63,29 @@ def _dedup_str_list(items: list[Any]) -> list[str]:
     return out
 
 
+def _resolve_grounding_url(raw_url: str, timeout: float = 5.0) -> str:
+    """Resolve vertexaisearch redirect URLs to final http(s):// canonical target URLs."""
+    if not raw_url.startswith(("http://", "https://")):
+        return ""
+    if "vertexaisearch.cloud.google.com" not in raw_url:
+        return raw_url
+    direct = _resolve_redirect_url(raw_url, timeout=timeout)
+    if direct:
+        return direct
+    try:
+        import requests
+
+        resp = requests.get(raw_url, allow_redirects=True, timeout=timeout, stream=True)
+        final_url = resp.url or ""
+        status_ok = resp.status_code < 400
+        resp.close()
+        if status_ok and final_url.startswith(("http://", "https://")) and "vertexaisearch.cloud.google.com" not in final_url:
+            return final_url
+    except Exception:  # noqa: BLE001
+        pass
+    return ""
+
+
 def _clean_primary_sources(sources: list[dict[str, Any]]) -> list[dict[str, str]]:
     cleaned: list[dict[str, str]] = []
     seen_urls: set[str] = set()
@@ -71,9 +94,7 @@ def _clean_primary_sources(sources: list[dict[str, Any]]) -> list[dict[str, str]
             continue
         title = str(src.get("title") or "").strip()
         raw_url = str(src.get("url") or "").strip()
-        url = _resolve_redirect_url(raw_url) if "vertexaisearch.cloud.google.com" in raw_url else raw_url
-        if not url:
-            url = raw_url
+        url = _resolve_grounding_url(raw_url) if "vertexaisearch.cloud.google.com" in raw_url else raw_url
         if not url or url in seen_urls:
             continue
         seen_urls.add(url)

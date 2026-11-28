@@ -9,9 +9,9 @@
   "operating_status": "open",
   "operating_status_note": "通常開園中（10:00〜16:00・入園無料／休園：月曜・第3火曜・祝翌日（土日除く）・12/27〜1/5）",
   "official_urls": [
-    "https://kodaira-furusatomura.jp/",
-    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGrz7Hy-MIIVPiew0-40noO5pUuA-VPQ1YqklTrOG42Gj29HgXGT9yxEWoAis8d9a957WZrZh_H4gDEMl4LYzlsaD12VBfg89NYppXeHLEOXFk5g4M272V57-r0ioWBtIe14H6aFZgC",
-    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFm2UjBtCF1gy1NuuB7lu84NfS3YLEUCWNR3I_eK5GzHe9R-Qr1CYYDZ0a7oT4IbFpgUFXuEuc-4u5XapFT4Vkx_rXbR303vLwbPTbh6O1BWwXC5-dEN4DXMh9BtATnG3Uko4OGzNrASo5e"
+    "http://kodaira-furusatomura.jp/",
+    "http://kodaira-furusatomura.jp/detail/z00011.html",
+    "http://www.kodaira-furusatomura.jp/detail/z00179.html"
   ],
   "curated_highlights": [
     "開園10:00〜16:00・入場無料で江戸〜明治の復元古民家や旧小平小川郵便局舎を見学可能",
@@ -49,11 +49,11 @@
       "primary_sources": [
         {
           "title": "小平ふるさと村 公式ホームページ（開園・休園案内）",
-          "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGrz7Hy-MIIVPiew0-40noO5pUuA-VPQ1YqklTrOG42Gj29HgXGT9yxEWoAis8d9a957WZrZh_H4gDEMl4LYzlsaD12VBfg89NYppXeHLEOXFk5g4M272V57-r0ioWBtIe14H6aFZgC"
+          "url": "http://kodaira-furusatomura.jp/detail/z00011.html"
         },
         {
           "title": "小平ふるさと村 公式ホームページ（小平糧うどん 営業予定）",
-          "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFm2UjBtCF1gy1NuuB7lu84NfS3YLEUCWNR3I_eK5GzHe9R-Qr1CYYDZ0a7oT4IbFpgUFXuEuc-4u5XapFT4Vkx_rXbR303vLwbPTbh6O1BWwXC5-dEN4DXMh9BtATnG3Uko4OGzNrASo5e"
+          "url": "http://www.kodaira-furusatomura.jp/detail/z00179.html"
         }
       ]
     }

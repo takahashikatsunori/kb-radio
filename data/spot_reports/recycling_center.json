@@ -10,8 +10,7 @@
   "operating_status_note": "通常運営中（窓口・見学 平日8:30〜17:00／併設『リプレこだいら』10:00〜17:00 水木・年末年始休）",
   "official_urls": [
     "https://www.city.kodaira.tokyo.jp/",
-    "https://www.city.kodaira.tokyo.jp/kurashi/000/000189.html",
-    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFSYLY93BNZc9couVVET94c6aAXu4f1DFt-M-CEWXHJ5BMRzrUI1XcH01I-j-TAv2vA_esrj3AUTHhMBYXur8tG6PuYmWd05jAWUcSZt2ibZ92xnI1gQWq9MgMdGIh7s0qLGrVuIt9P9mXkrd2pbNM=="
+    "https://www.city.kodaira.tokyo.jp/kurashi/000/000189.html"
   ],
   "curated_highlights": [
     "小平市リサイクルセンター（小川東町5-19-10）内に小型充電式電池（リチウムイオン電池等）回収ボックスを設置",
@@ -50,10 +49,6 @@
         {
           "title": "小平市公式ホームページ（小型充電式電池の回収案内）",
           "url": "https://www.city.kodaira.tokyo.jp/kurashi/000/000189.html"
-        },
-        {
-          "title": "小平市公式ホームページ（リサイクルセンター窓口・利用案内）",
-          "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFSYLY93BNZc9couVVET94c6aAXu4f1DFt-M-CEWXHJ5BMRzrUI1XcH01I-j-TAv2vA_esrj3AUTHhMBYXur8tG6PuYmWd05jAWUcSZt2ibZ92xnI1gQWq9MgMdGIh7s0qLGrVuIt9P9mXkrd2pbNM=="
         }
       ]
     }

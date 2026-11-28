@@ -10,8 +10,7 @@
   "operating_status_note": "通常開館中（仲町公民館 9:00〜22:00・受付21:30まで／図書館 火水 9:00〜20:00、他曜日・祝 9:00〜17:00／休館：金曜・第3木曜（祝日開館）・12/28〜1/4）",
   "official_urls": [
     "https://www.city.kodaira.tokyo.jp/",
-    "https://www.city.kodaira.tokyo.jp/shihou/131/131055.html",
-    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHDtaVWZWBCsD4pdehWecdLdt_-REMEFVDWHxdFziqx44BDy6d-KkwBntVdUfjBLQj_trJJ2fd3yRTIPWTu2YOzPfyDey1apeOnFHZJ6IV2vLbdw1821K9z7yqjxzDX2dwBNMj4MiJuA5Fc1_yMNmM=="
+    "https://www.city.kodaira.tokyo.jp/shihou/131/131055.html"
   ],
   "curated_highlights": [
     "建築家・妹島和世氏設計のガラス張り建築と木を活かした地域交流ハブ（仲町公民館・図書館）",
@@ -50,10 +49,6 @@
         {
           "title": "小平市公式ホームページ（なかまちテラス イルミネーション案内）",
           "url": "https://www.city.kodaira.tokyo.jp/shihou/131/131055.html"
-        },
-        {
-          "title": "小平市公式ホームページ（なかまちテラス 施設・休館日案内）",
-          "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHDtaVWZWBCsD4pdehWecdLdt_-REMEFVDWHxdFziqx44BDy6d-KkwBntVdUfjBLQj_trJJ2fd3yRTIPWTu2YOzPfyDey1apeOnFHZJ6IV2vLbdw1821K9z7yqjxzDX2dwBNMj4MiJuA5Fc1_yMNmM=="
         }
       ]
     }
