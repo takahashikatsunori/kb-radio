@@ -77,5 +77,30 @@
   "next_research_leads": [
     "小平神明宮・鈴木稲荷神社（鏝絵）・小川寺など神社・仏閣ジャンルの他スポット一次取材",
     "冬の文化財防火デー（1月26日前後）に向けた小平市内の文化財防災訓練・情報確認"
-  ]
+  ],
+  "location": {
+    "lat": 35.713233,
+    "lon": 139.50692,
+    "verified_address": "東京都小平市御幸町318",
+    "confidence": "high",
+    "verification_method": "OSM境内ポリゴン(way/286059855 瑞雲山海岸寺) + GSI住所照合",
+    "accuracy_note": "海岸寺の本堂・茅葺き山門のある境内区域を指しています。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/kaiganji_temple/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/kaiganji_temple/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

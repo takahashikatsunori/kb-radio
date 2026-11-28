@@ -86,5 +86,30 @@
   "next_research_leads": [
     "ロピア・サンドラッグ・Seria 各店舗の2026〜2027年末年始営業時間確認",
     "新規テナントの入れ替わりや冬の防災・防寒用品売り場情報"
-  ]
+  ],
+  "location": {
+    "lat": 35.7153,
+    "lon": 139.4782,
+    "verified_address": "東京都小平市上水本町4-22-1",
+    "confidence": "high",
+    "verification_method": "GSI地名住所ジオコーディング + OSM施設店舗群(ロピア・サンドラッグ)照合",
+    "accuracy_note": "商業施設「アクロスプラザ小平」建物棟（ロピア上水本町店等）の中心付近を示しています。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/across_plaza_kodaira/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/across_plaza_kodaira/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

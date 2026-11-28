@@ -100,5 +100,30 @@
       "based_on": "テルメ小川公式HP写真（keishoku.jpg・tonkatsu_teisyoku.jpg）",
       "added_at": "2026-11-28"
     }
-  ]
+  ],
+  "location": {
+    "lat": 35.732076,
+    "lon": 139.451794,
+    "verified_address": "東京都小平市小川町1-2494",
+    "confidence": "high",
+    "verification_method": "OSM施設POI(node/14208098996 テルメ小川 / way/713921526 駐車場)照合",
+    "accuracy_note": "小川通り付近のテルメ小川施設位置を指しています（番地代表点ではなく建物位置に補正済み）。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/terme_ogawa/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/terme_ogawa/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

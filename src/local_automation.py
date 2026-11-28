@@ -1232,6 +1232,58 @@ def cmd_register_spot_art(args: argparse.Namespace) -> None:
             print("No changes to commit.")
 
 
+def cmd_render_spot_maps(args: argparse.Namespace) -> None:
+    from render_spot_maps import DEFAULT_TILES_DIR, render_maps_for_dossier
+
+    tiles_dir = Path(args.tiles_dir) if getattr(args, "tiles_dir", "") else DEFAULT_TILES_DIR
+    if not tiles_dir.is_dir():
+        raise FileNotFoundError(f"kbt-2608 tiles directory not found: {tiles_dir}")
+
+    spots_cfg = load_kodaira_spots()
+    valid_ids = {str(s["id"]) for s in (spots_cfg.get("spots") or []) if isinstance(s, dict) and s.get("id")}
+
+    if args.spot_id:
+        if args.spot_id not in valid_ids:
+            raise ValueError(f"Unknown spot_id '{args.spot_id}' not found in config/kodaira_spots.json")
+        dp = SPOT_REPORTS_DIR / f"{args.spot_id}.json"
+        if not dp.is_file():
+            raise FileNotFoundError(f"Spot dossier not found: {dp}")
+        targets = [dp]
+    elif args.all:
+        targets = sorted(SPOT_REPORTS_DIR.glob("*.json"))
+    else:
+        raise ValueError("Provide --spot-id <id> or --all.")
+
+    rendered = 0
+    for dp in targets:
+        sid = dp.stem
+        dossier = _load_json(dp)
+        if args.spot_id:
+            loc = dict(dossier.get("location") or {})
+            if args.lat is not None:
+                loc["lat"] = args.lat
+            if args.lon is not None:
+                loc["lon"] = args.lon
+            if args.address:
+                loc["verified_address"] = args.address
+            if args.confidence:
+                loc["confidence"] = args.confidence
+            if args.method:
+                loc["verification_method"] = args.method
+            if args.note:
+                loc["accuracy_note"] = args.note
+            dossier["location"] = loc
+        if not isinstance(dossier.get("location"), dict) or dossier["location"].get("lat") is None:
+            continue
+        dossier["location"] = render_maps_for_dossier(sid, dossier, tiles_dir=tiles_dir)
+        dp.write_text(json.dumps(dossier, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        rendered += 1
+        print(f"Rendered spot maps: {sid} ({dossier['location']['lat']:.5f}, {dossier['location']['lon']:.5f})")
+
+    if rendered and not args.no_build:
+        _run_python_script("build_site.py", [])
+
+
 def _load_or_init_weekly_banners() -> dict[str, Any]:
     existing = load_weekly_banners(WEEKLY_BANNERS_PATH)
     if existing:
@@ -2241,6 +2293,18 @@ def main() -> None:
     p_rsa.add_argument("--no-build", action="store_true", help="Skip build_site.py")
     p_rsa.add_argument("--push", action="store_true", help="Commit and push data/spot_reports and docs to origin/main")
 
+    p_rsm = sub.add_parser("render-spot-maps", help="Render wide (~1/25k) and detail (~1/5k) kbt-2608 locator maps")
+    p_rsm.add_argument("--spot-id", default="", help="Target spot_id")
+    p_rsm.add_argument("--all", action="store_true", help="Render maps for all dossiers with coordinates")
+    p_rsm.add_argument("--lat", type=float, default=None, help="Latitude override for --spot-id")
+    p_rsm.add_argument("--lon", type=float, default=None, help="Longitude override for --spot-id")
+    p_rsm.add_argument("--address", default="", help="Verified address override for --spot-id")
+    p_rsm.add_argument("--confidence", default="", choices=("", "high", "medium", "area"), help="Location confidence")
+    p_rsm.add_argument("--method", default="", help="Verification method note")
+    p_rsm.add_argument("--note", default="", help="Accuracy note displayed in reading page")
+    p_rsm.add_argument("--tiles-dir", default="", help="Optional custom kbt-2608 tiles directory")
+    p_rsm.add_argument("--no-build", action="store_true", help="Skip build_site.py")
+
     args = parser.parse_args()
     handlers = {
         "prepare-daily": cmd_prepare_daily,
@@ -2253,6 +2317,7 @@ def main() -> None:
         "finalize-spot-patrol": cmd_finalize_spot_patrol,
         "fetch-spot-refs": cmd_fetch_spot_refs,
         "register-spot-art": cmd_register_spot_art,
+        "render-spot-maps": cmd_render_spot_maps,
     }
     handlers[args.command](args)
 

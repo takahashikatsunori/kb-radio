@@ -81,5 +81,30 @@
   "next_research_leads": [
     "公式HP・Instagram（@cafe_laguras_）の年末年始休業・冬限定メニュー情報",
     "隣接する『あじさい公園』側の最新状況や季節イベントとの連動"
-  ]
+  ],
+  "location": {
+    "lat": 35.735019,
+    "lon": 139.490914,
+    "verified_address": "東京都小平市美園町1-24-14",
+    "confidence": "high",
+    "verification_method": "OSM店舗POI(node/1717756768 ラグラス) + 多摩湖自転車道・あじさいの小径照合",
+    "accuracy_note": "あじさいの小径・多摩湖自転車歩行者道沿いの店舗位置を指しています。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/cafe_laguras/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/cafe_laguras/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

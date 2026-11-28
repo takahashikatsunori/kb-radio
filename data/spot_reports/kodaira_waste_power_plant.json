@@ -97,5 +97,30 @@
       "based_on": "衛生組合公式外観（mv_01.png）＋ こもれびの足湯公式写真（komorebi_ashiyu.jpg）＋ 最大6,000kW自己託送データ",
       "added_at": "2026-11-28"
     }
-  ]
+  ],
+  "location": {
+    "lat": 35.729405,
+    "lon": 139.427526,
+    "verified_address": "東京都小平市中島町2-1",
+    "confidence": "high",
+    "verification_method": "OSM施設ポリゴン(way/1472245144) + GSI中島町2-1照合",
+    "accuracy_note": "小平・村山・大和衛生組合のごみ焼却・発電施設敷地を指しています。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/kodaira_waste_power_plant/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/kodaira_waste_power_plant/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

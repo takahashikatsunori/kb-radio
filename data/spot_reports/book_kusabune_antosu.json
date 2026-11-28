@@ -81,5 +81,30 @@
   "next_research_leads": [
     "2026年12月〜年末年始の臨時休業・展示会スケジュール（公式X @kusafune_anthos 等確認）",
     "冬の植物図鑑・ハーブや室内グリーンの特集イベント情報"
-  ]
+  ],
+  "location": {
+    "lat": 35.732346,
+    "lon": 139.46614,
+    "verified_address": "東京都小平市小川町2-2051（ホーリーガーデン内）",
+    "confidence": "medium",
+    "verification_method": "GSI番地ジオコーディング + 同敷地内施設座標照合",
+    "accuracy_note": "緑に囲まれた複合敷地「Holy Garden」内の一角を示す代表座標です（小規模店舗のため詳細図で周辺の道順もあわせてご確認ください）。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/book_kusabune_antosu/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/book_kusabune_antosu/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

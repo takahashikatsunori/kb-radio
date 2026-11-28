@@ -77,5 +77,30 @@
   "next_research_leads": [
     "東村山浄水場・小川浄水所・上水南浄水所など小平の給水拠点レポートとの連携記事化",
     "玉川上水・小平監視所付近の一般公開イベント（水道週間等）有無の確認"
-  ]
+  ],
+  "location": {
+    "lat": 35.730453,
+    "lon": 139.42305,
+    "verified_address": "東京都立川市幸町6-36-4（※小平市西端境界・玉川上水接続点すぐ）",
+    "confidence": "high",
+    "verification_method": "公的施設座標(小平監視所) + GSI立川市幸町6-36-4照合",
+    "accuracy_note": "名称に「小平」が付きますが所在地は隣接する立川市幸町6丁目（小平市西端すぐ西の玉川上水沿い）です。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/kodaira_kanshisyo/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/kodaira_kanshisyo/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

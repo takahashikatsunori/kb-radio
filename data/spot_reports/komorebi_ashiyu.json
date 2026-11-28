@@ -81,5 +81,30 @@
   "next_research_leads": [
     "2026〜2027年冬季の焼却施設点検日・臨時休場スケジュール確認",
     "3月からの夏季営業時間（〜16:30）切り替えと春の桜シーズンのにぎわい"
-  ]
+  ],
+  "location": {
+    "lat": 35.7291,
+    "lon": 139.42912,
+    "verified_address": "東京都小平市中島町3-5",
+    "confidence": "high",
+    "verification_method": "GSI中島町3-5住所ジオコーディング + 衛生組合施設東側位置照合",
+    "accuracy_note": "ごみ焼却施設（中島町2-1）の東側に隣接する余熱利用施設「こもれびの足湯」周辺を指しています。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/komorebi_ashiyu/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/komorebi_ashiyu/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

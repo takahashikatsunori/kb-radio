@@ -81,5 +81,30 @@
   "next_research_leads": [
     "九道の辻公園周辺や小川水衛所跡など野火止〜玉川上水合流部の詳細レポート作成",
     "冬の野鳥・水鳥観察や春のサクラ・新緑シーズンに向けた見どころ整理"
-  ]
+  ],
+  "location": {
+    "lat": 35.743372,
+    "lon": 139.465595,
+    "verified_address": "東京都小平市美園町・小川町〜栄町（野火止用水緑道／代表表示：九道の辻公園付近）",
+    "confidence": "area",
+    "verification_method": "OSM公園(way/778861700 九道の辻公園・node/10154524070 九道の辻)照合",
+    "accuracy_note": "数kmにわたる野火止用水緑道（栄町・中島町〜九道の辻・東村山方面）全体を対象としているため、緑道沿いの代表的歴史拠点「九道の辻公園」付近を代表地点として表示しています。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/nobidome_josui_walk/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/nobidome_josui_walk/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

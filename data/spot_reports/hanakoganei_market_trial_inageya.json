@@ -86,5 +86,30 @@
   "next_research_leads": [
     "いなげや・トライアル西友 花小金井店の年末年始（12/31〜1/3）営業時間情報",
     "同エリアの『リブロ 花小金井店』（花小金井1-8-3）の新規詳細レポート作成"
-  ]
+  ],
+  "location": {
+    "lat": 35.727735,
+    "lon": 139.511686,
+    "verified_address": "東京都小平市花小金井1丁目（花小金井駅北口商業エリア・トライアル西友周辺）",
+    "confidence": "area",
+    "verification_method": "OSM商業POI(node/684006593 トライアル西友花小金井) + GSI街区照合",
+    "accuracy_note": "花小金井駅北口の複数店舗（トライアル西友・いなげや等）を対象とするエリア項目ため、トライアル西友付近を代表地点としています。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/hanakoganei_market_trial_inageya/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/hanakoganei_market_trial_inageya/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

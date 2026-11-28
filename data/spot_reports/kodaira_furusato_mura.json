@@ -106,5 +106,30 @@
       "based_on": "小平ふるさと村公式HP写真（2022udon.jpg）",
       "added_at": "2026-11-28"
     }
-  ]
+  ],
+  "location": {
+    "lat": 35.731361,
+    "lon": 139.500457,
+    "verified_address": "東京都小平市天神町3-9-1",
+    "confidence": "high",
+    "verification_method": "OSM園内ポリゴン(way/57477608 小平ふるさと村) + GSI住所照合",
+    "accuracy_note": "小平ふるさと村の園内中心付近を指しています。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/kodaira_furusato_mura/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/kodaira_furusato_mura/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

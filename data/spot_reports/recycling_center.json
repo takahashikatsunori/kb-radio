@@ -81,5 +81,30 @@
   "next_research_leads": [
     "膨張・破損したリチウムイオン電池の市での最新受け入れ・窓口相談ルール確認",
     "リプレこだいら（10:00〜17:00・水木休）の年末最終営業日と新春リユース情報"
-  ]
+  ],
+  "location": {
+    "lat": 35.733185,
+    "lon": 139.47456,
+    "verified_address": "東京都小平市小川東町5-19-10",
+    "confidence": "high",
+    "verification_method": "OSM施設区画(way/584066743 リサイクル公園建物棟) + GSI住所照合",
+    "accuracy_note": "小平市リサイクルセンター建物本棟（リサイクル公園西側）の位置を指しています。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/recycling_center/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/recycling_center/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

@@ -489,6 +489,22 @@ def _merge_connections(
     return [merged[k] for k in order]
 
 
+def _merge_location(existing_raw: Any, incoming_raw: Any) -> dict[str, Any]:
+    existing = dict(existing_raw) if isinstance(existing_raw, dict) else {}
+    incoming = dict(incoming_raw) if isinstance(incoming_raw, dict) else {}
+    if not existing and not incoming:
+        return {}
+    merged = dict(existing)
+    for k, v in incoming.items():
+        if k == "maps" and isinstance(v, dict):
+            prev_maps = dict(existing.get("maps") or {}) if isinstance(existing.get("maps"), dict) else {}
+            prev_maps.update(v)
+            merged["maps"] = prev_maps
+        elif v is not None and v != "":
+            merged[k] = v
+    return merged
+
+
 def _normalize_draft_items(payload: Any) -> list[dict[str, Any]]:
     if isinstance(payload, list):
         return [x for x in payload if isinstance(x, dict)]
@@ -582,6 +598,7 @@ def ingest_draft_payload(
             merged_leads = _dedup_str_list(
                 list(existing.get("next_research_leads") or []) + list(item.get("next_research_leads") or [])
             )
+            merged_location = _merge_location(existing.get("location"), item.get("location"))
             dossier = {
                 "spot_id": sid,
                 "spot_name": str(item.get("spot_name") or existing.get("spot_name") or sp_meta["name"]),
@@ -611,6 +628,7 @@ def ingest_draft_payload(
                 **({"illustrations": merged_illustrations} if merged_illustrations else {}),
                 **({"connections": merged_connections} if merged_connections else {}),
                 **({"next_research_leads": merged_leads} if merged_leads else {}),
+                **({"location": merged_location} if merged_location else {}),
                 "entries": existing_entries,
             }
             out_path.write_text(json.dumps(dossier, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -709,6 +727,7 @@ def ingest_draft_payload(
         merged_leads = _dedup_str_list(
             list(existing.get("next_research_leads") or []) + list(item.get("next_research_leads") or [])
         )
+        merged_location = _merge_location(existing.get("location"), item.get("location"))
         dossier = {
             "spot_id": sid,
             "spot_name": str(item.get("spot_name") or existing.get("spot_name") or sp_meta["name"]),
@@ -736,6 +755,7 @@ def ingest_draft_payload(
             **({"illustrations": merged_illustrations} if merged_illustrations else {}),
             **({"connections": merged_connections} if merged_connections else {}),
             **({"next_research_leads": merged_leads} if merged_leads else {}),
+            **({"location": merged_location} if merged_location else {}),
             "entries": merged_entries,
         }
 

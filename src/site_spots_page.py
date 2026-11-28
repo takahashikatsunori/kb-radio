@@ -692,10 +692,81 @@ SPOTS_CSS = """
 .spot-pager a:hover {
   background: var(--forest-soft);
 }
+.spot-map-wrap {
+  padding: 0.95rem 1.15rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+.spot-map-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+.spot-map-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  min-width: 0;
+}
+.spot-map-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #f1f5f9;
+}
+.spot-map-card-cap {
+  padding: 0.55rem 0.78rem;
+  border-top: 1px solid var(--border);
+  background: #f8faf8;
+  font-size: 0.79rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.spot-map-card-cap strong {
+  display: block;
+  font-size: 0.83rem;
+  color: var(--forest-dark);
+}
+.spot-map-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.7rem;
+  font-size: 0.81rem;
+  color: var(--muted);
+}
+.spot-map-note {
+  padding: 0.68rem 0.88rem;
+  border-radius: 10px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  font-size: 0.82rem;
+  line-height: 1.58;
+}
+.spot-map-note.is-warn {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #92400e;
+}
+.spot-map-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem 0.8rem;
+}
+.spot-map-credit {
+  font-size: 0.74rem;
+  color: var(--muted);
+}
 @media (max-width: 760px) {
   .spots-index-grid,
   .spot-quick-grid,
   .spot-art-grid,
+  .spot-map-grid,
   .spot-conn-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1369,6 +1440,72 @@ def render_spot_detail_page(
             '</div>'
         )
 
+    # Location maps (wide ~1/25,000 + detail ~1/5,000 from kbt-2608 tiles)
+    loc = dossier.get("location") if isinstance(dossier.get("location"), dict) else {}
+    loc_maps = loc.get("maps") if isinstance(loc.get("maps"), dict) else {}
+    wide_info = loc_maps.get("wide") if isinstance(loc_maps.get("wide"), dict) else {}
+    detail_info = loc_maps.get("detail") if isinstance(loc_maps.get("detail"), dict) else {}
+    map_section_html = ""
+    if loc.get("lat") is not None and loc.get("lon") is not None and (wide_info.get("src") or detail_info.get("src")):
+        lat_val = float(loc["lat"])
+        lon_val = float(loc["lon"])
+        conf_code = str(loc.get("confidence") or "high").strip().lower()
+        conf_badge = {
+            "high": ("is-open", "✅ 位置検証済み（建物・施設特定）"),
+            "medium": ("is-seasonal", "⚠️ 位置精度の補足あり（区画・周辺基準）"),
+            "area": ("is-limited", "📍 代表地点表示（散策路・複数拠点エリア）"),
+        }.get(conf_code, ("is-seasonal", "⚠️ 位置精度の補足あり"))
+        v_addr = str(loc.get("verified_address") or address_hint or area).strip()
+        v_method = str(loc.get("verification_method") or "").strip()
+        acc_note = str(loc.get("accuracy_note") or "").strip()
+        map_cards: list[str] = []
+        if wide_info.get("src"):
+            w_src = html.escape(f"../../{wide_info['src']}", quote=True)
+            map_cards.append(
+                f'<figure class="spot-map-card" style="margin:0;">'
+                f'<img src="{w_src}" alt="{html.escape(name)} 広域地図（約1/25,000）" loading="lazy" />'
+                f'<figcaption class="spot-map-card-cap"><strong>広域マップ（約1/25,000）</strong>最寄り駅・主要幹線道路・周辺エリアとの位置関係</figcaption>'
+                f'</figure>'
+            )
+        if detail_info.get("src"):
+            d_src = html.escape(f"../../{detail_info['src']}", quote=True)
+            map_cards.append(
+                f'<figure class="spot-map-card" style="margin:0;">'
+                f'<img src="{d_src}" alt="{html.escape(name)} 詳細地図（約1/5,000）" loading="lazy" />'
+                f'<figcaption class="spot-map-card-cap"><strong>詳細マップ（約1/5,000）</strong>建物形状・周辺施設・消火栓／防火水槽</figcaption>'
+                f'</figure>'
+            )
+        note_cls = "spot-map-note is-warn" if conf_code != "high" else "spot-map-note"
+        note_prefix = "⚠️ 位置情報の補足：" if conf_code != "high" else "🧭 位置メモ："
+        note_html = f'<div class="{note_cls}">{note_prefix}{html.escape(acc_note)}</div>' if acc_note else ""
+        gmaps_url = html.escape(f"https://www.google.com/maps/search/?api=1&query={lat_val:.6f},{lon_val:.6f}", quote=True)
+        osm_url = html.escape(f"https://www.openstreetmap.org/?mlat={lat_val:.6f}&mlon={lon_val:.6f}#map=17/{lat_val:.6f}/{lon_val:.6f}", quote=True)
+        method_html = f'<span>検証方法: {html.escape(v_method)}</span>' if v_method else ""
+        map_section_html = (
+            '<div class="card">'
+            '<div class="section-head">'
+            '<h2>🗺️ スポット所在地マップ（広域 約1/25,000 ＆ 詳細 約1/5,000）</h2>'
+            '<span class="hint">kbt-2608 小平市防災タウンマップタイル使用</span>'
+            '</div>'
+            '<div class="spot-map-wrap">'
+            f'<div class="spot-map-grid">{"".join(map_cards)}</div>'
+            '<div class="spot-map-meta">'
+            f'<span class="spot-badge {conf_badge[0]}">{conf_badge[1]}</span>'
+            f'<span>📍 {html.escape(v_addr)}（{lat_val:.5f}, {lon_val:.5f}）</span>'
+            f'{method_html}'
+            '</div>'
+            f'{note_html}'
+            '<div class="spot-map-links">'
+            '<div style="display:flex; flex-wrap:wrap; gap:0.42rem;">'
+            f'<a class="spot-url-pill" href="{gmaps_url}" target="_blank" rel="noopener noreferrer">🗺️ Googleマップで開く</a>'
+            f'<a class="spot-url-pill" href="{osm_url}" target="_blank" rel="noopener noreferrer">🌐 OpenStreetMapで見る</a>'
+            '</div>'
+            '<span class="spot-map-credit">地図タイル出典: 小平市防災タウンマップ2026年8月版（© OpenStreetMap contributors, ODbL）</span>'
+            '</div>'
+            '</div>'
+            '</div>'
+        )
+
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1423,6 +1560,8 @@ def render_spot_detail_page(
       </div>
       {f'<div class="spot-url-row">{url_pills_html}</div>' if url_pills_html else ''}
     </div>
+
+    {map_section_html}
 
     <div class="card">
       <div class="section-head">

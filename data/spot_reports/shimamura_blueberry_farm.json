@@ -82,5 +82,30 @@
   "next_research_leads": [
     "JA東京むさしや小平市公式での2027年夏（6〜8月）ブルーベリー摘み取り案内時期の確認",
     "小平駅南口『日本におけるブルーベリー栽培発祥の地モニュメント』・他観光農園の取材レポート追加"
-  ]
+  ],
+  "location": {
+    "lat": 35.72258,
+    "lon": 139.51302,
+    "verified_address": "東京都小平市花小金井南町1-10-13",
+    "confidence": "medium",
+    "verification_method": "GSI花小金井南町1-10-13 + 鈴木街道沿いほっともっと東側街区(10番)照合",
+    "accuracy_note": "鈴木街道（花小金井南町1丁目10番）沿いの直売所付近を指しています。時期や利用内容（直売所／摘み取り園）により入口位置が異なります。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/shimamura_blueberry_farm/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/shimamura_blueberry_farm/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

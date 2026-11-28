@@ -85,5 +85,30 @@
   "next_research_leads": [
     "2026年12月〜2027年1月の上水南公民館まつり・公開講座・地域サロン予定",
     "特別整理期間による図書館分室の臨時休室スケジュール確認"
-  ]
+  ],
+  "location": {
+    "lat": 35.713092,
+    "lon": 139.483714,
+    "verified_address": "東京都小平市上水南町1-27-1",
+    "confidence": "high",
+    "verification_method": "OSM建物ポリゴン(way/1013430240 上水南公民館) + GSI住所照合",
+    "accuracy_note": "上水南公民館・上水南図書館の併設施設建物を指しています。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/josuiminami_kominkan/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/josuiminami_kominkan/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

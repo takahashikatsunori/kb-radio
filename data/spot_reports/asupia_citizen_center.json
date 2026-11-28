@@ -77,5 +77,30 @@
   "next_research_leads": [
     "小川パレット4F・5F移転後の新講座・市民活動交流イベント（2026年12月〜2027年1月予定）",
     "西部市民センター・小川西町公民館・図書館（同ビル内施設）との共同企画確認"
-  ]
+  ],
+  "location": {
+    "lat": 35.73765,
+    "lon": 139.46305,
+    "verified_address": "東京都小平市小川西町4-16-1（小川パレット4F・5F）",
+    "confidence": "high",
+    "verification_method": "小川駅西口複合施設(小川パレット)座標 + OSM再開発区域ポリゴン照合",
+    "accuracy_note": "西武線小川駅西口直結の再開発ビル「小川パレット」区画（4F・5Fがあすぴあ）を指しています。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/asupia_citizen_center/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/asupia_citizen_center/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

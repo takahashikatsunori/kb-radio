@@ -78,5 +78,30 @@
   "next_research_leads": [
     "2026年12月9日(水)リニューアルオープン当日の公式レポート・入場状況・追加イベント",
     "新設『The Woodland Lounge（帰らずの森）』および新サウナの稼働後公式案内"
-  ]
+  ],
+  "location": {
+    "lat": 35.721476,
+    "lon": 139.521408,
+    "verified_address": "東京都小平市花小金井南町3-9-10",
+    "confidence": "high",
+    "verification_method": "OSM建物ポリゴン(way/292494494 おふろの王様花小金井店) + GSI住所照合",
+    "accuracy_note": "温浴施設棟の中心位置を指しています。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/osama_hanakoganei/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/osama_hanakoganei/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

@@ -101,5 +101,30 @@
       "based_on": "ブリヂストン公式ギャラリー展示構成 ＋ 免震ゴム技術解説",
       "added_at": "2026-11-28"
     }
-  ]
+  ],
+  "location": {
+    "lat": 35.737872,
+    "lon": 139.466824,
+    "verified_address": "東京都小平市小川東町3-1-1（Bridgestone Innovation Gallery）",
+    "confidence": "high",
+    "verification_method": "公式アクセス情報 + 施設固有座標 + OSM敷地/周辺交差点(ブリヂストン前)照合",
+    "accuracy_note": "広大なブリヂストン小平敷地（3-1-1）のうち、小川駅東口側のギャラリー棟付近を示しています。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/bridgestone_gallery/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/bridgestone_gallery/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

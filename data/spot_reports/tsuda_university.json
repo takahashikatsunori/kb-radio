@@ -81,5 +81,30 @@
   "next_research_leads": [
     "津田塾大学の地域向け公開講座・一般公開イベント（2026冬〜2027春）の有無",
     "津田梅子生誕・創立史に関する記念企画や展示会情報"
-  ]
+  ],
+  "location": {
+    "lat": 35.722083,
+    "lon": 139.466423,
+    "verified_address": "東京都小平市津田町2-1-1",
+    "confidence": "high",
+    "verification_method": "OSM大学キャンパス(way/161959856 津田塾大学小平キャンパス) + GSI住所照合",
+    "accuracy_note": "キャンパス敷地中央付近を指しています（正門・鷹の台駅側は南西端）。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/tsuda_university/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/tsuda_university/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

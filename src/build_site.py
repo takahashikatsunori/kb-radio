@@ -10,10 +10,8 @@ from pathlib import Path
 from typing import Any
 
 from kodaira_spots import (
-    compute_spot_usage,
     load_kodaira_spots,
     load_spot_reports,
-    render_spots_catalog_markdown,
 )
 from site_calendar_page import render_calendar_page
 from site_listen_page import render_listen_page
@@ -3129,22 +3127,6 @@ def build_site() -> None:
             safe_json_fn=_safe_json_for_html,
             kodaira_spots=kodaira_spots,
             spot_reports=spot_reports,
-        ),
-        encoding="utf-8",
-    )
-    spot_usage = compute_spot_usage(
-        kodaira_spots,
-        topic_history.get("entries", []),
-        editorial_plan=editorial_plan,
-        program_schedule=program_schedule,
-        reference_date=today_jst_str,
-    )
-    (DOCS_DIR / "kodaira_spots_catalog.md").write_text(
-        render_spots_catalog_markdown(
-            kodaira_spots,
-            spot_usage,
-            today_jst_str,
-            reports_map=spot_reports,
         ),
         encoding="utf-8",
     )

@@ -81,5 +81,30 @@
   "next_research_leads": [
     "2026年末（12/30までか）および2027年始営業開始日の正確なJA公式告知確認",
     "年末お正月野菜市・クリスマスシーズンの直売フェア情報"
-  ]
+  ],
+  "location": {
+    "lat": 35.730742,
+    "lon": 139.477488,
+    "verified_address": "東京都小平市小川町2-1827",
+    "confidence": "high",
+    "verification_method": "OSM直売所POI(node/13451547266 ムーちゃん広場)照合",
+    "accuracy_note": "青梅街道（小川駅〜新小平駅方面）近くの直売所店舗位置を指しています。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/ja_muchan_hiroba/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/ja_muchan_hiroba/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

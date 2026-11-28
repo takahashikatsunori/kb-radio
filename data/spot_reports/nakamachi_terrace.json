@@ -101,5 +101,30 @@
       "based_on": "Wikimedia Commons外観写真・妹島和世建築空間構成",
       "added_at": "2026-11-28"
     }
-  ]
+  ],
+  "location": {
+    "lat": 35.730904,
+    "lon": 139.484912,
+    "verified_address": "東京都小平市仲町145",
+    "confidence": "high",
+    "verification_method": "OSM建物ポリゴン(way/1391354161 仲町テラス・node/1420775780 仲町図書館)照合",
+    "accuracy_note": "仲町公民館と仲町図書館が一体となった「なかまちテラス」建物位置を指しています。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/nakamachi_terrace/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/nakamachi_terrace/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

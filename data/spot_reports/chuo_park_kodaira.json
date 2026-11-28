@@ -87,5 +87,30 @@
   "next_research_leads": [
     "2026年12月5日『小平でのウクライナのクリスマス 2026』開催後の公式レポートや冬季イルミ有無",
     "2027年4月の中央公園グラウンド供用再開に向けたPark-PFI工事進捗・新料金発表"
-  ]
+  ],
+  "location": {
+    "lat": 35.723054,
+    "lon": 139.462484,
+    "verified_address": "東京都小平市津田町1-1-1",
+    "confidence": "high",
+    "verification_method": "OSM公園ポリゴン(way/176436692 小平中央公園) + GSI住所照合",
+    "accuracy_note": "広大な小平市立中央公園の敷地中央付近を示しています（管理棟・グラウンド等は南寄り）。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/chuo_park_kodaira/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/chuo_park_kodaira/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }

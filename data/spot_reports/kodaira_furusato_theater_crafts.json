@@ -86,5 +86,30 @@
   "next_research_leads": [
     "2027年1〜2月の小平ふるさと村・中央公民館周辺での新春イベント・昔あそび予定",
     "小平市郷土かるた大会や地域の伝統芸能サークルの開催情報"
-  ]
+  ],
+  "location": {
+    "lat": 35.731361,
+    "lon": 139.500457,
+    "verified_address": "東京都小平市天神町3-9-1（主会場：小平ふるさと村 ほか市内公民館）",
+    "confidence": "area",
+    "verification_method": "主会場(小平ふるさと村 OSM way/57477608)代表地点",
+    "accuracy_note": "伝統行事・体験は小平ふるさと村のほか市内各公民館でも開催されるため、主会場である小平ふるさと村を代表地点として表示しています。",
+    "verified_at": "2026-11-28",
+    "maps": {
+      "wide": {
+        "src": "assets/spots/kodaira_furusato_theater_crafts/map_wide.png",
+        "zoom": 14,
+        "width": 768,
+        "height": 512,
+        "scale_label": "広域 約1/25,000"
+      },
+      "detail": {
+        "src": "assets/spots/kodaira_furusato_theater_crafts/map_detail.png",
+        "zoom": 17,
+        "width": 864,
+        "height": 576,
+        "scale_label": "詳細 約1/5,000"
+      }
+    }
+  }
 }
